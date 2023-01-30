@@ -13,6 +13,9 @@ local function map(mode, bind, command, opts)
 end
 
 -- Key Maps
+-- Lazy
+map("n", "<leader>L", "<cmd>lua require('lazy').home()<cr>", {})
+
 -- Core
 map("n", "<leader>w", "<cmd>w<cr>", {})
 map("n", "<leader>q", "<cmd>q<cr>", {})
@@ -61,9 +64,6 @@ map("n", "<leader>di", '<cmd>lua require("dap").step_into()<cr>', {})
 map("n", "<leader>do", '<cmd>lua require("dap").step_out()<cr>', {})
 map("n", "<leader>dt", '<cmd>lua require("dap").terminate()<cr>', {})
 map("n", "<leader>dr", '<cmd>lua require("dap").repl.toggle()<cr>', {})
-
--- Packer
-map("n", "<leader>ps", "<cmd>PackerSync<cr>", {})
 
 -- Comment
 map("n", "<leader>/", '<cmd>lua require("Comment.api").toggle.linewise.current()<cr>', {})
