@@ -1,11 +1,12 @@
 return {
 	"williamboman/mason.nvim",
+	enabled = true,
 	opts = {
 		ensure_installed = {
 			"bash-language-server",
+			"beautysh",
 			"black",
 			"delve",
-			"eslint-lsp",
 			"gofumpt",
 			"goimports-reviser",
 			"golangci-lint",
@@ -20,6 +21,7 @@ return {
 			"revive",
 			"rust-analyzer",
 			"rustfmt",
+			"sqlfluff",
 			"stylua",
 			"typescript-language-server",
 			"yaml-language-server",

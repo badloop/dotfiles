@@ -1,5 +1,8 @@
 return {
 	"neovim/nvim-lspconfig",
+	dependencies = {
+		"folke/neodev.nvim",
+	},
 	config = function()
 		return {
 			servers = {
@@ -10,7 +13,9 @@ return {
 					reportGeneralTypeIssues = "none",
 				},
 				yamlls = {},
-				bashls = {},
+				bashls = {
+					filetypes = { "bash", "sh", "zsh" },
+				},
 				marksman = {},
 				html = {
 					{

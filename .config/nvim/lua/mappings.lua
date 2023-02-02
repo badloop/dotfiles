@@ -1,15 +1,15 @@
 -- User Functions
 local function map(mode, bind, command, opts)
-	local options = { noremap = true }
-	if type(mode) ~= "table" then
-		mode = { mode }
-	end
-	for _, v in pairs(mode) do
-		if opts then
-			options = vim.tbl_extend("force", options, opts)
-		end
-		vim.api.nvim_set_keymap(v, bind, command, opts)
-	end
+    local options = { noremap = true }
+    if type(mode) ~= "table" then
+        mode = { mode }
+    end
+    for _, v in pairs(mode) do
+        if opts then
+            options = vim.tbl_extend("force", options, opts)
+        end
+        vim.api.nvim_set_keymap(v, bind, command, opts)
+    end
 end
 
 -- Key Maps
@@ -17,6 +17,7 @@ end
 map("n", "<leader>L", "<cmd>lua require('lazy').home()<cr>", {})
 
 -- Core
+map("n", "<leader>e", "<cmd>E<cr>", {}) -- netrw
 map("n", "<leader>w", "<cmd>w<cr>", {})
 map("n", "<leader>q", "<cmd>q<cr>", {})
 map("n", "<leader>Q", "<cmd>qall<cr>", {})
@@ -30,8 +31,8 @@ map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
 map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
 map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})
 map("n", "<C-k>", ":TmuxNavigateUp<cr>", {})
-map("n", "<A-j>", "<C-y>", {})
-map("n", "<A-k>", "<C-e>", {})
+map("n", "<A-k>", "<C-y>", {})
+map("n", "<A-j>", "<C-e>", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
 map("n", "∆", "<cmd><m+<cr>", {}) -- Move current line/visual block down one
 map("n", "<C-d>", "<C-d>zz", {})

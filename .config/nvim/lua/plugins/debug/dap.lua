@@ -14,6 +14,10 @@ return {
 			load("plugins/debug/adapters")
 			load("plugins/debug/configurations")
 			require("dap.ext.vscode").load_launchjs()
+
+			-- Breakpoint def
+			vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "Error" })
+
 			-- Add pythonPath to user defined configurations
 			for _, config in pairs(dap.configurations.python) do
 				if not config.pythonPath then
@@ -100,7 +104,7 @@ return {
 	},
 	{
 		"rcarriga/nvim-dap-ui",
-		config = {
+		opts = {
 			icons = { expanded = "", collapsed = "", current_frame = "" },
 			layouts = {
 				{

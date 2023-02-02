@@ -1,8 +1,9 @@
 return {
     "hrsh7th/nvim-cmp",
+    enabled = true,
     dependencies = {
-        'onsails/lspkind.nvim',
-        'hrsh7th/cmp-nvim-lsp'
+        "onsails/lspkind.nvim",
+        "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
         local capabilities = vim.lsp.protocol.make_client_capabilities()

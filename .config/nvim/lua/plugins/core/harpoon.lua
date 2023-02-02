@@ -1,6 +1,7 @@
 return {
-	"theprimeagen/harpoon",
-	config = function()
-		require("harpoon").setup()
-	end,
+    "theprimeagen/harpoon",
+    enabled = true,
+    config = function()
+        require("harpoon").setup()
+    end,
 }

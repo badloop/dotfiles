@@ -14,12 +14,19 @@ map("-", "CTRL", wezterm.action.SendString("\x01\x2d"))
 map("j", "CTRL|SHIFT", wezterm.action.SendString("\x01\x2d"))
 
 local config = {
+	window_background_image = "/Users/aaron/.config/wezterm/background/wp2466539.jpg",
+	window_background_image_hsb = {
+		brightness = 0.02,
+		hue = 1.0,
+		saturation = 1.0,
+	},
 	enable_tab_bar = true,
 	hide_tab_bar_if_only_one_tab = true,
 	allow_square_glyphs_to_overflow_width = "Never",
 	use_fancy_tab_bar = false,
 	font = wezterm.font({
-		family = "JetBrains Mono",
+		-- family = "JetBrains Mono",
+		family = "FiraCode Nerd Font Mono",
 		stretch = "Expanded",
 		weight = "Regular",
 	}),

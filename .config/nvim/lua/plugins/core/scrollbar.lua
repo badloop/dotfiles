@@ -1,15 +1,8 @@
 return {
 	"petertriho/nvim-scrollbar",
+	enabled = true,
 	config = function()
-		require("scrollbar").setup({
-			excluded_filetypes = {
-				"prompt",
-				"TelescopePrompt",
-				"noice",
-				"neo-tree",
-				"dashboard",
-			},
-		})
+		require("scrollbar").setup()
 		require("scrollbar.handlers.gitsigns").setup()
 	end,
 }
