@@ -25,7 +25,6 @@ local config = {
 	allow_square_glyphs_to_overflow_width = "Never",
 	use_fancy_tab_bar = false,
 	font = wezterm.font({
-		-- family = "JetBrains Mono",
 		family = "FiraCode Nerd Font Mono",
 		stretch = "Expanded",
 		weight = "Regular",

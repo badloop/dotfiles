@@ -11,6 +11,10 @@ g.loaded_perl_provider = 0
 g.loaded_python3_provider = 0
 g.loaded_ruby_provider = 0
 g.loaded_node_provider = 0
+g.netrw_list_style = 3
+g.netrw_banner = 0
+g.netrw_browse_split = 0
+g.netrw_winsize = 25
 
 -- Options
 o.termguicolors = true
@@ -47,8 +51,8 @@ o.listchars = o.listchars .. ",eol:↴"
 d.source = true
 d.severity_sort = true
 d.float = {
-    source = "always",
-    border = "rounded",
+	source = "always",
+	border = "rounded",
 }
 vim.diagnostic.config(d)
 
