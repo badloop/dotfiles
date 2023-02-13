@@ -39,13 +39,14 @@ o.undodir = os.getenv("HOME") .. "/.local/share/nvim/undo/"
 o.undofile = true
 o.hlsearch = true
 o.incsearch = true
-o.colorcolumn = "80"
+o.colorcolumn = "100"
 o.wrap = false
 o.updatetime = 50
 o.scrolloff = 8
 o.list = true
 o.listchars = o.listchars .. ",space:⋅"
 o.listchars = o.listchars .. ",eol:↴"
+o.guicursor = ""
 
 -- Diagnostics
 d.source = true
@@ -64,7 +65,7 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 -- Format on save
-vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
+vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
 
 -- Vertical Help
 vim.cmd([[autocmd! FileType help :wincmd L | :vert resize 90]])

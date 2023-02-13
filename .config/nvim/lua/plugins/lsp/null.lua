@@ -1,6 +1,7 @@
 return {
 	"jose-elias-alvarez/null-ls.nvim",
 	config = function()
+		local os = require("os")
 		local null_ls = require("null-ls")
 
 		local f = null_ls.builtins.formatting
@@ -8,17 +9,28 @@ return {
 		local c = null_ls.builtins.completion
 
 		null_ls.setup({
+			-- debug = true,
 			sources = {
 				-- Formatting
 				f.beautysh,
 				f.stylua,
 				f.black,
+				f.fixjson,
 				f.goimports_reviser,
 				f.gofumpt,
-				f.sql_formatter.with({
-					args = {
-						"-c",
-						"/Users/aaron/.config/nvim/lua/aaron/sql_formatter.json",
+				-- f.sql_formatter.with({
+				-- 	args = {
+				-- 		"-c",
+				-- 		"/users/aaron/.config/nvim/lua/aaron/sql_formatter.json",
+				-- 	},
+				-- }),
+				f.sqlfluff.with({
+					timeout = 20000,
+					extra_args = {
+						"--config",
+						os.getenv("HOME") .. "/.config/nvim/lua/aaron/sqlfluff.cfg",
+						"-p",
+						"-1",
 					},
 				}),
 				f.prettier.with({
@@ -45,6 +57,12 @@ return {
 						disable = {
 							"too-many-argument",
 						},
+					},
+				}),
+				d.sqlfluff.with({
+					extra_args = {
+						"--config",
+						os.getenv("HOME") .. "/.config/nvim/lua/aaron/sqlfluff.cfg",
 					},
 				}),
 				d.golangci_lint,
