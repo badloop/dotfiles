@@ -20,12 +20,12 @@ map(
 	})
 )
 local config = {
-	window_background_image = "/Users/aaron/.config/wezterm/background/wp2466539.jpg",
-	window_background_image_hsb = {
-		brightness = 0.02,
-		hue = 1.0,
-		saturation = 1.0,
-	},
+	-- window_background_image = "/Users/aaron/.config/wezterm/background/wp2466539.jpg",
+	-- window_background_image_hsb = {
+	-- 	brightness = 0.02,
+	-- 	hue = 1.0,
+	-- 	saturation = 1.0,
+	-- },
 	enable_tab_bar = true,
 	hide_tab_bar_if_only_one_tab = true,
 	allow_square_glyphs_to_overflow_width = "Never",

@@ -95,10 +95,10 @@
 # shift + alt - left   : yabai -m window --grid 1:2:0:0:1:1
 
 # create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
-shift + cmd - n : yabai -m space --create && \
-                  index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
-                  yabai -m window --space "${index}" && \
-                  yabai -m space --focus "${index}"
+# shift + cmd - n : yabai -m space --create && \
+#                   index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+#                   yabai -m window --space "${index}" && \
+#                   yabai -m space --focus "${index}"
 
 shift + cmd - 1 : yabai -m space --focus 1
 shift + cmd - 2 : yabai -m space --focus 2
@@ -109,6 +109,8 @@ shift + cmd - 6 : yabai -m space --focus 6
 shift + cmd - 7 : yabai -m space --focus 7
 shift + cmd - 8 : yabai -m space --focus 8
 shift + cmd - 9 : yabai -m space --focus 9
+shift + cmd - m : ~/.config/sketchybar/plugins/mic_click.sh
+shift + cmd - p : ~/.config/sketchybar/plugins/music_click.sh
 
 # fast focus desktop
 # cmd + alt - x : yabai -m space --focus recent

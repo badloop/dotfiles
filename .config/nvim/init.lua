@@ -27,3 +27,13 @@ for type, icon in pairs(signs) do
 	local hl = "DiagnosticSign" .. type
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
+
+require("lazy.core.util").try(function()
+	vim.cmd.colorscheme("kanagawa")
+end, {
+	msg = "Could not load colorscheme!",
+	on_error = function(msg)
+		require("lazy.core.util").error(msg)
+		vim.cmd.colorscheme("habamax")
+	end,
+})

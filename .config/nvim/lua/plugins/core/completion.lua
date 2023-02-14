@@ -8,7 +8,7 @@ return {
 	config = function()
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
 		local lspconfig = require("lspconfig")
-		local servers = { "clangd", "rust_analyzer", "pyright", "tsserver", "sumneko_lua", "gopls" }
+		local servers = { "clangd", "rust_analyzer", "pyright", "tsserver", "lua_ls", "gopls" }
 		local luasnip = require("luasnip")
 		local cmp = require("cmp")
 		local lspkind = require("lspkind")
