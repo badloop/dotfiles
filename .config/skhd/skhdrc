@@ -111,6 +111,8 @@ shift + cmd - 8 : yabai -m space --focus 8
 shift + cmd - 9 : yabai -m space --focus 9
 shift + cmd - m : ~/.config/sketchybar/plugins/mic_click.sh
 shift + cmd - p : ~/.config/sketchybar/plugins/music_click.sh
+shift + cmd - l : ~/.config/sketchybar/plugins/music_click.sh next
+shift + cmd - h : ~/.config/sketchybar/plugins/music_click.sh prev
 
 # fast focus desktop
 # cmd + alt - x : yabai -m space --focus recent

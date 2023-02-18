@@ -1,7 +1,7 @@
 return {
 	"nvim-lualine/lualine.nvim",
 	enabled = true,
-	config = {
+	opts = {
 		options = {
 			theme = "auto",
 			globalstatus = true,

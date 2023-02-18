@@ -19,7 +19,7 @@ sketchybar --bar height=23        \
                  padding_top=2    \
                  padding_bottom=2 \
                  padding_left=10  \
-                 padding_right=0  \
+                 padding_right=10  \
                  y_offset=3       \
                  border_width=1   \
                  corner_radius=5  \
@@ -35,11 +35,9 @@ sketchybar --default icon.font="FiraCode Nerd Font:Bold:14.0"  \
                      icon.color=0xffffffff                 \
                      label.font="FiraCode Nerd Font:Bold:12.0" \
                      label.color=0xffffffff                \
-                     padding_left=5                        \
+                     padding_left=2                        \
                      padding_right=5                       \
-                     label.padding_left=4                  \
-                     label.padding_right=4                 \
-                     icon.padding_left=4                   \
+                     icon.padding_left=2                   \
                      icon.padding_right=4
 
 ##### Adding Mission Control Space Indicators #####
@@ -92,9 +90,12 @@ sketchybar --add item space_separator left                         \
 
 sketchybar --add item clock right                              \
            --set clock   update_freq=10                        \
-                         icon=                                \
                          script="$PLUGIN_DIR/clock.sh"         \
                                                                \
+           --add item weather right                            \
+           --set weather script="$PLUGIN_DIR/weather.sh"       \
+           --set weather update_freq=300                       \
+           --set weather icon.y_offset=2                       \
            --add item wifi right                               \
            --set wifi    script="$PLUGIN_DIR/wifi.sh"          \
                          icon=直                               \
