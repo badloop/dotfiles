@@ -9,6 +9,9 @@ end
 return {
 	{
 		"mfussenegger/nvim-dap",
+		opts = {
+			console = "integrateTerminal",
+		},
 		config = function()
 			local dap = require("dap")
 			load("plugins/debug/adapters")

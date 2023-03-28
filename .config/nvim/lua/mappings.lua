@@ -1,15 +1,15 @@
 -- User Functions
 local function map(mode, bind, command, opts)
-    local options = { noremap = true }
-    if type(mode) ~= "table" then
-        mode = { mode }
-    end
-    for _, v in pairs(mode) do
-        if opts then
-            options = vim.tbl_extend("force", options, opts)
-        end
-        vim.api.nvim_set_keymap(v, bind, command, opts)
-    end
+	local options = { noremap = true }
+	if type(mode) ~= "table" then
+		mode = { mode }
+	end
+	for _, v in pairs(mode) do
+		if opts then
+			options = vim.tbl_extend("force", options, opts)
+		end
+		vim.api.nvim_set_keymap(v, bind, command, opts)
+	end
 end
 
 -- Key Maps
@@ -27,6 +27,8 @@ map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
 map("n", "<leader>-", "<C-w>s", {}) -- Horizontal buffer split
 
 -- Motion
+map("n", "<leader>o", "o<esc><cr>", {})
+map("n", "<leader>O", "O<esc><cr>", {})
 map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
 map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
 map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})

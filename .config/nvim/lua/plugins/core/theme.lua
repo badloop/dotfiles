@@ -15,4 +15,20 @@ return {
 	{
 		"olimorris/onedarkpro.nvim",
 	},
+	{
+		"sainnhe/sonokai",
+	},
+	{
+		"Mofiqul/dracula.nvim",
+		opts = {
+			italic_comment = true,
+		},
+	},
+	{
+		"Shatur/neovim-ayu",
+		name = "ayu",
+		opts = {
+			mirage = true,
+		},
+	},
 }

@@ -24,6 +24,7 @@ return {
 				-- 		"/users/aaron/.config/nvim/lua/aaron/sql_formatter.json",
 				-- 	},
 				-- }),
+				f.isort,
 				f.sqlfluff.with({
 					timeout = 20000,
 					extra_args = {

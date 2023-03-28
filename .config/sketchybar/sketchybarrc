@@ -20,6 +20,7 @@ sketchybar --bar height=23        \
                  padding_bottom=2 \
                  padding_left=10  \
                  padding_right=10  \
+                 icon.y_offset=2  \
                  y_offset=3       \
                  border_width=1   \
                  corner_radius=5  \
@@ -94,15 +95,17 @@ sketchybar --add item clock right                              \
                                                                \
            --add item weather right                            \
            --set weather script="$PLUGIN_DIR/weather.sh"       \
-           --set weather update_freq=300                       \
-           --set weather icon.y_offset=2                       \
+           --set weather update_freq=60                        \
+           --set weather icon.y_offset=1                       \
            --add item wifi right                               \
            --set wifi    script="$PLUGIN_DIR/wifi.sh"          \
                          icon=直                               \
+           --set wifi icon.y_offset=1                          \
            --subscribe wifi wifi_change                        \
                                                                \
            --add item volume right                             \
            --set volume  script="$PLUGIN_DIR/volume.sh"        \
+           --set volume icon.y_offset=1                        \
            --subscribe volume volume_change                    \
                                                                \
            --add item battery right                            \
@@ -110,6 +113,7 @@ sketchybar --add item clock right                              \
                          update_freq=120                       \
            --subscribe battery system_woke power_source_change \
            --add item mic right                                \
+           --set mic icon.y_offset=1                           \
            --set mic update_freq=3                             \
            --set mic script="$PLUGIN_DIR/mic.sh"               \
            --set mic click_script="$PLUGIN_DIR/mic_click.sh"
