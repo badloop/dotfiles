@@ -1,16 +1,18 @@
 local default = {
-    filetypes = { "default" },
-    active = {},
-    in_active = {},
+	filetypes = { "default" },
+	active = {},
+	in_active = {},
 }
 return {
-    "windwp/windline.nvim",
-    enabled = false,
-    config = {
-        theme = require("wlsample.airline"),
-        tabline = {},
-        statuslines = {
-            default,
-        },
-    },
+	"windwp/windline.nvim",
+	enabled = true,
+	opts = {
+		tabline = {},
+		statuslines = {
+			default,
+		},
+	},
+	config = function()
+		require("wlsample.airline")
+	end,
 }
