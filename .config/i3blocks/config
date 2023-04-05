@@ -1,0 +1,58 @@
+# i3blocks config file
+#
+# Please see man i3blocks for a complete reference!
+# The man page is also hosted at http://vivien.github.io/i3blocks
+#
+# List of valid properties:
+#
+# align
+# color
+# command
+# full_text
+# instance
+# interval
+# label
+# min_width
+# name
+# separator
+# separator_block_width
+# short_text
+# signal
+# urgent
+
+# Global properties
+#
+# The top properties below are applied to every block, but can be overridden.
+# Each block command defaults to the script name to avoid boilerplate.
+command=/usr/share/i3blocks/$BLOCK_NAME
+separator_block_width=15
+markup=none
+
+[music]
+command=playerctl -p cider metadata -f "{{xesam:artist}} - {{xesam:title}}"
+interval=5
+signal=10
+
+[weather]
+command=sh $HOME/.config/i3/scripts/weather.sh
+interval=120
+align=center
+
+[volume]
+label=VOL
+instance=Master
+interval=once
+signal=10
+
+[memory]
+interval=30
+
+[cpu_usage]
+interval=10
+min_width=100.00%
+align=center
+
+[time]
+command=date '+%Y-%m-%d %H:%M:%S'
+interval=5
+
