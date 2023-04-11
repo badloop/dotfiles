@@ -1,0 +1,7 @@
+[user]
+    name = Aaron Dunlap
+    email = aaronmdunlap@icloud.com
+[pull]
+    ff = only
+[github]
+    user = badloop

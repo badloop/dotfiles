@@ -1,0 +1,14 @@
+[user]
+        name = Aaron Dunlap
+        email = aaron.m.dunlap@windstream.com
+[core]
+        autocrlf = input
+[advice]
+        detachedHead = FALSE
+[pull]
+        ff = only
+[filter "lfs"]
+        process = git-lfs filter-process
+        required = true
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
