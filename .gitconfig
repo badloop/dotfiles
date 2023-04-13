@@ -1,9 +1,11 @@
 # ~/.gitconfig
 [includeIf "gitdir:~/code/work/"]
     path = .gitconfig-work
+[includeIf "gitdir:~/code/home/"]
+    path = .gitconfig-home
 [includeIf "gitdir:~/.config/"]
     path = .gitconfig-home
-[includeIf "gitdir:~/code/home/"]
+[includeIf "gitdir:~/"]
     path = .gitconfig-home
 [url "git@ssh.dev.azure.com:v3/Windstream/"]
 	insteadOf = https://dev.azure.com/Windstream/
