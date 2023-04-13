@@ -82,7 +82,7 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+Ctrl+h split h
+# bindsym $mod+Ctrl+h split h
 
 # split in vertical orientation
 bindsym $mod+Ctrl+v split v
@@ -186,9 +186,11 @@ bar {
     font pango:JetBrainsMono Nerd Font, Awesome 9 
 }
 default_border none
-default_floating_border none
 for_window [class="[.]*"] floating disable
+for_window [floating] border pixel 2
 
 # User keybinds
-bindsym $mod+Shift+s exec "flameshot gui"
-bindsym $mod+Shift+p exec "playerctl -p cider play-pause"
+bindsym $mod+Ctrl+s exec "flameshot gui"
+bindsym $mod+Ctrl+p exec "playerctl -p cider play-pause"
+bindsym $mod+Ctrl+h exec "playerctl -p cider prev"
+bindsym $mod+Ctrl+l exec "playerctl -p cider next"
