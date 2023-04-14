@@ -95,6 +95,9 @@ map("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", {})
 map("n", "<leader>gs", "<cmd>Gdiffsplit<cr>", {})
 map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<cr>", {})
 map("n", "<leader>gr", "<cmd>Gitsigns reset_hunk<cr>", {})
+map("n", "gh", "<cmd>diffget //2<cr>", {})
+map("n", "gl", "<cmd>diffget //3<cr>", {})
+map("n", "<leader>gp", "<cmd>Git push -u origin", {})
 
 -- Harpoon
 map("n", "<leader>a", '<cmd>lua require("harpoon.mark").add_file()<cr>', {})

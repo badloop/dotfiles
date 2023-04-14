@@ -31,8 +31,8 @@ alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f "
 source "$HOME/.cargo/env"
 
 # Prompt
-# eval "$(starship init zsh)"
-source /usr/local/opt/powerlevel10k/powerlevel10k.zsh-theme
+eval "$(starship init zsh)"
+# source /usr/local/opt/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
