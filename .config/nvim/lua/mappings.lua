@@ -100,7 +100,7 @@ map("n", "gl", "<cmd>diffget //3<cr>", {})
 map("n", "<leader>gp", "<cmd>Git push -u origin", {})
 
 -- Harpoon
-map("n", "<leader>a", '<cmd>lua require("harpoon.mark").add_file()<cr>', {})
+map("n", "<leader>ha", '<cmd>lua require("harpoon.mark").add_file()<cr>', {})
 map("n", "<leader>he", '<cmd>lua require("harpoon.ui").toggle_quick_menu()<cr>', {})
 map("n", "<leader>1", '<cmd>lua require("harpoon.ui").nav_file(1)<cr>', {})
 map("n", "<leader>2", '<cmd>lua require("harpoon.ui").nav_file(2)<cr>', {})

@@ -23,6 +23,8 @@ export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
 
+systemctl --user import-environment DISPLAY
+
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv shell 3.10.10
