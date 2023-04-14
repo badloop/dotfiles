@@ -21,6 +21,11 @@ export GOPRIVATE="dev.azure.com"
 export GOPATH=$(go env GOPATH)
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH
+export PATH=$PATH:$PYENV_ROOT/bin
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+pyenv shell 3.10.10
 
 # Aliases
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
