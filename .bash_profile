@@ -36,4 +36,4 @@ alias vim="myvim"
 alias g="google"
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 set -o vi
-source "$HOME/.cargo/env"
+. "$HOME/.cargo/env"
