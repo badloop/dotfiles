@@ -200,5 +200,5 @@ gaps outer 5
 # User keybinds
 bindsym $mod+Ctrl+s exec "flameshot gui"
 bindsym $mod+Ctrl+p exec "playerctl -p cider play-pause"
-bindsym $mod+Ctrl+h exec "playerctl -p cider prev"
+bindsym $mod+Ctrl+h exec "playerctl -p cider previous"
 bindsym $mod+Ctrl+l exec "playerctl -p cider next"

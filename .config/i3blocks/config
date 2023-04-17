@@ -53,6 +53,6 @@ min_width=100.00%
 align=center
 
 [time]
-command=date '+%Y-%m-%d %H:%M:%S'
+command=date '+%Y-%m-%d %H:%M%p'
 interval=5
 
