@@ -35,7 +35,8 @@ exec --no-startup-id nm-applet
 exec --no-startup-id dunst
 exec --no-startup-id flameshot
 exec --no-startup-id 1Password
-exec --no-startup-id barrier 
+exec --no-startup-id barrier
+exec --no-startup-id nitrogen --restore
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3blocks 
@@ -188,14 +189,14 @@ bar {
     status_command SCRIPT_DIR=~/code/home/i3blocks-contrib i3blocks 
     i3bar_command i3bar --transparency
     position top 
-    font pango:JetBrainsMono Nerd Font, Awesome 9
+    font pango:JetBrainsMono Nerd Font, Awesome Bold Italic 10
     colors {
         background  #282a3655
         separator   #676e7d
         #                  border     bground     text
-        focused_workspace  #282a36CC  #282a36CC   #FFFFFF
-        inactive_workspace #282a36CC  #282a36CC   #676e7d
-        urgent_workspace   #282a36CC  #282a36CC   #e53935
+        focused_workspace  #282a3655  #282a3655   #FFFFFF
+        inactive_workspace #282a3655  #282a3655   #676e7d
+        urgent_workspace   #282a3655  #282a3655   #e53935
     }
 }
 default_border none

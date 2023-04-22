@@ -19,6 +19,7 @@ export GOPATH=$(go env GOPATH)
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
+export DISPLAY=:0.0
 
 systemctl --user import-environment DISPLAY
 
