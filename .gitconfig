@@ -11,3 +11,5 @@
 	insteadOf = https://dev.azure.com/Windstream/
 [status]
 	showUntrackedFiles = no
+[core]
+	editor = vim

@@ -37,6 +37,7 @@ exec --no-startup-id flameshot
 exec --no-startup-id 1Password
 exec --no-startup-id barrier
 exec --no-startup-id nitrogen --restore
+exec --no-startup-id picom -b
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3blocks 
