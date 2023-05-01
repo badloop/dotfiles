@@ -37,7 +37,8 @@ exec --no-startup-id flameshot
 exec --no-startup-id 1Password
 exec --no-startup-id barrier
 exec --no-startup-id nitrogen --restore
-exec --no-startup-id picom -b
+exec_always --no-startup-id picom -b
+exec_always xrandr --output DP-0 --mode 1920x1080 --rate 144
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3blocks 
@@ -50,7 +51,7 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec wezterm
+bindsym $mod+Return exec alacritty 
 
 # kill focused window
 bindsym $mod+Shift+q kill

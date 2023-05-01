@@ -51,6 +51,6 @@ align=center
 [battery]
 
 [time]
-command=date '+%Y-%m-%d %H:%M%p'
+command=date '+%Y-%m-%d %I:%M%p'
 interval=5
 

@@ -1,7 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-
 # User defined functions
 function v() {
     if [ -f ./venv/bin/activate ]; then
@@ -31,6 +27,11 @@ pyenv shell 3.10.10
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
+
+# Completions
+autoload -U compinit; compinit
+zstyle ':completion:*:*:cp:*' file-sort size
+zstyle ':completion:*' file-sort modification
 
 # Rust
 source "$HOME/.cargo/env"

@@ -71,4 +71,4 @@ case "${conditions}" in
         fi
         ;;
 esac
-echo "${icon}  ${temp}°"
+echo "${icon} ${temp}°"
