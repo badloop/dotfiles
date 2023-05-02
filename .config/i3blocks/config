@@ -32,6 +32,9 @@ markup=none
 command=playerctl -p cider metadata -f "{{xesam:artist}} - {{xesam:title}}"
 interval=5
 signal=10
+align=center
+min_width=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+separator=false
 
 [weather]
 command=sh $HOME/.config/i3/scripts/weather.sh
@@ -41,12 +44,13 @@ align=center
 [volume]
 interval=persist
 
-[memory]
-interval=30
-
-interval=10
+[cpu_usage]
 min_width=100.00%
-align=center
+interval=5
+align=right
+
+[memory]
+interval=5
 
 [battery]
 
