@@ -108,7 +108,7 @@ return {
 	{
 		"rcarriga/nvim-dap-ui",
 		opts = {
-			icons = { expanded = "", collapsed = "", current_frame = "" },
+			icons = { expanded = "", collapsed = "", current_frame = "" },
 			layouts = {
 				{
 					elements = {
