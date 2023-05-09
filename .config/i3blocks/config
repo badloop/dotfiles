@@ -33,7 +33,7 @@ command=playerctl -p cider metadata -f "{{xesam:artist}} - {{xesam:title}}"
 interval=5
 signal=10
 align=center
-min_width=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+min_width=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 separator=false
 
 [weather]

@@ -6,6 +6,10 @@ local load = function(path)
 	end
 end
 
+local function all_trim(s)
+	return s:match("^%s*(.-)%s*$")
+end
+
 return {
 	{
 		"mfussenegger/nvim-dap",
@@ -92,7 +96,7 @@ return {
 							for line in io.lines(filePath) do
 								local words = {}
 								for word in string.gmatch(line, "[^=]+") do
-									table.insert(words, word)
+									table.insert(words, all_trim(word))
 								end
 								if not config.env then
 									config.env = {}

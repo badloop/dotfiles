@@ -205,6 +205,11 @@ default_border none
 for_window [class="[.]*"] floating disable
 for_window [floating] border pixel 0
 
+# Float enable for specific windows
+for_window [class="1Password"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Nm-connection-editor"] floating enable]
+
 # Gaps
 gaps inner 5
 gaps outer 5

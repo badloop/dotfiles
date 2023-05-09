@@ -27,6 +27,7 @@ pyenv shell 3.10.10
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
+alias ls="ls --color=auto"
 
 # Completions
 autoload -U compinit; compinit
@@ -35,6 +36,9 @@ zstyle ':completion:*' file-sort modification
 
 # Rust
 source "$HOME/.cargo/env"
+
+# Autosuggestions
+source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Prompt
 eval "$(starship init zsh)"
