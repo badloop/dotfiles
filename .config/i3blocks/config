@@ -33,7 +33,7 @@ command=playerctl -p cider metadata -f "{{xesam:artist}} - {{xesam:title}}"
 interval=5
 signal=10
 align=center
-min_width=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+min_width=1040
 separator=false
 
 [weather]
@@ -44,13 +44,28 @@ align=center
 [volume]
 interval=persist
 
-[cpu_usage]
-min_width=100.00%
-interval=5
-align=right
+[cpu]
+command=$HOME/.config/i3blocks/scripts/cpu
+interval=repeat
+color=#89b4fa
+# border=#a6e3a1
+border_right=0
+border_left=0
+border_top=0
+border_bottom=0
+markup=pango
 
-[memory]
-interval=5
+[mem]
+command=$HOME/.config/i3blocks/scripts/mem
+interval=repeat
+color=#fab387
+# border=#a6e3a1
+border_right=0
+border_left=0
+border_top=0
+border_bottom=0
+markup=pango
+
 
 [battery]
 
