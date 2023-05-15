@@ -14,8 +14,11 @@ return {
 						python = {
 							venvPath = ".",
 							venv = "venv",
-							verboseOutput = true,
-							reportGeneralTypeIssues = false,
+							analysis = {
+								diagnosticSeverityOverrides = {
+									reportGeneralTypeIssues = "none",
+								},
+							},
 						},
 					},
 				},
