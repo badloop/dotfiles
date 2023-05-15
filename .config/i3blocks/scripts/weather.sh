@@ -71,4 +71,4 @@ case "${conditions}" in
         fi
         ;;
 esac
-echo "${icon} ${temp}°"
+echo "<span color=\"#a6e3a1\">${icon} ${temp}°</span>"

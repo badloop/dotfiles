@@ -37,9 +37,10 @@ min_width=1040
 separator=false
 
 [weather]
-command=sh $HOME/.config/i3/scripts/weather.sh
+command=sh $HOME/.config/i3blocks/scripts/weather.sh
 interval=120
 align=center
+markup=pango
 
 [volume]
 interval=persist
