@@ -28,6 +28,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
 alias ls="ls --color=auto"
+alias tmux="tmux; setenv TERM tmux-256color"
 
 # Completions
 autoload -U compinit; compinit

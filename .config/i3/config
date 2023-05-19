@@ -187,7 +187,7 @@ bar {
         #                  border     bground     text
         focused_workspace  #282a3655  #282a3655   #FFFFFF
         inactive_workspace #282a3655  #282a3655   #676e7d
-        urgent_workspace   #282a3655  #282a3655   #e53935
+        urgent_workspace   #282a3655  #282a3655   #f38ba8
     }
 }
 default_border none
