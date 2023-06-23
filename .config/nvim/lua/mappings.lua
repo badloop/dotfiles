@@ -17,12 +17,13 @@ end
 map("n", "<leader>L", "<cmd>lua require('lazy').home()<cr>", {})
 
 -- Core
+map("n", "<leader>f", "<cmd>terminal ~/.local/bin/tmux-sessionizer<cr>", {})
 map("n", "<leader>e", "<cmd>E<cr>", {}) -- netrw
 map("n", "<leader>w", "<cmd>w<cr>", {})
 map("n", "<leader>q", "<cmd>q<cr>", {})
 map("n", "<leader>Q", "<cmd>qall<cr>", {})
 map("n", "<leader>c", "<cmd>bdelete<cr>", {})
-map("n", "<leader>C", "<cmd>bdelete!<cr>", {})
+map("n", "<leader>C", "<cmd>Bdelete!<cr>", {})
 map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
 map("n", "<leader>-", "<C-w>s", {}) -- Horizontal buffer split
 

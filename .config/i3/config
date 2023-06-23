@@ -29,18 +29,11 @@ exec --no-startup-id dex --autostart --environment i3
 # screen before suspend. Use loginctl lock-session to lock your screen.
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
-# Use pactl to adjust volume in PulseAudio.
-set $refresh_i3status killall -SIGUSR1 i3blocks 
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec alacritty 
+bindsym $mod+Return exec --no-startup-id alacritty 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -145,7 +138,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -177,16 +170,17 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command SCRIPT_DIR=~/code/home/i3blocks-contrib i3blocks 
+    status_command SCRIPT_DIR=~/.config/i3blocks/scripts i3blocks 
     i3bar_command i3bar --transparency
+    tray_padding 2
     position top 
     font pango:JetBrainsMono Nerd Font, Awesome Bold Italic 10
     colors {
         background  #282a3655
         separator   #676e7d
         #                  border     bground     text
-        focused_workspace  #282a3655  #282a3655   #FFFFFF
-        inactive_workspace #282a3655  #282a3655   #676e7d
+        focused_workspace  #74c7ecCC  #282a3655   #FFFFFF
+        inactive_workspace #282a3655  #282a3655   #FFFFFF
         urgent_workspace   #282a3655  #282a3655   #f38ba8
     }
 }
@@ -204,10 +198,14 @@ gaps inner 5
 gaps outer 5
 
 # User keybinds
-bindsym $mod+Ctrl+s exec "flameshot gui"
-bindsym $mod+Ctrl+p exec "playerctl -p cider play-pause"
-bindsym $mod+Ctrl+h exec "playerctl -p cider previous"
-bindsym $mod+Ctrl+l exec "playerctl -p cider next"
+set $refresh_i3status killall -SIGUSR1 i3blocks
+bindsym $mod+Ctrl+s exec --no-startup-id "flameshot gui"
+bindsym $mod+Ctrl+p exec --no-startup-id "playerctl -p cider play-pause"
+bindsym $mod+Ctrl+h exec --no-startup-id "playerctl -p cider previous"
+bindsym $mod+Ctrl+l exec --no-startup-id "playerctl -p cider next"
+bindsym $mod+Ctrl+j exec --no-startup-id "pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status"
+bindsym $mod+Ctrl+k exec --no-startup-id "pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status"
+bindsym $mod+Ctrl+m exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status"
 
 ## Startup Applications
 exec --no-startup-id nm-applet
@@ -230,5 +228,5 @@ for_window [title="Teams"] move container to workspace $ws3
 for_window [class="Cider"] move container to workspace $ws4
 for_window [class="Alacritty"] move container to workspace $ws5
 
-exec_always xrandr --output DP-0 --mode 1920x1080 --rate 144
+exec_always --no-startup-id xrandr --output DP-0 --mode 1920x1080 --rate 144
 

@@ -24,7 +24,7 @@
 #
 # The top properties below are applied to every block, but can be overridden.
 # Each block command defaults to the script name to avoid boilerplate.
-command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME
+command=$SCRIPT_DIR/$BLOCK_NAME
 separator_block_width=15
 markup=none
 
@@ -43,7 +43,9 @@ align=center
 markup=pango
 
 [volume]
-interval=persist
+command=sh $HOME/.config/i3blocks/scripts/volume
+interval=1
+markup=pango
 
 [cpu]
 command=$HOME/.config/i3blocks/scripts/cpu
