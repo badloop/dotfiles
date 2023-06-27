@@ -13,3 +13,6 @@
 	showUntrackedFiles = no
 [core]
 	editor = vim
+[init]
+    templateDir = /home/aaron/code/work/devops-githooks
+	defaultBranch = main

@@ -226,7 +226,7 @@ exec --no-startup-id alacritty
 for_window [class="discord"] move container to workspace $ws2
 for_window [title="Teams"] move container to workspace $ws3
 for_window [class="Cider"] move container to workspace $ws4
-for_window [class="Alacritty"] move container to workspace $ws5
+# for_window [class="Alacritty"] move container to workspace $ws5
 
 exec_always --no-startup-id xrandr --output DP-0 --mode 1920x1080 --rate 144
 
