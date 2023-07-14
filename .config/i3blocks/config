@@ -37,18 +37,18 @@ min_width=1040
 separator=false
 
 [weather]
-command=sh $HOME/.config/i3blocks/scripts/weather.sh
+command=sh $SCRIPT_DIR/weather.sh
 interval=120
 align=center
 markup=pango
 
 [volume]
-command=sh $HOME/.config/i3blocks/scripts/volume
+command=sh $SCRIPT_DIR/volume
 interval=1
 markup=pango
 
 [cpu]
-command=$HOME/.config/i3blocks/scripts/cpu
+command=$SCRIPT_DIR/cpu
 interval=repeat
 color=#89b4fa
 # border=#a6e3a1
@@ -59,7 +59,7 @@ border_bottom=0
 markup=pango
 
 [mem]
-command=$HOME/.config/i3blocks/scripts/mem
+command=$SCRIPT_DIR/mem
 interval=repeat
 color=#fab387
 # border=#a6e3a1
