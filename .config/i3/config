@@ -189,11 +189,13 @@ for_window [class="[.]*"] floating disable
 for_window [floating] border pixel 0
 
 # Float enable for specific windows
+for_window [class="Tk"] floating enable
 for_window [class="1Password"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="Nm-connection-editor"] floating enable
 for_window [class="steam"] floating enable
 for_window [window_role="GtkFileChooserDialog"] floating enable
+for_window [title="MakeMKV BETA"] floating enable
 
 # Gaps
 gaps inner 5
@@ -217,6 +219,7 @@ exec --no-startup-id 1password --silent
 exec --no-startup-id barrier
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id steam -silent
+exec --no-startup-id beeper-3.64.5.AppImage
 exec_always --no-startup-id picom -b
 
 exec --no-startup-id brave --new-window https://outlook.office.com

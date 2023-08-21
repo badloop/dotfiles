@@ -5,6 +5,7 @@
     geometry = 0x0-30+20
     # width = 300
     # height = 300
+    max_height = 300
     origin = top-right
     offset = 10x30
     scale = 0
@@ -77,10 +78,11 @@
     appname = volume
     history_ignore = yes
 
-[beeper-crit]
+[beeper-crit-jenn]
     appname = Beeper
+    summary = "+1 812-453-1203"
     urgency = critical
-    new_icon = chat-message-new-symbolic.symbolic.png
+    new_icon = chat-message-new-symbolic.symbolic
 
 [urgency_low]
     background = "#b4befe"

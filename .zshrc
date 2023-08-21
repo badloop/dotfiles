@@ -5,6 +5,12 @@ function v() {
     fi
 }
 
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+
 # Exports
 export TERM=xterm-256color
 export BASH_SILENCE_DEPRECATION_WARNING=1
@@ -35,6 +41,7 @@ alias tmux="tmux; setenv TERM tmux-256color"
 autoload -U compinit; compinit
 zstyle ':completion:*:*:cp:*' file-sort size
 zstyle ':completion:*' file-sort modification
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 
 # Rust
 source "$HOME/.cargo/env"

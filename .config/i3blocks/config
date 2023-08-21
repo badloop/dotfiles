@@ -37,7 +37,7 @@ min_width=1040
 separator=false
 
 [weather]
-command=sh $SCRIPT_DIR/weather.sh
+command=$SCRIPT_DIR/weather.sh; if [ "${BLOCK_BUTTON}" = "1" ]; then i3-msg "exec --no-startup-id $SCRIPT_DIR/forecast.py"; fi
 interval=120
 align=center
 markup=pango
