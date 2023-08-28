@@ -220,6 +220,7 @@ exec --no-startup-id barrier
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id steam -silent
 exec --no-startup-id beeper-3.64.5.AppImage
+exec --no-startup-id solaar -w hide
 exec_always --no-startup-id picom -b
 
 exec --no-startup-id brave --new-window https://outlook.office.com

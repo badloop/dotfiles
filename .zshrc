@@ -5,6 +5,41 @@ function v() {
     fi
 }
 
+# Rename epsiodes based on timestamp
+function rename() {
+    IFS=$'\n'
+    if [ -z "$1" ]; then
+        echo "Please provide filter text as first argument"
+        kill -INT $$
+    fi
+    filter=$1
+    curr_files=($(find ./ -type f | grep -e "E[0-9]\{2\}\.mkv"))
+    curr_count=$(echo "${#curr_files[@]}");
+    # Allow reindexing of the entire dir
+    if [[ "${filter}" == "E" ]]; then
+        curr_count=0
+    fi
+    echo "Current files: $curr_files"
+    echo "Current count: $curr_count"
+    for f in *; do 
+        if ! (($curr_files[(Ie)$f])); then
+            if [[ $f == *${filter}* ]]; then 
+                # echo "CURR: $curr_count"
+                curr_count=$((curr_count+1)); 
+                # echo "CURR+1: $curr_count"
+                strCount=$curr_count; 
+                if ((curr_count<10)); then 
+                    strCount="0${curr_count}"; 
+                fi; 
+                echo "$curr_count -> $f -> E$strCount.mkv"; 
+                if [ -z "$2" ]; then
+                    mv -i "${f}" "E${strCount}.mkv"; 
+                fi
+            fi; 
+        fi
+    done
+}
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -36,6 +71,7 @@ alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
 alias ls="ls --color=auto"
 alias tmux="tmux; setenv TERM tmux-256color"
+alias hist="history 1"
 
 # Completions
 autoload -U compinit; compinit
