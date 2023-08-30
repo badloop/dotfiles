@@ -21,7 +21,7 @@ function rename() {
     fi
     echo "Current files: $curr_files"
     echo "Current count: $curr_count"
-    for f in *; do 
+    for f in (*.mkv(NOm)); do 
         if ! (($curr_files[(Ie)$f])); then
             if [[ $f == *${filter}* ]]; then 
                 # echo "CURR: $curr_count"
