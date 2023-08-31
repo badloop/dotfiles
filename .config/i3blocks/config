@@ -73,6 +73,6 @@ markup=pango
 [battery]
 
 [time]
-command=date '+%Y-%m-%d %I:%M%p'
+command=date '+%a %Y-%m-%d %I:%M%p'
 interval=5
 
