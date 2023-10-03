@@ -42,10 +42,6 @@ return {
 						"typescript",
 						"css",
 					},
-					extra_args = {
-						"--tab-width",
-						"4",
-					},
 				}),
 
 				-- Diagnostics

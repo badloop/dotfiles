@@ -5,6 +5,20 @@ function v() {
     fi
 }
 
+# Re-encode raw video file
+function encode() {
+    if [ -z "$1" ]; then
+        echo "Please provide a filename to convert..."
+        kill -INT $$
+    fi
+    if [ -z "$2" ]; then
+        echo "Please provide a target filename..."
+        kill -INT $$
+    fi
+
+    ffmpeg -i "${1}" -preset fast -crf 22 -tune film -level 4 -colorspace bt709 "${2}"
+}
+
 # Rename epsiodes based on timestamp
 function rename() {
     IFS=$'\n'
@@ -21,7 +35,8 @@ function rename() {
     fi
     echo "Current files: $curr_files"
     echo "Current count: $curr_count"
-    for f in (*.mkv(NOm)); do 
+    allfiles=(*.mkv(NOm))
+    for f in $allfiles; do 
         if ! (($curr_files[(Ie)$f])); then
             if [[ $f == *${filter}* ]]; then 
                 # echo "CURR: $curr_count"
@@ -58,6 +73,8 @@ export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH=$PATH:~/.local/bin
 export DISPLAY=:0.0
+export LS_COLORS=$(vivid generate catppuccin-mocha)
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 systemctl --user import-environment DISPLAY
 
@@ -69,7 +86,7 @@ pyenv shell 3.10.10
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
-alias ls="ls --color=auto"
+alias ls="eza --git --icons --header --group"
 alias tmux="tmux; setenv TERM tmux-256color"
 alias hist="history 1"
 

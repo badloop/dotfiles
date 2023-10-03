@@ -70,7 +70,6 @@ return {
 						},
 					},
 				},
-				rust_analyzer = {},
 				gopls = {},
 			},
 			setup = {
@@ -143,13 +142,11 @@ return {
 				"pylint",
 				"pyright",
 				"revive",
-				"rust-analyzer",
-				"rustfmt",
 				"shellcheck",
 				"shfmt",
 				"sqlfluff",
 				"stylua",
-				"typescript-language-server",
+				"tailwindcss-language-server",
 				"yaml-language-server",
 			},
 			ui = {
