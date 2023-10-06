@@ -1,9 +1,13 @@
 configuration {
-  display-drun: "Applications:";
-  display-window: "Windows:";
+  display-drun: "Apps:";
+  display-run: "Run:";
+  display-ssh: "ssh:";
+  display-combi: ">";
   drun-display-format: "{name}";
+  show-icons: true;
   font: "JetBrainsMono Nerd Font Medium 10";
-  modi: "window,run,drun";
+  // modi: "drun,run,ssh";
+  combi-modes: "drun,run,ssh";
 }
 
 @theme "/dev/null"

@@ -68,10 +68,14 @@ export PYENV_ROOT=${HOME}/.pyenv
 export GO111MODULE="on"
 export GOPRIVATE="dev.azure.com"
 export GOPATH=$(go env GOPATH)
+export JAVA_HOME=/usr/lib/jvm/default
+
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH=$PATH:~/.local/bin
+export PATH=$PATH:~/Desktop
+export PATH=$PATH:/usr/lib/jvm/java-17-openjdk/bin/
 export DISPLAY=:0.0
 export LS_COLORS=$(vivid generate catppuccin-mocha)
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
