@@ -36,21 +36,21 @@ function rename() {
     echo "Current files: $curr_files"
     echo "Current count: $curr_count"
     allfiles=(*.mkv(NOm))
-    for f in $allfiles; do 
+    for f in $allfiles; do
         if ! (($curr_files[(Ie)$f])); then
-            if [[ $f == *${filter}* ]]; then 
+            if [[ $f == *${filter}* ]]; then
                 # echo "CURR: $curr_count"
-                curr_count=$((curr_count+1)); 
+                curr_count=$((curr_count+1));
                 # echo "CURR+1: $curr_count"
-                strCount=$curr_count; 
-                if ((curr_count<10)); then 
-                    strCount="0${curr_count}"; 
-                fi; 
-                echo "$curr_count -> $f -> E$strCount.mkv"; 
+                strCount=$curr_count;
+                if ((curr_count<10)); then
+                    strCount="0${curr_count}";
+                fi;
+                echo "$curr_count -> $f -> E$strCount.mkv";
                 if [ -z "$2" ]; then
-                    mv -i "${f}" "E${strCount}.mkv"; 
+                    mv -i "${f}" "E${strCount}.mkv";
                 fi
-            fi; 
+            fi;
         fi
     done
 }
@@ -91,7 +91,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
 alias ls="eza --git --icons --header --group"
-alias tmux="tmux; setenv TERM tmux-256color"
+# alias tmux="tmux; setenv TERM tmux-256color"
 alias hist="history 1"
 
 # Completions

@@ -36,6 +36,11 @@ align=center
 min_width=850
 separator=false
 
+[notify]
+command=$HOME/.config/i3/scripts/notify
+interval=5
+markup=pango
+
 [weather]
 command=$SCRIPT_DIR/weather.sh; if [ "${BLOCK_BUTTON}" = "1" ]; then i3-msg "exec --no-startup-id $SCRIPT_DIR/forecast.py"; fi
 interval=120
