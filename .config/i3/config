@@ -173,7 +173,7 @@ bar {
     status_command SCRIPT_DIR=~/.config/i3/scripts i3blocks 
     i3bar_command i3bar --transparency
     tray_padding 2
-    tray_output primary
+    tray_output DP-0
     position top 
     font pango:JetBrainsMono Nerd Font, Awesome Bold Italic 10
     colors {

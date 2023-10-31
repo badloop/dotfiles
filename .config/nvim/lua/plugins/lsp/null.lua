@@ -25,6 +25,7 @@ return {
 				-- 	},
 				-- }),
 				f.isort,
+				f.rustfmt,
 				f.sqlfluff.with({
 					timeout = 20000,
 					extra_args = {
@@ -41,8 +42,11 @@ return {
 						"javascript",
 						"typescript",
 						"css",
+						"yaml",
+						"xml",
 					},
 				}),
+				f.yamlfmt,
 
 				-- Diagnostics
 				d.pylint.with({
@@ -62,6 +66,8 @@ return {
 						os.getenv("HOME") .. "/.config/nvim/lua/aaron/sqlfluff.cfg",
 					},
 				}),
+				d.eslint,
+				d.eslint_d,
 				d.golangci_lint,
 				d.revive,
 				d.markdownlint,

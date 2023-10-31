@@ -75,7 +75,8 @@ export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Desktop
-export PATH=$PATH:/usr/lib/jvm/java-17-openjdk/bin/
+export PATH=$PATH:/usr/lib/jvm/java-17-openjdk/bin
+export PATH=$PATH:/usr/local/maven/bin
 export DISPLAY=:0.0
 export LS_COLORS=$(vivid generate catppuccin-mocha)
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
