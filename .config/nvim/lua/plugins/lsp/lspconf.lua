@@ -75,77 +75,77 @@ return {
 				gopls = {},
 			},
 			setup = {
-				jdtls = function(_, opts)
-					vim.api.nvim_create_autocmd("FileType", {
-						pattern = "java",
-						callback = function()
-							-- vim.lsp.set_log_level("DEBUG")
-
-							local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-							local workspace_dir = "/home/aaron/code/work/.workspace/" .. project_name
-							local cmd = {
-								"java",
-								"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044",
-								"-javaagent:/home/aaron/.local/share/nvim/mason/packages/jdtls/lombok.jar",
-								"-Declipse.application=org.eclipse.jdt.ls.core.id1",
-								"-Dosgi.bundles.defaultStartLevel=4",
-								"-Declipse.product=org.eclipse.jdt.ls.core.product",
-								"-Dlog.protocol=true",
-								"-Dlog.level=ALL",
-								"-Xmx1g",
-								"--add-modules=ALL-SYSTEM",
-								"--add-opens",
-								"java.base/java.util=ALL-UNNAMED",
-								"--add-opens",
-								"java.base/java.lang=ALL-UNNAMED",
-								"-jar",
-								"/home/aaron/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.6.500.v20230717-2134.jar",
-								"-configuration",
-								"/home/aaron/.local/share/nvim/mason/packages/jdtls/config_linux",
-								"-data",
-								workspace_dir,
-							}
-
-							-- This is the default if not provided, you can remove it. Or adjust as needed.
-							-- One dedicated LSP server & client will be started per unique root_dir
-							local root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew" })
-
-							-- Here you can configure eclipse.jdt.ls specific settings
-							-- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
-							-- for a list of options
-							local settings = {
-								java = {},
-							}
-
-							local handlers = {
-								-- ["language/status"] = function(_, result)
-								--     -- print(result)
-								-- end,
-								-- ["$/progress"] = function(_, result, ctx)
-								--     -- disable progress updates.
-								-- end,
-							}
-
-							local config = {
-								cmd = cmd,
-								root_dir = root_dir,
-								settings = settings,
-								handlers = handlers,
-								capabilities = require("cmp_nvim_lsp").default_capabilities(
-									vim.lsp.protocol.make_client_capabilities()
-								),
-							}
-							require("jdtls").start_or_attach(config)
-						end,
-					})
-					return true
-				end,
-				-- example to setup with typescript.nvim
-				-- tsserver = function(_, opts)
-				--   require("typescript").setup({ server = opts })
-				--   return true
-				-- end,
-				-- Specify * to use this function as a fallback for any server
+				-- 	jdtls = function(_, opts)
+				-- 		vim.api.nvim_create_autocmd("FileType", {
+				-- 			pattern = "java",
+				-- 			callback = function()
+				-- 				-- vim.lsp.set_log_level("DEBUG")
+				--
+				-- 				local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+				-- 				local workspace_dir = "/home/aaron/code/work/.workspace/" .. project_name
+				-- 				local cmd = {
+				-- 					"java",
+				-- 					"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044",
+				-- 					"-javaagent:/home/aaron/.local/share/nvim/mason/packages/jdtls/lombok.jar",
+				-- 					"-Declipse.application=org.eclipse.jdt.ls.core.id1",
+				-- 					"-Dosgi.bundles.defaultStartLevel=4",
+				-- 					"-Declipse.product=org.eclipse.jdt.ls.core.product",
+				-- 					"-Dlog.protocol=true",
+				-- 					"-Dlog.level=ALL",
+				-- 					"-Xmx1g",
+				-- 					"--add-modules=ALL-SYSTEM",
+				-- 					"--add-opens",
+				-- 					"java.base/java.util=ALL-UNNAMED",
+				-- 					"--add-opens",
+				-- 					"java.base/java.lang=ALL-UNNAMED",
+				-- 					"-jar",
+				-- 					"/home/aaron/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.6.500.v20230717-2134.jar",
+				-- 					"-configuration",
+				-- 					"/home/aaron/.local/share/nvim/mason/packages/jdtls/config_linux",
+				-- 					"-data",
+				-- 					workspace_dir,
+				-- 				}
+				--
+				-- 				-- This is the default if not provided, you can remove it. Or adjust as needed.
+				-- 				-- One dedicated LSP server & client will be started per unique root_dir
+				-- 				local root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew" })
+				--
+				-- 				-- Here you can configure eclipse.jdt.ls specific settings
+				-- 				-- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
+				-- 				-- for a list of options
+				-- 				local settings = {
+				-- 					java = {},
+				-- 				}
+				--
+				-- 				local handlers = {
+				-- 					-- ["language/status"] = function(_, result)
+				-- 					--     -- print(result)
+				-- 					-- end,
+				-- 					-- ["$/progress"] = function(_, result, ctx)
+				-- 					--     -- disable progress updates.
+				-- 					-- end,
+				-- 				}
+				--
+				-- 				local config = {
+				-- 					cmd = cmd,
+				-- 					root_dir = root_dir,
+				-- 					settings = settings,
+				-- 					handlers = handlers,
+				-- 					capabilities = require("cmp_nvim_lsp").default_capabilities(
+				-- 						vim.lsp.protocol.make_client_capabilities()
+				-- 					),
+				-- 				}
+				-- 				require("jdtls").start_or_attach(config)
+				-- 			end,
+				-- 		})
+				-- 		return true
+				-- 	end,
+				-- 	-- example to setup with typescript.nvim
+				-- 	-- tsserver = function(_, opts)
+				-- 	--   require("typescript").setup({ server = opts })
+				-- 	--   return true
+				-- 	-- end,
+				-- 	-- Specify * to use this function as a fallback for any server
 				["*"] = function(server, opts) end,
 			},
 		},
