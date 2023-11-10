@@ -185,6 +185,7 @@ bar {
         urgent_workspace   #282a3655  #282a3655   #f38ba8
     }
 }
+# default_border pixel 2
 default_border none
 for_window [class="[.]*"] floating disable
 for_window [floating] border pixel 0
@@ -223,6 +224,9 @@ exec --no-startup-id steam -silent
 exec --no-startup-id beeper-3.64.5.AppImage
 exec --no-startup-id solaar -w hide
 exec_always --no-startup-id picom -b
+
+# Colors
+client.focused #45475a #285577 #ffffff #2e9ef4 #285577
 
 exec --no-startup-id brave --new-window https://outlook.office.com
 exec --no-startup-id brave --new-window /home/aaron/Desktop/Microsoft Teams.desktop
