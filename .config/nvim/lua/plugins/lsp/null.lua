@@ -1,5 +1,6 @@
 return {
 	"jose-elias-alvarez/null-ls.nvim",
+	enabled = false,
 	config = function()
 		local os = require("os")
 		local null_ls = require("null-ls")

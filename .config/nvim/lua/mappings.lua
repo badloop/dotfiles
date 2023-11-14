@@ -13,6 +13,9 @@ local function map(mode, bind, command, opts)
 end
 
 -- Key Maps
+-- Unbind
+map("n", "C-f", "<nop>", {})
+
 -- Lazy
 map("n", "<leader>L", "<cmd>lua require('lazy').home()<cr>", {})
 

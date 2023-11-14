@@ -5,6 +5,12 @@ function v() {
     fi
 }
 
+# Zoxide
+eval "$(zoxide init zsh)"
+
+# Key Bindings
+bindkey -s '^F' 't^M'
+
 # Re-encode raw video file
 function encode() {
     if [ -z "$1" ]; then
@@ -77,7 +83,14 @@ export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Desktop
 export PATH=$PATH:/usr/lib/jvm/java-21-openjdk/bin
 export PATH=$PATH:/usr/local/maven/bin
+
+# ~/.tmux/plugins
+export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
+# ~/.config/tmux/plugins
+export PATH=$HOME/.config/tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
+
 export DISPLAY=:0.0
+
 export LS_COLORS=$(vivid generate catppuccin-mocha)
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
