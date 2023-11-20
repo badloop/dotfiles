@@ -18,7 +18,7 @@ require("lazy").setup({
 	{ import = "plugins.core" },
 	{ import = "plugins.lsp" },
 	{ import = "plugins.debug" },
-	{ import = "plugins.extra" },
+	{ import = "plugins.linting" },
 })
 require("aaron")
 

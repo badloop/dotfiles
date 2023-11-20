@@ -13,14 +13,14 @@ configuration {
 @theme "/dev/null"
 
 * {
-  bg: #1e1e2e22;
-  bg-alt: #585b7066;
-  bg-selected: #31324433;
+  bg: #1e1e2e33;
+  bg-alt: #9399b233;
+  bg-selected: #b4befe33;
 
-  fg: #cdd6f4;
-  fg-alt: #7f849c;
+  fg: #89dceb;
+  fg-alt: #a6adc8;
 
-  
+
   border: 0;
   margin: 0;
   padding: 0;

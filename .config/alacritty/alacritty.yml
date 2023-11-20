@@ -54,3 +54,6 @@ search:
   - pattern: "GET"
     attributes:
       foreground: "green"
+
+selection:
+  save_to_clipboard: true

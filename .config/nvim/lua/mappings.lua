@@ -13,8 +13,6 @@ local function map(mode, bind, command, opts)
 end
 
 -- Key Maps
--- Unbind
-map("n", "C-f", "<nop>", {})
 
 -- Lazy
 map("n", "<leader>L", "<cmd>lua require('lazy').home()<cr>", {})
@@ -41,6 +39,7 @@ map("n", "<A-k>", "<C-y>", {})
 map("n", "<A-j>", "<C-e>", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
 map("n", "∆", "<cmd><m+<cr>", {}) -- Move current line/visual block down one
+map("n", "<C-f>", "<cmd>!t<cr>", {})
 map("n", "<C-d>", "<C-d>zz", {})
 map("n", "<C-u>", "<C-u>zz", {})
 map("v", "J", ":m '>+1<cr>gv=gv", {})
@@ -110,3 +109,6 @@ map("n", "<leader>1", '<cmd>lua require("harpoon.ui").nav_file(1)<cr>', {})
 map("n", "<leader>2", '<cmd>lua require("harpoon.ui").nav_file(2)<cr>', {})
 map("n", "<leader>3", '<cmd>lua require("harpoon.ui").nav_file(3)<cr>', {})
 map("n", "<leader>4", '<cmd>lua require("harpoon.ui").nav_file(4)<cr>', {})
+
+-- Treesitter
+map("n", "<leader>tt", "<cmd>TSContextToggle<cr>", {})
