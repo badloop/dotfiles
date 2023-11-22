@@ -1,14 +1,14 @@
 font:
   bold:
-    family: JetBrainsMonoNL Nerd Font
+    family: JetBrainsMonoNL NF
     # family: Iosevka Nerd Font
     style: Bold
   italic:
-    family: JetBrainsMonoNL Nerd Font
+    family: JetBrainsMonoNL NF
     # family: Iosevka Nerd Font
     style: Italic
   normal:
-    family: JetBrainsMonoNL Nerd Font
+    family: JetBrainsMonoNL NF
     # family: Iosevka Nerd Font
     style: Regular
   size: 9.0
