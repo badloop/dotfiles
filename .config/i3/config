@@ -175,7 +175,7 @@ bar {
     tray_padding 2
     tray_output DP-0
     position top 
-    font pango:JetBrainsMono Nerd Font, Awesome Bold Italic 10
+    font pango:JetBrainsMonoNL NF, Awesome Bold Italic 10
     colors {
         background  #282a3655
         separator   #676e7d
