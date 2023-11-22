@@ -173,7 +173,7 @@ bar {
     status_command SCRIPT_DIR=~/.config/i3/scripts i3blocks 
     i3bar_command i3bar --transparency
     tray_padding 2
-    tray_output DP-0
+    tray_output HDMI-1
     position top 
     font pango:JetBrainsMonoNL NF, Awesome Bold Italic 10
     colors {
@@ -197,7 +197,6 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="Nm-connection-editor"] floating enable
 for_window [class="steam"] floating enable
 for_window [window_role="GtkFileChooserDialog"] floating enable
-for_window [title="MakeMKV BETA"] floating enable
 
 # Gaps
 gaps inner 5

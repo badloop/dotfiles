@@ -83,8 +83,6 @@ export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Desktop
 export PATH=$PATH:/usr/lib/jvm/java-21-openjdk/bin
 export PATH=$PATH:/usr/local/maven/bin
-export http_proxy=http://localhost:8080
-export https_proxy=http://localhost:8080
 
 # ~/.tmux/plugins
 export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
