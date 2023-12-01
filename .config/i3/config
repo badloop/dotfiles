@@ -173,7 +173,6 @@ bar {
     status_command SCRIPT_DIR=~/.config/i3/scripts i3blocks 
     i3bar_command i3bar --transparency
     tray_padding 2
-    tray_output HDMI-1
     position top 
     font pango:JetBrainsMonoNL NF, Awesome Bold Italic 10
     colors {
@@ -186,9 +185,9 @@ bar {
     }
 }
 # default_border pixel 2
-default_border none
+default_border pixel 2
+default_floating_border pixel 2
 for_window [class="[.]*"] floating disable
-for_window [floating] border pixel 0
 
 # Float enable for specific windows
 for_window [class="Tk"] floating enable
@@ -199,8 +198,8 @@ for_window [class="steam"] floating enable
 for_window [window_role="GtkFileChooserDialog"] floating enable
 
 # Gaps
-gaps inner 5
-gaps outer 5
+gaps inner 8
+gaps outer 0
 
 # User keybinds
 set $refresh_i3status killall -SIGUSR1 i3blocks
@@ -222,21 +221,19 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id steam -silent
 exec --no-startup-id beeper-3.64.5.AppImage
 exec --no-startup-id solaar -w hide
-exec_always --no-startup-id picom -b
+exec_always --no-startup-id picom -b --experimental-backends &
 
-# Colors
-client.focused #45475a #285577 #ffffff #2e9ef4 #285577
+# Colors       Border  Backgr  Text    Indictr 
+client.focused #89b4fa #285577 #ffffff #2e9ef4 #285577
 
 exec --no-startup-id brave --new-window https://outlook.office.com
-exec --no-startup-id brave --new-window /home/aaron/Desktop/Microsoft Teams.desktop
 exec --no-startup-id discord
 exec --no-startup-id cider
 exec --no-startup-id alacritty 
 
+for_window [title="^Microsoft Outlook.*"] move container to workspace $ws1
 for_window [class="discord"] move container to workspace $ws2
-# for_window [title="Teams"] move container to workspace $ws3
+for_window [title="^Microsoft Teams.*"] move container to workspace $ws3
 for_window [class="Cider"] move container to workspace $ws4
-# for_window [class="Alacritty"] move container to workspace $ws5
 
-exec_always --no-startup-id xrandr --output DP-0 --mode 1920x1080 --rate 144
 

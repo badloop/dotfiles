@@ -5,6 +5,13 @@ function v() {
     fi
 }
 
+# zsh vi mode
+autoload edit-command-line
+zle -N edit-command-line
+zstyle :zle:edit-command-line editor nvim 
+bindkey -v
+bindkey -M vicmd vv edit-command-line 
+
 # Zoxide
 eval "$(zoxide init zsh)"
 
@@ -81,8 +88,7 @@ export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Desktop
-export PATH=$PATH:/usr/lib/jvm/java-21-openjdk/bin
-export PATH=$PATH:/usr/local/maven/bin
+export PATH=$PATH:~/.bun/bin
 
 # ~/.tmux/plugins
 export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
@@ -105,7 +111,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias vim='v;nvim'
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done'
 alias ls="eza --git --icons --header --group"
-# alias tmux="tmux; setenv TERM tmux-256color"
+# alias tmux="tmux -L"
 alias hist="history 1"
 
 # Completions
@@ -122,3 +128,10 @@ source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Prompt
 eval "$(starship init zsh)"
+
+# bun completions
+[ -s "/home/aaron/.bun/_bun" ] && source "/home/aaron/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

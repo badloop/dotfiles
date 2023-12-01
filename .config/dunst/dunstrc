@@ -80,7 +80,7 @@
 
 [beeper-crit-jenn]
     appname = Beeper
-    summary = "+1 812-453-1203"
+    summary = "+18124531203"
     urgency = critical
     new_icon = chat-message-new-symbolic.symbolic
 
