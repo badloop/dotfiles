@@ -1,15 +1,15 @@
 -- User Functions
 local function map(mode, bind, command, opts)
-	local options = { noremap = true }
-	if type(mode) ~= "table" then
-		mode = { mode }
-	end
-	for _, v in pairs(mode) do
-		if opts then
-			options = vim.tbl_extend("force", options, opts)
-		end
-		vim.api.nvim_set_keymap(v, bind, command, opts)
-	end
+    local options = { noremap = true }
+    if type(mode) ~= "table" then
+        mode = { mode }
+    end
+    for _, v in pairs(mode) do
+        if opts then
+            options = vim.tbl_extend("force", options, opts)
+        end
+        vim.api.nvim_set_keymap(v, bind, command, opts)
+    end
 end
 
 -- Key Maps
@@ -26,7 +26,7 @@ map("n", "<leader>Q", "<cmd>qall<cr>", {})
 map("n", "<leader>c", "<cmd>bdelete<cr>", {})
 map("n", "<leader>C", "<cmd>Bdelete!<cr>", {})
 map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
-map("n", "<leader>-", "<C-w>s", {}) -- Horizontal buffer split
+map("n", "<leader>-", "<C-w>s", {})  -- Horizontal buffer split
 
 -- Motion
 map("n", "<leader>o", "o<esc><cr>", {})
@@ -52,9 +52,9 @@ map("v", "<leader>y", '"+y', { desc = "Enter yank to system clipboard mode" })
 map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
 
 -- LSP
-map("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", {}) -- Variable rename
+map("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", {})                          -- Variable rename
 map("n", "<leader>lR", '<cmd>lua require("telescope.builtin").lsp_references()<cr>', {}) -- Variable rename
-map("n", "<S-k>", "<cmd>lua vim.lsp.buf.hover()<cr>", {}) -- Variable rename
+map("n", "<S-k>", "<cmd>lua vim.lsp.buf.hover()<cr>", {})                                -- Variable rename
 map("n", "<leader>gD", "<cmd> lua vim.lsp.buf.declaration()<cr>", {})
 map("n", "<leader>gd", "<cmd> lua vim.lsp.buf.definition()<cr>", {})
 map("n", "<leader>ld", "<cmd>lua vim.diagnostic.open_float()<cr>", {})
@@ -93,6 +93,7 @@ map("n", "<leader>ft", "<cmd>TodoTelescope<cr>", {})
 
 -- Telescope -- git
 map("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", {})
+map("n", "<leader>tu", "<cmd>Telescope undo<cr>", {})
 
 -- Git
 map("n", "<leader>gs", "<cmd>Gdiffsplit<cr>", {})
