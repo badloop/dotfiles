@@ -12,6 +12,8 @@ return {
                     "-f",
                     "json",
                     "--enable-all-extensions",
+                    "-d",
+                    "C0199,R0902,R0913,R0914,R2004,R6103,W0717",
                     "--init-hook",
                     "import sys;import os;sys.path.append(os.getcwd());sys.path.append([r+'/'+d[0] for r, d, f in os.walk('.') if 'site-packages' in d][0])",
                 },

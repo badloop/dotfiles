@@ -27,6 +27,7 @@ map("n", "<leader>c", "<cmd>bdelete<cr>", {})
 map("n", "<leader>C", "<cmd>Bdelete!<cr>", {})
 map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
 map("n", "<leader>-", "<C-w>s", {})  -- Horizontal buffer split
+map("n", "<leader>'", "ciw'<ESC>p", {})
 
 -- Motion
 map("n", "<leader>o", "o<esc><cr>", {})
