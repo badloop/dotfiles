@@ -60,7 +60,7 @@ symbol = " "
 
 [hostname]
 ssh_symbol = " "
-style = 'fg: #a6e3a1'
+style = 'bold #a6e3a1'
 
 [java]
 symbol = " "
