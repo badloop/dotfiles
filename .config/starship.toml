@@ -72,7 +72,7 @@ symbol = " "
 symbol = " "
 
 [kubernetes]
-symbol = "󱃾"
+symbol = "󱃾 "
 disabled = false
 style = "purple"
 
