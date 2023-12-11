@@ -72,7 +72,9 @@ symbol = " "
 symbol = " "
 
 [kubernetes]
+symbol = "󱃾"
 disabled = false
+style = "purple"
 
 [memory_usage]
 symbol = "󰍛 "

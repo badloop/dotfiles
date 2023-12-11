@@ -4,6 +4,10 @@ return {
         -- Event to trigger linters
         events = { "BufWritePost", "BufReadPost", "InsertLeave" },
         linters_by_ft = {
+            javascriptreact = { "eslint" },
+            typescriptreact = { "eslint" },
+            javascript = { "eslint" },
+            typescript = { "eslint" },
             python = { "pylint" },
         },
         linters = {

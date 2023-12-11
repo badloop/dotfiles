@@ -19,6 +19,7 @@ return {
         },
         opts = {
             servers = {
+                eslint = {},
                 jdtls = {},
                 pyright = {
                     settings = {
@@ -204,6 +205,7 @@ return {
                 "beautysh",
                 "black",
                 "delve",
+                "eslint_d",
                 "eslint-lsp",
                 "gofumpt",
                 "goimports-reviser",
