@@ -199,7 +199,7 @@ for_window [class="steam"] floating enable
 for_window [window_role="GtkFileChooserDialog"] floating enable
 
 # Gaps
-gaps inner 8
+gaps inner 6
 gaps outer 0
 
 # User keybinds
