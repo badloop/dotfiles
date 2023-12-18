@@ -8,9 +8,9 @@ function v() {
 # zsh vi mode
 autoload edit-command-line
 zle -N edit-command-line
-zstyle :zle:edit-command-line editor nvim 
+zstyle :zle:edit-command-line editor nvim
 bindkey -v
-bindkey -M vicmd vv edit-command-line 
+bindkey -M vicmd vv edit-command-line
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -113,6 +113,7 @@ alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f "
 alias ls="eza --git --icons --header --group"
 # alias tmux="tmux -L"
 alias hist="history 1"
+alias cat="bat"
 
 # Completions
 autoload -U compinit; compinit
