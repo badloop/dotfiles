@@ -1,11 +1,3 @@
-theme = "Catppuccin"
-
-[[search]]
-pattern = "GET"
-
-[search.attributes]
-foreground = "green"
-
 [[colors.indexed_colors]]
 color = "0xF8BD96"
 index = 16

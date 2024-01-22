@@ -4,10 +4,10 @@ return {
         -- Event to trigger linters
         events = { "BufWritePost", "BufReadPost", "InsertLeave" },
         linters_by_ft = {
-            javascriptreact = { "eslint" },
-            typescriptreact = { "eslint" },
-            javascript = { "eslint" },
-            typescript = { "eslint" },
+            javascriptreact = { "eslint_d" },
+            typescriptreact = { "eslint_d" },
+            javascript = { "eslint_d" },
+            typescript = { "eslint_d" },
             python = { "pylint" },
         },
         linters = {
@@ -28,11 +28,11 @@ return {
         local M = {}
         local lint = require("lint")
 
-        for name, linter in pairs(opts.linters) do
-            if type(linter) == "table" and type(lint.linters[name]) == "table" then
-                lint.linters[name] = vim.tbl_deep_extend("force", lint.linters[name], linter)
+        for lnt_name, lnt_config in pairs(opts.linters) do
+            if type(lnt_config) == "table" and type(lint.linters[lnt_name]) == "table" then
+                lint.linters[lnt_name] = vim.tbl_deep_extend("force", lint.linters[lnt_name], lnt_config)
             else
-                lint.linters[name] = linter
+                lint.linters[lnt_name] = lnt_config
             end
         end
 

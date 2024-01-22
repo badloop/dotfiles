@@ -40,7 +40,7 @@ function rename() {
         kill -INT $$
     fi
     filter=$1
-    curr_files=($(find ./ -type f | grep -e "E[0-9]\{2\}\.mkv"))
+    curr_files=($(find ./ -type f | grep -e "E[0-9]\{2\}\.*"))
     curr_count=$(echo "${#curr_files[@]}");
     # Allow reindexing of the entire dir
     if [[ "${filter}" == "E" ]]; then
@@ -48,7 +48,7 @@ function rename() {
     fi
     echo "Current files: $curr_files"
     echo "Current count: $curr_count"
-    allfiles=(*.mkv(NOm))
+    allfiles=(*.(mkv|mp4)(NOm))
     for f in $allfiles; do
         if ! (($curr_files[(Ie)$f])); then
             if [[ $f == *${filter}* ]]; then
@@ -82,6 +82,7 @@ export GO111MODULE="on"
 export GOPRIVATE="dev.azure.com"
 export GOPATH=$(go env GOPATH)
 export JAVA_HOME=/usr/lib/jvm/default
+export GIT_EDITOR=nvim
 
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH

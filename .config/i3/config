@@ -197,6 +197,7 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="Nm-connection-editor"] floating enable
 for_window [class="steam"] floating enable
 for_window [window_role="GtkFileChooserDialog"] floating enable
+for_window [class="Peek"] floating enable
 
 # Gaps
 gaps inner 6
@@ -205,9 +206,9 @@ gaps outer 0
 # User keybinds
 set $refresh_i3status killall -SIGUSR1 i3blocks
 bindsym $mod+Ctrl+s exec --no-startup-id "flameshot gui"
-bindsym $mod+Ctrl+p exec --no-startup-id "playerctl -p cider play-pause"
-bindsym $mod+Ctrl+h exec --no-startup-id "playerctl -p cider previous"
-bindsym $mod+Ctrl+l exec --no-startup-id "playerctl -p cider next"
+bindsym $mod+Ctrl+p exec --no-startup-id "playerctl -p cider2 play-pause"
+bindsym $mod+Ctrl+h exec --no-startup-id "playerctl -p cider2 previous"
+bindsym $mod+Ctrl+l exec --no-startup-id "playerctl -p cider2 next"
 bindsym $mod+Ctrl+j exec --no-startup-id "/home/aaron/.config/i3/scripts/volume down"
 bindsym $mod+Ctrl+k exec --no-startup-id "/home/aaron/.config/i3/scripts/volume up"
 bindsym $mod+Ctrl+m exec --no-startup-id "/home/aaron/.config/i3/scripts/volume mute"
@@ -223,6 +224,7 @@ exec --no-startup-id steam -silent
 exec --no-startup-id beeper-3.64.5.AppImage
 exec --no-startup-id solaar -w hide
 exec_always --no-startup-id picom -b --experimental-backends &
+exec_always --no-startup-id xrandr --output eDP1 --gamma .7 --brightness 1.3
 
 # Colors       Border  Backgr  Text    Indictr
 client.focused #89b4fa #285577 #ffffff #2e9ef4 #285577

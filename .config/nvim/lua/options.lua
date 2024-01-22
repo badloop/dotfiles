@@ -53,8 +53,8 @@ o.guicursor = ""
 d.source = true
 d.severity_sort = true
 d.float = {
-	source = "always",
-	border = "rounded",
+    source = "always",
+    border = "rounded",
 }
 vim.diagnostic.config(d)
 
@@ -66,7 +66,7 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 -- Format on save
-vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
+-- vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
 
 -- Vertical Help
 vim.cmd([[autocmd! FileType help :wincmd L | :vert resize 90]])

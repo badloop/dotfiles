@@ -28,6 +28,7 @@ map("n", "<leader>C", "<cmd>Bdelete!<cr>", {})
 map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
 map("n", "<leader>-", "<C-w>s", {})  -- Horizontal buffer split
 map("n", "<leader>'", "ciw'<ESC>p", {})
+map("n", "<leader>le", "<cmd>Lex<cr>", {})
 
 -- Motion
 map("n", "<leader>o", "o<esc><cr>", {})
@@ -89,8 +90,19 @@ map("n", "<leader>ff", "<cmd>Telescope find_files hidden=true<cr>", {})
 map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", {})
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", {})
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", {})
+map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", {})
 map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", {})
 map("n", "<leader>ft", "<cmd>TodoTelescope<cr>", {})
+
+-- map("n", "<leader>fw", function()
+--     require('telescope.builtin').grep_string()
+-- end, {})
+-- map("n", "<leader>fW", function()
+--     require('telescope.builtin').grep_string({
+--         word_match = "-w"
+--     })
+-- end, {})
+
 
 -- Telescope -- git
 map("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", {})
