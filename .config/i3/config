@@ -212,6 +212,8 @@ bindsym $mod+Ctrl+l exec --no-startup-id "playerctl -p cider2 next"
 bindsym $mod+Ctrl+j exec --no-startup-id "/home/aaron/.config/i3/scripts/volume down"
 bindsym $mod+Ctrl+k exec --no-startup-id "/home/aaron/.config/i3/scripts/volume up"
 bindsym $mod+Ctrl+m exec --no-startup-id "/home/aaron/.config/i3/scripts/volume mute"
+bindsym $mod+Ctrl+1 exec --no-startup-id "ddcutil -d 1 setvcp 60 17"
+bindsym $mod+Ctrl+2 exec --no-startup-id "ddcutil -d 1 setvcp 60 16"
 
 ## Startup Applications
 exec --no-startup-id nm-applet
@@ -223,11 +225,12 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id steam -silent
 exec --no-startup-id beeper-3.64.5.AppImage
 exec --no-startup-id solaar -w hide
-exec_always --no-startup-id picom -b --experimental-backends &
-exec_always --no-startup-id xrandr --output eDP1 --gamma .7 --brightness 1.3
+exec --no-startup-id xrandr --output HDMI-2 --mode 2560x1440 -r 59.95 --brightness 1 --gamma .7 --scale 1x1
 
-# Colors       Border  Backgr  Text    Indictr
-client.focused #89b4fa #285577 #ffffff #2e9ef4 #285577
+exec_always --no-startup-id picom -b --experimental-backends &
+
+# Colors       Border  Backgr  Text    Indictr ChildBrdr
+client.focused #cdd6f4 #285577 #ffffff #2e9ef4 #285577
 
 exec --no-startup-id brave --new-window https://outlook.office.com
 exec --no-startup-id discord

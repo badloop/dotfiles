@@ -214,6 +214,7 @@ return {
                 "gopls",
                 "html-lsp",
                 "isort",
+                "js-debug-adapter",
                 "jsonlint",
                 "lua-language-server",
                 "markdownlint",
@@ -226,6 +227,7 @@ return {
                 "sqlfluff",
                 "stylua",
                 "tailwindcss-language-server",
+                "typescript-language-server",
                 "yaml-language-server",
             },
             ui = {

@@ -33,8 +33,13 @@ command=playerctl -p cider2 metadata -f "{{xesam:artist}} - {{xesam:title}}"
 interval=5
 signal=10
 align=center
-min_width=850
+min_width=1450
 separator=false
+
+[mouse]
+command=$HOME/.config/i3/scripts/mouse
+interval=60
+markup=pango
 
 [notify]
 command=$HOME/.config/i3/scripts/notify

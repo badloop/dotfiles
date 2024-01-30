@@ -22,7 +22,7 @@ return {
         config = function()
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             local lspconfig = require("lspconfig")
-            local servers = { "clangd", "rust_analyzer", "pyright", "eslint", "lua_ls", "gopls" }
+            local servers = { "clangd", "rust_analyzer", "pyright", "eslint", "tsserver", "lua_ls", "gopls" }
             local luasnip = require("luasnip")
             local cmp = require("cmp")
             local lspkind = require("lspkind")
@@ -89,7 +89,8 @@ return {
                 preselect = cmp.PreselectMode.None,
                 formatting = {
                     format = lspkind.cmp_format({
-                        with_text = true,
+                        mode = "symbol_text",
+                        show_labelDetails = true,
                         menu = {
                             nvim_lua = "[api]",
                             nvim_lsp = "[LSP]",
