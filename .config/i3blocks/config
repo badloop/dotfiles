@@ -37,12 +37,12 @@ min_width=1450
 separator=false
 
 [mouse]
-command=$HOME/.config/i3/scripts/mouse
+command=$SCRIPT_DIR/mouse
 interval=60
 markup=pango
 
 [notify]
-command=$HOME/.config/i3/scripts/notify
+command=$SCRIPT_DIR/notify
 interval=5
 markup=pango
 

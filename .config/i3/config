@@ -223,11 +223,11 @@ exec --no-startup-id 1password --silent
 exec --no-startup-id barrier
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id steam -silent
-exec --no-startup-id beeper-3.64.5.AppImage
+exec --no-startup-id beeper-2.64.5.AppImage
 exec --no-startup-id solaar -w hide
-exec --no-startup-id xrandr --output HDMI-2 --mode 2560x1440 -r 59.95 --brightness 1 --gamma .7 --scale 1x1
 
-exec_always --no-startup-id picom -b --experimental-backends &
+exec_always --no-startup-id picom -b &
+exec_always --no-startup-id xrandr --output HDMI-1 --mode 2560x1440 -r 144.00 --brightness 1 --gamma 1 --scale 1x1
 
 # Colors       Border  Backgr  Text    Indictr ChildBrdr
 client.focused #cdd6f4 #285577 #ffffff #2e9ef4 #285577
