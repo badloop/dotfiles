@@ -41,7 +41,8 @@ map("n", "<A-k>", "<C-y>", {})
 map("n", "<A-j>", "<C-e>", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
 map("n", "∆", "<cmd><m+<cr>", {}) -- Move current line/visual block down one
-map("n", "<C-f>", "<cmd>!t<cr>", {})
+map("n", "<C-f>",
+    "<cmd>!sesh list -tz | fzf-tmux -p 55%,60% --no-sort --border-label 'Tmux Session Manager' --prompt ' '<cr>", {})
 map("n", "<C-d>", "<C-d>zz", {})
 map("n", "<C-u>", "<C-u>zz", {})
 map("v", "J", ":m '>+1<cr>gv=gv", {})

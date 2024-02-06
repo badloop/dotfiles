@@ -16,7 +16,7 @@ bindkey -M vicmd vv edit-command-line
 eval "$(zoxide init zsh)"
 
 # Key Bindings
-bindkey -s '^F' 't^M'
+bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 
 # Re-encode raw video file
 function encode() {

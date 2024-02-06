@@ -229,7 +229,7 @@ exec --no-startup-id alacritty
 exec --no-startup-id dex /home/aaron/.local/share/applications/Microsoft_Teams.desktop
 
 
-exec_always --no-startup-id picom -b &
+exec_always --no-startup-id picom --animations -b &
 exec_always --no-startup-id xrandr --output HDMI-1 --mode 2560x1440 -r 144.00 --brightness 1 --gamma 1 --scale 1x1
 
 # Colors       Border  Backgr  Text    Indictr ChildBrdr
