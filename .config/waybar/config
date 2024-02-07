@@ -1,34 +1,48 @@
 {
+    "layer": "top",
+    "margin": 5,
     "modules-left": ["hyprland/workspaces"],
-    "modules-center": [],
-    "modules-right": ["network", "pulseaudio", "tray", "clock"],
+    "modules-center": ["custom/cider"],
+    "modules-right": ["custom/mouse", "custom/notify", "cpu", "custom/memory", "network", "pulseaudio", "tray", "clock"],
 
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
+    "custom/cider": {
+        "exec": "playerctl -p cider2 metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+        "escape": true,
     },
+
+    "custom/mouse": {
+        "interval": "30",
+        "exec": "~/.config/hypr/scripts/mouse",
+    },
+
+    "custom/memory": {
+      "interval": 1,
+      "exec": "~/.config/hypr/scripts/mem"
+    },
+
+    "cpu": {
+      "interval": 1,
+      "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    },
+
     "network": {
         "format-wifi": "{essid} ({signalStrength}%) ",
         "format-ethernet": "{ifname} ",
         "format-disconnected": "",
         "max-length": 50,
-        "on-click": "kitty -e 'nmtui'"
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        },
-		"on-click": "bash /home/dg/.local/bin/toggleRemote"
-    },
+
     "tray": {
         "icon-size": 15,
         "spacing": 10
     },
+
     "clock": {
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
+        "interval": 60,
+        "format": "{:%Y-%m-%d %H:%M %p}"
     },
+
     "pulseaudio": {
         "format": "{volume}% {icon} ",
         "format-bluetooth": "{volume}% {icon} {format_source}",
@@ -37,12 +51,6 @@
         "format-source": "{volume}% ",
         "format-source-muted": "",
         "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
             "default": ["", "", ""]
         },
         "on-click": "pavucontrol"
