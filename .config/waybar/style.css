@@ -25,6 +25,9 @@
     padding-left: 10px;
 }
 
+#custom-mouse {
+    color: rgba(249, 226, 175, .8)
+}
 window#waybar {
     background: rgba(21, 18, 27, 0);
     color: #f6f7fc;
@@ -62,7 +65,7 @@ tooltip label{
 }
 
 #cpu {
-    color: rgba(137, 180, 250, .5)
+    color: rgba(137, 180, 250, .8)
 }
 #temperature.critical {
     color: #e92d4d;
@@ -91,5 +94,5 @@ tooltip label{
 }
 
 #custom-memory {
-    color: rgba(250, 179, 135, .5)
+    color: rgba(250, 179, 135, .8)
 }

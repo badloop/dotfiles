@@ -16,10 +16,10 @@ return {
             fish = { "fish_indent" },
             sh = { "shfmt" },
             python = { "isort", "black" },
-            javascript = { "prettier" },
-            javascriptreact = { "prettier" },
-            typescript = { "prettier" },
-            typescriptreact = { "prettier" },
+            javascript = { "prettierd", "prettier" },
+            javascriptreact = { "prettierd", "prettier" },
+            typescript = { "prettierd", "prettier" },
+            typescriptreact = { "prettierd", "prettier" },
             ["_"] = { "trim_whitespace" }
         },
         -- The options you set here will be merged with the builtin formatters.
