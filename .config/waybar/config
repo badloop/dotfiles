@@ -28,7 +28,8 @@
     },
 
     "network": {
-        "format-wifi": "{signalStrength}% ",
+        "interval": 2,
+        "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
         "format-ethernet": "{ifname} ",
         "format-disconnected": "",
         "max-length": 50,

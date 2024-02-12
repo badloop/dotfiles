@@ -20,7 +20,7 @@
 #tray,
 #temperature,
 #idle_inhibitor {
-    border-left: 1px solid rgba(255, 255, 255, .2);
+    border-left: 1px solid rgba(255, 255, 255, .6);
     padding-right: 10px;
     padding-left: 10px;
 }
@@ -46,6 +46,13 @@ tooltip label{
     color: #cdd6f4;
 }
 
+#workspaces {
+    background-color: rgba(50, 50, 50, .6);
+    border-radius: 5px;
+    margin: 0px;
+    border: 1px solid rgba(255, 255, 255, .6)
+}
+
 #workspaces button {
     color: #f6f7fc;
     padding: 5px;
@@ -57,12 +64,10 @@ tooltip label{
     border-radius: 5px;
 }
 
-#workspaces {
-    background-color: rgba(250, 50, 250, .2);
-    border-radius: 5px;
-    margin: 0px;
-    border: 1px solid rgba(255, 255, 255, .2)
+#workspaces button.urgent {
+    color: #f38ba8;
 }
+
 
 #cpu {
     color: rgba(137, 180, 250, .8)
@@ -78,16 +83,16 @@ tooltip label{
 }
 
 .modules-right {
-    background-color: rgba(250, 50, 250, .2);
+    background-color: rgba(50, 50, 50, .6);
     border-radius: 5px;
     margin: 0px;
-    border: 1px solid rgba(255, 255, 255, .2)
+    border: 1px solid rgba(255, 255, 255, .6)
 }
 #custom-cider {
-    background-color: rgba(250, 50, 250, .2);
+    background-color: rgba(50, 50, 50, .6);
     border-radius: 5px;
     margin: 0px;
-    border: 1px solid rgba(255, 255, 255, .2);
+    border: 1px solid rgba(255, 255, 255, .6);
     padding-left: 15px;
     padding-right: 15px;
 
