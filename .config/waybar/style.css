@@ -61,7 +61,8 @@ tooltip label{
 #workspaces button.active {
     color: #000000;
     background: #74c7ec;
-    border-radius: 5px;
+    border-radius: 3px;
+    margin: 0px;
 }
 
 #workspaces button.urgent {
