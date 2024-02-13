@@ -25,6 +25,9 @@
     padding-left: 10px;
 }
 
+#network {
+    min-width: 200px;
+}
 #custom-mouse {
     color: rgba(249, 226, 175, .8)
 }

@@ -18,6 +18,30 @@ eval "$(zoxide init zsh)"
 # Key Bindings
 bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 
+# Work Proxy
+function proxy() {
+    if [ -z "$1" ]; then
+        echo "Usage: 'proxy up' or 'proxy down'"
+    fi
+
+    case $1 in
+        up)
+            echo "Enabling proxy..."
+            export http_proxy=work:8028
+            export HTTP_PROXY=work:8028
+            export https_proxy=work:8028
+            export HTTPS_PROXY=work:8028
+            ;;
+        down)
+            echo "Disabling proxy..."
+            unset http_proxy
+            unset HTTP_PROXY
+            unset https_proxy
+            unset HTTPS_PROXY
+            ;;
+    esac
+}
+
 # Re-encode raw video file
 function encode() {
     if [ -z "$1" ]; then
@@ -83,6 +107,7 @@ export GOPRIVATE="dev.azure.com"
 export GOPATH=$(go env GOPATH)
 export JAVA_HOME=/usr/lib/jvm/default
 export GIT_EDITOR=nvim
+export STARSHIP_DISABLE_KUBERNETES=true
 
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
 export PATH=$HOME/.cargo/bin:$PATH

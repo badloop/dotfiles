@@ -32,7 +32,7 @@
         "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
         "format-ethernet": "{ifname} ",
         "format-disconnected": "",
-        "max-length": 50,
+        "max-length": 30,
     },
 
     "tray": {
