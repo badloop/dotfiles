@@ -13,6 +13,7 @@
 #custom-updates,
 #custom-memory,
 #custom-mouse,
+#custom-weather,
 #clock,
 #battery,
 #pulseaudio,
@@ -25,6 +26,9 @@
     padding-left: 10px;
 }
 
+#custom-weather {
+    color: rgba(180, 190, 254, .8)
+}
 #network {
     min-width: 200px;
 }

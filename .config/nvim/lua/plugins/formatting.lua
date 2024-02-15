@@ -1,6 +1,5 @@
 return {
     "stevearc/conform.nvim",
-    cond = false,
     dependencies = { "mason.nvim" },
     opts = {
         format_on_save = {

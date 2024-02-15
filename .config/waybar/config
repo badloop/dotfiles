@@ -3,8 +3,12 @@
     "margin": 5,
     "modules-left": ["hyprland/workspaces"],
     "modules-center": ["custom/cider"],
-    "modules-right": ["custom/mouse", "custom/notify", "cpu", "custom/memory", "network", "pulseaudio", "tray", "clock"],
+    "modules-right": ["custom/weather", "custom/mouse", "custom/notify", "cpu", "custom/memory", "network", "pulseaudio", "tray", "clock"],
 
+    "custom/weather": {
+        "interval": 60,
+        "exec": "~/.config/hypr/scripts/weather.sh"
+    },
     "custom/cider": {
         "interval": 5,
         "exec": "playerctl -p cider2 metadata -f '{{xesam:artist}} - {{xesam:title}}'",
