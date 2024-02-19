@@ -53,7 +53,9 @@ tooltip label{
     color: #cdd6f4;
 }
 
-#workspaces {
+#workspaces,
+#custom-cider,
+.modules-right {
     background-color: rgba(50, 50, 50, .6);
     border-radius: 5px;
     margin: 0px;
@@ -90,12 +92,6 @@ tooltip label{
     margin-right: 0px;
 }
 
-.modules-right {
-    background-color: rgba(50, 50, 50, .6);
-    border-radius: 5px;
-    margin: 0px;
-    border: 1px solid rgba(255, 255, 255, .6)
-}
 #custom-cider {
     background-color: rgba(50, 50, 50, .6);
     border-radius: 5px;

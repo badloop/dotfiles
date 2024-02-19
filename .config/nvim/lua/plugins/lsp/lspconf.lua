@@ -83,6 +83,7 @@ return {
                     },
                 },
                 gopls = {},
+                rust_analyzer = {},
             },
             setup = {
                 -- 	jdtls = function(_, opts)

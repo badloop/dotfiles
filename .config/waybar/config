@@ -16,7 +16,7 @@
     },
 
     "custom/mouse": {
-        "interval": "30",
+        "interval": 30,
         "exec": "~/.config/hypr/scripts/mouse",
     },
 
