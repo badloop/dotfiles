@@ -7,7 +7,6 @@ return {
             "williamboman/mason-lspconfig.nvim",
             "hrsh7th/cmp-nvim-lsp",
             "mfussenegger/nvim-jdtls",
-            "Hoffs/omnisharp-extended-lsp.nvim",
             {
                 "j-hui/fidget.nvim",
                 opts = {

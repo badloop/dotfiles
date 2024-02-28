@@ -1,24 +1,14 @@
-configuration{
-    modi: "run,drun,window,ssh,filebrowser";
-    icon-theme: "Oranchelo";
-    show-icons: true;
-    terminal: "alacritty";
-    drun-display-format: "{icon} {name}";
-    location: 0;
-    disable-history: false;
-    hide-scrollbar: true;
-    display-drun: "";
-    display-run: "";
-    display-window: "";
-    display-filebrowser: "";
-    display-Network: "󰤨";
-    sidebar-mode: true;
-    display-combi: "Launch";
-    display-file-browser-extended: "Files";
-    display-ssh: "SSH";
-    kb-element-next: "";
-    kb-mode-complete: "Tab";
-    kb-page-next: "Control+l";
+configuration {
+  display-drun: "apps";
+  display-run: "run";
+  display-ssh: "ssh";
+  display-filebrowser: "files";
+  drun-display-format: "{name}";
+  disable-history: false;
+  hide-scrollbar: true;
+  show-icons: true;
+  modi: "drun,run,ssh,filebrowser";
+  sidebar-mode: true;
 }
 
 @theme "catppuccin-mocha"
