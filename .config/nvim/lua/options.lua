@@ -12,6 +12,8 @@ g.python3_host_prog = "/usr/bin/python3"
 -- g.loaded_python3_provider = 0
 g.loaded_ruby_provider = 0
 g.loaded_node_provider = 0
+
+-- NETRW
 g.netrw_liststyle = 3
 g.netrw_banner = 0
 g.netrw_browse_split = 0
@@ -40,7 +42,6 @@ o.undodir = os.getenv("HOME") .. "/.local/share/nvim/undo/"
 o.undofile = true
 o.hlsearch = true
 o.incsearch = true
-o.colorcolumn = "100"
 o.wrap = false
 o.updatetime = 50
 o.scrolloff = 8

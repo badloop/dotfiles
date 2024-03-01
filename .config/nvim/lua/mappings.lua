@@ -93,6 +93,8 @@ map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", {})
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", {})
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", {})
 map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", {})
+map("n", "<leader>fr", "<cmd>Telescope lsp_references<cr>", {})
+
 map("n", "<leader>ft", "<cmd>TodoTelescope<cr>", {})
 
 -- map("n", "<leader>fw", function()
