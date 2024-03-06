@@ -1,0 +1,8 @@
+[Default Applications]
+text/html=thorium-browser.desktop
+x-scheme-handler/http=thorium-browser.desktop
+x-scheme-handler/https=thorium-browser.desktop
+x-scheme-handler/about=thorium-browser.desktop
+x-scheme-handler/unknown=thorium-browser.desktop
+x-scheme-handler/msteams=teams-for-linux.desktop
+application/pdf=thorium-browser.desktop
