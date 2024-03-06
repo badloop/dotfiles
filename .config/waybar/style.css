@@ -27,7 +27,8 @@
 }
 
 #custom-weather {
-    color: rgba(180, 190, 254, .8)
+    color: rgba(180, 190, 254, .8);
+    border-left: none;
 }
 #network {
     min-width: 200px;
