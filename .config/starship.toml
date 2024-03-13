@@ -1,7 +1,7 @@
 command_timeout = 5000
 
 format = """
-[╭╴ ](bold #cba6f7)$all
+[╭╴[](bold #74c7ec) ](bold #cba6f7)$all
 
 """
 [character] # The name of the module we are configuring is 'character'
@@ -73,7 +73,7 @@ symbol = " "
 
 [kubernetes]
 symbol = "󱃾 "
-disabled = false
+disabled = true
 style = "purple"
 
 [memory_usage]

@@ -31,6 +31,7 @@ function proxy() {
             export HTTP_PROXY=work:8028
             export https_proxy=work:8028
             export HTTPS_PROXY=work:8028
+	    export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
             ;;
         down)
             echo "Disabling proxy..."
@@ -38,9 +39,16 @@ function proxy() {
             unset HTTP_PROXY
             unset https_proxy
             unset HTTPS_PROXY
+            export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
             ;;
     esac
 }
+
+export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
+# Starship kube config
+if [ -n "${http_proxy}" ]; then
+    export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
+fi
 
 # Re-encode raw video file
 function encode() {
@@ -115,6 +123,7 @@ export PATH=$PATH:$PYENV_ROOT/bin
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Desktop
 export PATH=$PATH:~/.bun/bin
+
 
 # ~/.tmux/plugins
 export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
