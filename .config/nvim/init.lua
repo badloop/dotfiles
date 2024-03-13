@@ -20,6 +20,7 @@ require("lazy").setup({
     { import = "plugins.debug" },
     { import = "plugins.linting" },
     { import = "plugins.formatting" },
+    { import = "plugins.file_access" },
 })
 require("aaron")
 
