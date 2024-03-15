@@ -23,8 +23,8 @@
     padding = 8
     horizontal_padding = 8
     text_icon_padding = 0
-    frame_width = 0
-    frame_color = "#aaaaaa"
+    frame_width = 2
+    frame_color = "#33333399"
     gap_size = 5
     separator_color = frame
     sort = yes
@@ -78,25 +78,18 @@
     appname = volume
     history_ignore = yes
 
-[beeper-crit-jenn]
-    appname = Beeper
-    summary = "+18124531203"
-    urgency = critical
-    new_icon = chat-message-new-symbolic.symbolic
-
 [urgency_low]
-    background = "#b4befe"
+    background = "#b4befecc"
     foreground = "#11111b"
     timeout = 10
 
 [urgency_normal]
-    background = "#a6e3a1"
+    background = "#a6e3a1cc"
     foreground = "#11111b"
     timeout = 10
 
 [urgency_critical]
-    background = "#f38ba8"
+    background = "#f38ba8cc"
     foreground = "#11111b"
-    frame_color = "#ff0000"
     timeout = 0
 

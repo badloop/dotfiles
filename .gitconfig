@@ -9,8 +9,6 @@
     path = .gitconfig-home
 [url "git@ssh.dev.azure.com:v3/Windstream/"]
 	insteadOf = https://dev.azure.com/Windstream/
-[status]
-	showUntrackedFiles = no
 [core]
 	editor = vim
 [init]

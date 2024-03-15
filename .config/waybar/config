@@ -11,7 +11,7 @@
     },
     "custom/cider": {
         "interval": 5,
-        "exec": "playerctl -p cider2 metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+        "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
         "escape": true,
     },
 
