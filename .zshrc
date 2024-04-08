@@ -18,6 +18,7 @@ eval "$(zoxide init zsh)"
 # Key Bindings
 bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 
+
 # Work Proxy
 function proxy() {
     if [ -z "$1" ]; then
@@ -172,3 +173,5 @@ eval "$(starship init zsh)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 [ -f ~/.fzf.colors ] && source ~/.fzf.colors
+
+source "$HOME/.zsh_profile"

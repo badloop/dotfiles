@@ -14,3 +14,5 @@
 [init]
     templateDir = /home/aaron/code/work/devops-githooks
 	defaultBranch = main
+[http]
+    sslBackend = openssl
