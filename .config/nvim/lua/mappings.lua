@@ -118,14 +118,17 @@ map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<cr>", {})
 map("n", "<leader>gr", "<cmd>Gitsigns reset_hunk<cr>", {})
 map("n", "gh", "<cmd>diffget //2<cr>", {})
 map("n", "gl", "<cmd>diffget //3<cr>", {})
+map("n", "gH", "<cmd>%diffget //2<cr>", {})
+map("n", "gL", "<cmd>%diffget //3<cr>", {})
 
 -- Harpoon
-map("n", "<leader>ha", '<cmd>lua require("harpoon.mark").add_file()<cr>', {})
-map("n", "<leader>he", '<cmd>lua require("harpoon.ui").toggle_quick_menu()<cr>', {})
+map("n", "<leader>a", '<cmd>lua require("harpoon.mark").add_file()<cr>', {})
+map("n", "<leader>e", '<cmd>lua require("harpoon.ui").toggle_quick_menu()<cr>', {})
 map("n", "<leader>1", '<cmd>lua require("harpoon.ui").nav_file(1)<cr>', {})
 map("n", "<leader>2", '<cmd>lua require("harpoon.ui").nav_file(2)<cr>', {})
 map("n", "<leader>3", '<cmd>lua require("harpoon.ui").nav_file(3)<cr>', {})
 map("n", "<leader>4", '<cmd>lua require("harpoon.ui").nav_file(4)<cr>', {})
+map("n", "<leader>5", '<cmd>lua require("harpoon.ui").nav_file(4)<cr>', {})
 
 -- Treesitter
 map("n", "<leader>tt", "<cmd>TSContextToggle<cr>", {})

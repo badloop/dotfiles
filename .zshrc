@@ -19,6 +19,21 @@ eval "$(zoxide init zsh)"
 bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 
 
+# Context switcher
+function c() {
+    case $1 in
+        prod)
+            kubectl config use-context aks04-prod-eus
+            ;;
+        qa)
+            kubectl config use-context aks06-dev-eus
+            ;;
+        dev)
+            kubectl config use-context aks08-dev-eus
+            ;;
+    esac
+}
+
 # Work Proxy
 function proxy() {
     if [ -z "$1" ]; then
