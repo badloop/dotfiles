@@ -46,7 +46,7 @@
 
     "clock": {
         "interval": 60,
-        "format": "{:%Y-%m-%d %I:%M %p}"
+        "format": "{:%a %Y-%m-%d %I:%M %p}"
     },
 
     "pulseaudio": {
