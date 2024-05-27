@@ -21,6 +21,9 @@ g.loaded_netrwPlugin = 1
 -- g.netrw_browse_split = 0
 -- g.netrw_winsize = 25
 
+-- Markdown Preview
+g.mkdp_browser = "/usr/bin/thorium-browser"
+
 -- Options
 o.termguicolors = true
 o.tabstop = 4
@@ -56,8 +59,8 @@ o.guicursor = ""
 d.source = true
 d.severity_sort = true
 d.float = {
-    source = "always",
-    border = "rounded",
+	source = "always",
+	border = "rounded",
 }
 vim.diagnostic.config(d)
 

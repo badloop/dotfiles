@@ -14,8 +14,8 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 
 zinit ice as"command" from"gh-r" \
-          atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
-          atpull"%atclone" src"init.zsh"
+    atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
+    atpull"%atclone" src"init.zsh"
 zinit light starship/starship
 
 # User defined functions
@@ -42,18 +42,25 @@ bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
+# Fuzzy JQ Finder
+function fjq() {
+    FILENAME=$1
+    KEY=$2
+    if [[ -z $1 ]]; then
+    fi
+}
 # Context switcher
 function c() {
     case $1 in
-        prod)
-            kubectl config use-context aks04-prod-eus
-            ;;
-        qa)
-            kubectl config use-context aks06-dev-eus
-            ;;
-        dev)
-            kubectl config use-context aks08-dev-eus
-            ;;
+    prod)
+        kubectl config use-context aks04-prod-eus
+        ;;
+    qa)
+        kubectl config use-context aks06-dev-eus
+        ;;
+    dev)
+        kubectl config use-context aks08-dev-eus
+        ;;
     esac
 }
 
@@ -64,22 +71,22 @@ function proxy() {
     fi
 
     case $1 in
-        up)
-            echo "Enabling proxy..."
-            export http_proxy=work:8028
-            export HTTP_PROXY=work:8028
-            export https_proxy=work:8028
-            export HTTPS_PROXY=work:8028
-	    export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
-            ;;
-        down)
-            echo "Disabling proxy..."
-            unset http_proxy
-            unset HTTP_PROXY
-            unset https_proxy
-            unset HTTPS_PROXY
-            export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
-            ;;
+    up)
+        echo "Enabling proxy..."
+        export http_proxy=work:8028
+        export HTTP_PROXY=work:8028
+        export https_proxy=work:8028
+        export HTTPS_PROXY=work:8028
+        export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
+        ;;
+    down)
+        echo "Disabling proxy..."
+        unset http_proxy
+        unset HTTP_PROXY
+        unset https_proxy
+        unset HTTPS_PROXY
+        export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
+        ;;
     esac
 }
 
@@ -103,7 +110,6 @@ function encode() {
     ffmpeg -i "${1}" -preset fast -crf 22 -tune film -level 4 -colorspace bt709 "${2}"
 }
 
-
 # History
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
@@ -116,7 +122,6 @@ setopt hist_ignore_all_dups
 setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
-
 
 # Exports
 GOPATH=$(go env GOPATH)
@@ -153,7 +158,8 @@ alias hist="history 1"
 alias cat="bat"
 
 # Completions
-autoload -U compinit; compinit
+autoload -U compinit
+compinit
 zstyle ':completion:*:*:cp:*' file-sort size
 zstyle ':completion:*' file-sort modification
 
