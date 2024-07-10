@@ -8,7 +8,14 @@ local javascript_langs = {
 return {
 	"mfussenegger/nvim-dap",
 	opts = {
-		console = "integrateTerminal",
+		defaults = {
+			fallback = {
+				external_terminal = {
+					command = "/usr/bin/alacritty",
+					args = { "-e" },
+				},
+			},
+		},
 	},
 
 	dependencies = {
@@ -33,7 +40,6 @@ return {
 					{
 						elements = {
 							"console",
-							"repl",
 						},
 						size = 0.25, -- 25% of total lines
 						position = "bottom",
@@ -87,14 +93,130 @@ return {
 		dap.listeners.before.launch.dapui_config = function()
 			ui.open()
 		end
-		-- dap.listeners.before.event_terminated.dapui_config = function()
-		-- 	ui.close()
-		-- end
-		-- dap.listeners.before.event_exited.dapui_config = function()
-		-- 	ui.close()
-		-- end
 
 		-- Breakpoint def
 		vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "Error" })
+
+		-- Breakpoint def
+		vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "Error" })
+
+		-- PYTHON
+		dap.adapters.python = {
+			type = "executable",
+			command = os.getenv("HOME") .. "/.pyenv/versions/debugpy/bin/python",
+			args = { "-m", "debugpy.adapter" },
+		}
+
+		dap.configurations.python = {
+			{
+				type = "python",
+				request = "launch",
+				name = "Debug Current File",
+				program = "${file}",
+				pythonPath = function()
+					local venv = os.getenv("VIRTUAL_ENV")
+					if venv then
+						return venv .. "/bin/python"
+					else
+						return "/usr/bin/python"
+					end
+				end,
+			},
+			{
+				type = "python",
+				request = "attach",
+				name = "Attach to remote process...",
+				connect = {
+					host = function()
+						return vim.fn.input("Host: ")
+					end,
+					port = function()
+						return vim.fn.input("Port: ")
+					end,
+				},
+				mode = "remote",
+				pythonPath = function()
+					local venv = os.getenv("VIRTUAL_ENV")
+					if venv then
+						return venv .. "/bin/python"
+					else
+						return "/usr/bin/python"
+					end
+				end,
+			},
+		}
+
+		-- Add pythonPath to user defined configurations
+		for _, config in pairs(dap.configurations.python) do
+			if not config.pythonPath then
+				config.pythonPath = function()
+					local venv = os.getenv("VIRTUAL_ENV")
+					if venv then
+						return venv .. "/bin/python"
+					else
+						return "/usr/bin/python"
+					end
+				end
+			end
+		end
+
+		-- Placeholder expansion for launch directives
+		local placeholders = {
+			["${file}"] = function(_)
+				return vim.fn.expand("%:p")
+			end,
+			["${fileBasename}"] = function(_)
+				return vim.fn.expand("%:t")
+			end,
+			["${fileBasenameNoExtension}"] = function(_)
+				return vim.fn.fnamemodify(vim.fn.expand("%:t"), ":r")
+			end,
+			["${fileDirname}"] = function(_)
+				return vim.fn.expand("%:p:h")
+			end,
+			["${fileExtname}"] = function(_)
+				return vim.fn.expand("%:e")
+			end,
+			["${relativeFile}"] = function(_)
+				return vim.fn.expand("%:.")
+			end,
+			["${relativeFileDirname}"] = function(_)
+				return vim.fn.fnamemodify(vim.fn.expand("%:.:h"), ":r")
+			end,
+			["${workspaceFolder}"] = function(_)
+				return vim.fn.getcwd()
+			end,
+			["${workspaceFolderBasename}"] = function(_)
+				return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+			end,
+			["${env:([%w_]+)}"] = function(match)
+				return os.getenv(match) or ""
+			end,
+		}
+		for type, _ in pairs(dap.configurations) do
+			for _, config in pairs(dap.configurations[type]) do
+				if config.envFile then
+					local filePath = config.envFile
+					for key, fn in pairs(placeholders) do
+						filePath = filePath:gsub(key, fn)
+					end
+
+					-- Verify file exists
+					local f = io.open(filePath, "r")
+					if f ~= nil then
+						for line in io.lines(filePath) do
+							local words = {}
+							for word in string.gmatch(line, "[^=]+") do
+								table.insert(words, all_trim(word))
+							end
+							if not config.env then
+								config.env = {}
+							end
+							config.env[words[1]] = words[2]
+						end
+					end
+				end
+			end
+		end
 	end,
 }

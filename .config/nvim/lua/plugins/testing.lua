@@ -1,3 +1,4 @@
+---@diagnostic disable:missing-fields
 return {
 	"nvim-neotest/neotest",
 	dependencies = {
@@ -10,29 +11,37 @@ return {
 		"nvim-neotest/neotest-plenary",
 		"thenbe/neotest-playwright",
 	},
-	config = function(_, opts)
-		opts.adapters = {
-			require("neotest-plenary"),
-			require("neotest-jest")({
-				jestCommand = "npm test --",
-				jestConfigFile = "custom.jest.config.ts",
-				env = { CI = true },
-				cwd = function()
-					return vim.fn.getcwd()
-				end,
-			}),
-			require("neotest-playwright").adapter({
-				options = {
-					persist_project_selection = true,
-					enable_dynamic_test_discovery = true,
-					is_test_file = function(file_path)
-						local result = file_path:find("tests/e2e/.*")
-						return result
+	config = function()
+		require("neotest").setup({
+			-- discovery = {
+			-- 	enabled = false,
+			-- },
+			adapters = {
+				require("neotest-plenary"),
+				require("neotest-jest")({
+					jestCommand = "npm test --",
+					jestConfigFile = "jest.config.js",
+					jest_test_discovery = true,
+					env = { CI = true },
+					cwd = function()
+						return vim.fn.getcwd()
 					end,
-				},
-			}),
-		}
-		require("neotest").setup(opts)
+				}),
+				require("neotest-playwright").adapter({
+					options = {
+						env = {
+							PW_TEST_CONNECT_WS_ENDPOINT = "ws://0.0.0.0:9999",
+						},
+						persist_project_selection = true,
+						enable_dynamic_test_discovery = true,
+						is_test_file = function(file_path)
+							local result = file_path:find("tests/e2e/.*")
+							return result
+						end,
+					},
+				}),
+			},
+		})
 	end,
 	keys = {
 		{
