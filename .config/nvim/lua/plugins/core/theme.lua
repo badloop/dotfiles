@@ -1,5 +1,15 @@
 return {
 	{
+		"levouh/tint.nvim",
+		lazy = false,
+		config = function()
+			require("tint").setup({
+				tint = -60,
+				saturation = 0.4,
+			})
+		end,
+	},
+	{
 		"folke/tokyonight.nvim",
 		lazy = false,
 		priority = 1000,
