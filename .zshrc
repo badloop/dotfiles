@@ -77,6 +77,7 @@ function proxy() {
         export HTTP_PROXY=work:8028
         export https_proxy=work:8028
         export HTTPS_PROXY=work:8028
+        export no_proxy=localhost
         export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
         ;;
     down)
@@ -85,6 +86,7 @@ function proxy() {
         unset HTTP_PROXY
         unset https_proxy
         unset HTTPS_PROXY
+        unset no_proxy
         export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
         ;;
     esac
@@ -148,7 +150,7 @@ export PATH=$HOME/.config/tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 eval "$(fzf --zsh)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
-pyenv shell 3.10.10
+pyenv shell $(pyenv latest 3)
 
 # Aliases
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'

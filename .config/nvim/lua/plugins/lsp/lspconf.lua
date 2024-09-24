@@ -41,7 +41,7 @@ return {
 		opts = {
 			servers = {
 				eslint = {},
-				tsserver = {},
+				ts_ls = {},
 				jdtls = {},
 				pyright = {
 					settings = {
