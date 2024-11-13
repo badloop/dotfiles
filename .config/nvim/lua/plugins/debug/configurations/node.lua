@@ -1,13 +1,18 @@
 local cfg = require("dap").configurations
+-- environment = {
+--     LOG_LEVEL = "debug",
+-- },
 for _, language in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact" }) do
 	cfg[language] = {
 		-- Debug server side
 		{
-			type = "node-terminal",
+			type = "pwa-node",
 			request = "launch",
-			name = "Server-side",
-			command = "npm run dev",
+			name = "Launch server",
+			program = vim.fn.getcwd() .. "/server.js",
 			cwd = vim.fn.getcwd(),
+			externalConsole = false,
+			console = "integratedTerminal",
 			sourceMaps = true,
 		},
 		-- Debug single nodejs files
@@ -17,6 +22,7 @@ for _, language in ipairs({ "javascript", "typescript", "javascriptreact", "type
 			name = "Launch file",
 			program = "${file}",
 			cwd = vim.fn.getcwd(),
+			console = "integratedTerminal",
 			sourceMaps = true,
 		},
 		-- Debug nodejs processes (make sure to add --inspect when you run the process)

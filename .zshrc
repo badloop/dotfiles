@@ -26,6 +26,15 @@ function v() {
     fi
 }
 
+# zsh syntax highlighting configuration
+ZSH_HIGHLIGHT_HIGHLIGHTERS+=(main brackets pattern)
+typeset -A ZSH_HIGHLIGHT_PATTERNS
+ZSH_HIGHLIGHT_PATTERNS+=('GET' bg=green,fg=black)
+ZSH_HIGHLIGHT_PATTERNS+=('POST' bg=magenta,fg=black)
+ZSH_HIGHLIGHT_PATTERNS+=('PUT' bg=yellow,fg=black)
+ZSH_HIGHLIGHT_PATTERNS+=('DELETE' bg=17,fg=ffffff)
+ZSH_HIGHLIGHT_PATTERNS+=('INFO' fg=cyan)
+
 # zsh vi mode
 autoload edit-command-line
 zle -N edit-command-line
@@ -42,13 +51,6 @@ bindkey -s '^F' 'sesh connect $(sesh list -tz | fzf)^M'
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
-# Fuzzy JQ Finder
-function fjq() {
-    FILENAME=$1
-    KEY=$2
-    if [[ -z $1 ]]; then
-    fi
-}
 # Context switcher
 function c() {
     case $1 in
@@ -62,6 +64,14 @@ function c() {
         kubectl config use-context aks08-dev-eus
         ;;
     esac
+}
+
+function ask() {
+    if [ -z "$1" ]; then
+        echo "Please ask a question"
+    fi
+    print $(curl -s -X POST "http://0.0.0.0:11434/api/chat" -d "{\"model\": \"meta-llama-3.1-8b-instruct-abliterated.Q8_0.gguf:latest\", \"stream\": false, \"messages\": [{ \"role\": \"user\", \"content\": \"${1}\"}]}" | jq ".message.content") | bat --language md --style plain
+    return 0
 }
 
 # Work Proxy

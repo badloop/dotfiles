@@ -16,6 +16,10 @@ return {
 		opts = {},
 	},
 	{
+		"EdenEast/nightfox.nvim",
+		lazy = false,
+	},
+	{
 		"artanikin/vim-synthwave84",
 		lazy = false,
 	},

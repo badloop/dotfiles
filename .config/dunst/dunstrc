@@ -28,7 +28,7 @@
     gap_size = 5
     separator_color = frame
     sort = yes
-    font = JetBrains Mono 10
+    font = SplineSansMono 9
     line_height = 0
     markup = full
 
