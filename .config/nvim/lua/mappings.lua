@@ -38,6 +38,7 @@ map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
 map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
 map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})
 map("n", "<C-k>", ":TmuxNavigateUp<cr>", {})
+-- map("n", "J", "mzJ`z", {})
 map("n", "<M-k>", "kzz", {})
 map("n", "<M-j>", "jzz", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
@@ -93,7 +94,7 @@ map("n", "<A-[>", "<cmd>BufferLineCyclePrev<cr>", {})
 
 -- Telescope
 map("n", "<leader>ff", "<cmd>Telescope find_files hidden=true<cr>", {})
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", {})
+map("n", "<leader>fg", '<cmd> lua require("aaron.telescope-multi")()<cr>', {})
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", {})
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", {})
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", {})
