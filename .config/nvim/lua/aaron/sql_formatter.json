@@ -1,0 +1,11 @@
+{
+    "keywordCase": "upper",
+    "tabWidth": 4,
+    "commaPosition": "before",
+    "language": "snowflake",
+    "paramTypes": {
+        "custom": [
+            { "regex": "{(.*)}"}
+        ]
+    }
+}
