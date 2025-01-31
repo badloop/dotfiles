@@ -23,9 +23,16 @@ return {
 			end,
 		},
 	},
+	keys = {
+		{
+			"<leader>bj",
+			"<cmd>BufferLinePick<cr>",
+			mode = { "n" },
+			desc = "Choose buffer",
+		},
+	},
 	config = function(_, opts)
 		local bl = require("bufferline")
 		bl.setup(opts)
-		vim.keymap.set("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})
 	end,
 }

@@ -5,6 +5,62 @@ return {
 		"nvim-lua/plenary.nvim",
 		"nvim-telescope/telescope-live-grep-args.nvim",
 	},
+	keys = {
+		{
+			"<leader>fb",
+			"<cmd>Telescope git_branches<cr>",
+			mode = { "n" },
+			desc = "Find and switch Git branches",
+		},
+		{
+			"<leader>fd",
+			"<cmd>Telescope diagnostics<cr>",
+			mode = { "n" },
+			desc = "Show workspace diagnostics",
+		},
+		{
+			"<leader>ff",
+			"<cmd>Telescope find_files hidden=true<cr>",
+			mode = { "n" },
+			desc = "Find files including hidden ones",
+		},
+		{
+			"<leader>fg",
+			'<cmd> lua require("aaron.telescope-multi")()<cr>',
+			mode = { "n" },
+			desc = "Run custom Telescope multi-selection",
+		},
+		{
+			"<leader>fh",
+			"<cmd>Telescope help_tags<cr>",
+			mode = { "n" },
+			desc = "Search help tags",
+		},
+		{
+			"<leader>fk",
+			"<cmd>Telescope keymaps<cr>",
+			mode = { "n" },
+			desc = "Show keymaps",
+		},
+		{
+			"<leader>fr",
+			"<cmd>Telescope lsp_references<cr>",
+			mode = { "n" },
+			desc = "Find LSP references",
+		},
+		{
+			"<leader>ft",
+			"<cmd>TodoTelescope<cr>",
+			mode = { "n" },
+			desc = "Show TODOs in the project",
+		},
+		{
+			"<leader>fu",
+			"<cmd>Telescope undo<cr>",
+			mode = { "n" },
+			desc = "Show undo history",
+		},
+	},
 	config = function()
 		local t = require("telescope")
 		local themes = require("telescope.themes")
@@ -14,7 +70,7 @@ return {
 					"^venv/",
 					"^.venv/",
 					"^.git/",
-                    "^bak/"
+					"^bak/",
 				},
 			},
 			pickers = {
@@ -24,15 +80,6 @@ return {
 			},
 		})
 		t.load_extension("live_grep_args")
-        -- Telescope
-        vim.keymap.set("n", "<leader>fb", "<cmd>Telescope git_branches<cr>", {})
-        vim.keymap.set("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", {})
-        vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files hidden=true<cr>", {})
-        vim.keymap.set("n", "<leader>fg", '<cmd> lua require("aaron.telescope-multi")()<cr>', {})
-        vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", {})
-        vim.keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", {})
-        vim.keymap.set("n", "<leader>fr", "<cmd>Telescope lsp_references<cr>", {})
-        vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", {})
-        vim.keymap.set("n", "<leader>fu", "<cmd>Telescope undo<cr>", {})
+		-- Telescope
 	end,
 }

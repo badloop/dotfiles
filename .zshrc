@@ -22,7 +22,7 @@ zinit light starship/starship
 function v() {
     if [ -f ./venv/bin/activate ]; then
         # shellcheck disable=1091
-        . venv/bin/activate
+        source venv/bin/activate
     fi
 }
 
