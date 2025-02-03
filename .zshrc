@@ -190,3 +190,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # shellcheck disable=1090
 [ -f ~/.fzf.colors ] && source ~/.fzf.colors
 source "$HOME/.zsh_profile"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/aaron/.lmstudio/bin"

@@ -37,3 +37,6 @@ alias g="google"
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 set -o vi
 . "$HOME/.cargo/env"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/aaron/.lmstudio/bin"
