@@ -91,7 +91,7 @@ return {
 
 			-- Breakpoint def
 			local t = require("tokyonight.colors.storm")
-			vim.api.nvim_set_hl(0, "Stopped", { bg = t.red, bold = true })
+			vim.api.nvim_set_hl(0, "Stopped", { bg = t.red1, bold = true })
 			vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "Error" })
 			vim.fn.sign_define("DapBreakpointRejected", { text = "R", texthl = "Error" })
 			vim.fn.sign_define(

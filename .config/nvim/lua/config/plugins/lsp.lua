@@ -32,6 +32,7 @@ return {
 						"revive",
 						"shellcheck",
 						"shfmt",
+						"swiftlint",
 						"sqlfluff",
 						"stylua",
 						"tailwindcss-language-server",
@@ -147,6 +148,7 @@ return {
 				},
 				gopls = {},
 				rust_analyzer = {},
+				sourcekit = {},
 			},
 			inlay_hints = {
 				enabled = true,
@@ -198,7 +200,8 @@ return {
 				setup(server)
 			end
 			require("mason-lspconfig").setup({
-				ensure_installed = ensure_installed,
+				ensure_installed = opts.ensure_installed,
+				automatic_installation = true,
 			})
 			require("mason-lspconfig").setup_handlers({ setup })
 		end,
