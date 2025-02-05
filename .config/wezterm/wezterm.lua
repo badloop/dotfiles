@@ -20,13 +20,6 @@ map(
 	})
 )
 local config = {
-	-- default_prog = { "/bin/bash" },
-	-- window_background_image = "/Users/aaron/Documents/wallpapers/499580.jpg",
-	-- window_background_image_hsb = {
-	-- 	brightness = 0.04,
-	-- 	hue = 1.0,
-	-- 	saturation = 1.0,
-	-- },
 	enable_tab_bar = true,
 	hide_tab_bar_if_only_one_tab = true,
 	allow_square_glyphs_to_overflow_width = "Never",
@@ -49,24 +42,9 @@ local config = {
 	},
 	keys = keymaps,
 	force_reverse_video_cursor = true,
-	colors = {
-		foreground = "#dcd7ba",
-		background = "#000000",
-		--
-		cursor_bg = "#c8c093",
-		cursor_fg = "#c8c093",
-		cursor_border = "#c8c093",
-		--
-		-- 	selection_fg = "#c8c093",
-		-- 	selection_bg = "#2d4f67",
-		--
-		-- 	scrollbar_thumb = "#16161d",
-		-- 	split = "#16161d",
-		--
-		-- 	ansi = { "#090618", "#c34043", "#76946a", "#c0a36e", "#7e9cd8", "#957fb8", "#6a9589", "#c8c093" },
-		-- 	brights = { "#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba" },
-		-- 	indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
-	},
+	color_scheme_dirs = { wezterm.home_dir },
+	color_scheme = "tokyonight_night",
 }
+wezterm.add_to_config_reload_watch_list(config.color_scheme_dirs[1] .. config.color_scheme .. ".toml")
 
 return config
