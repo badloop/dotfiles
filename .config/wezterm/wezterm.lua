@@ -31,11 +31,11 @@ local config = {
 	hide_tab_bar_if_only_one_tab = true,
 	allow_square_glyphs_to_overflow_width = "Never",
 	use_fancy_tab_bar = false,
-	font_size = 9,
+	font_size = 10,
 	font = wezterm.font({
 		-- family = "FiraCode Nerd Font Mono",
 		-- family = "Hack Nerd Font",
-		family = "JetBrainsMono Nerd Font",
+		family = "JetBrains Mono",
 		-- family = "VictorMono Nerd Font",
 		weight = "Regular",
 	}),
