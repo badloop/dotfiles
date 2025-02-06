@@ -19,6 +19,10 @@ shape = "Block"
 [font]
 size = 9.0
 
+[font.glyph_offset]
+x = 0
+y = 1
+
 [font.bold]
 # family = "JetBrainsMonoNL NF"
 # family = "HackNerdFontMono"
