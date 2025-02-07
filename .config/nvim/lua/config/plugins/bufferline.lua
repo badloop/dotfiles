@@ -1,3 +1,4 @@
+local t = require("tokyonight.colors.storm")
 return {
 	"akinsho/bufferline.nvim",
 	event = "VeryLazy",
@@ -10,8 +11,8 @@ return {
 			show_buffer_icons = true,
 			color_icons = true,
 			show_close_icon = false,
-			highlight = { underline = true, sp = "blue" },
 			indicator = { style = "underline" },
+			highlight = { underline = true, fg = t.red },
 			get_element_icon = function(element)
 				local icon, hl = require("nvim-web-devicons").get_icon_by_filetype(element.filetype, { default = true })
 				return icon, hl
