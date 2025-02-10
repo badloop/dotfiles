@@ -44,6 +44,7 @@ local config = {
 	force_reverse_video_cursor = true,
 	color_scheme_dirs = { wezterm.home_dir },
 	color_scheme = "tokyonight_night",
+	enable_wayland = false,
 }
 wezterm.add_to_config_reload_watch_list(config.color_scheme_dirs[1] .. config.color_scheme .. ".toml")
 

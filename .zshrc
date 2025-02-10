@@ -1,3 +1,6 @@
+#
+export LANG=en_US.UTF-8
+
 # ZINIT
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -145,6 +148,7 @@ export TERM=xterm-256color
 export BASH_SILENCE_DEPRECATION_WARNING=1
 export GIT_EDITOR=nvim
 export ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+export EDITOR=nvim
 
 # PATH
 export PATH=$PATH:/usr/local/bin:$GOPATH/bin
