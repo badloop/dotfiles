@@ -12,9 +12,7 @@ return {
 		},
 		{
 			"<leader>/",
-			function()
-				require("Comment.api").toggle.linewise.current(vim.fn.visualmode())
-			end,
+			"<esc><cmd>lua require('Comment.api').locked('toggle.linewise')(vim.fn.visualmode())<cr>gv",
 			mode = { "v" },
 			desc = "Comment line",
 		},
