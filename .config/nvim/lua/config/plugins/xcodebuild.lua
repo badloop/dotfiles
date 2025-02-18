@@ -26,6 +26,18 @@ return {
 			mode = { "n" },
 			desc = "XCode Build",
 		},
+		{
+			"<leader>xs",
+			"<cmd>XcodebuildSetup<cr>",
+			mode = { "n" },
+			desc = "XCode Setup",
+		},
+		{
+			"<leader>xt",
+			"<cmd>XcodebuildTestExplorerToggle<cr>",
+			mode = { "n" },
+			desc = "XCode Toggle Test Explorer",
+		},
 	},
 	config = function()
 		require("xcodebuild").setup({
