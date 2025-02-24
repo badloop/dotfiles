@@ -7,7 +7,7 @@
     # height = 300
     # max_height = 300
     origin = top-right
-    offset = 10x30
+    offset = (10, 30)
     scale = 0
     notification_limit = 20
     progress_bar = true
