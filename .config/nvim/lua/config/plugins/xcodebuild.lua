@@ -9,6 +9,12 @@ return {
 	},
 	keys = {
 		{
+			"<leader>X",
+			"<cmd>XcodebuildPicker<cr>",
+			mode = { "n" },
+			desc = "XCode Run",
+		},
+		{
 			"<leader>xr",
 			"<cmd>XcodebuildRun<cr>",
 			mode = { "n" },
