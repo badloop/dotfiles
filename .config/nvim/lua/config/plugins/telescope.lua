@@ -26,7 +26,7 @@ return {
 		},
 		{
 			"<leader>ff",
-			"<cmd>Telescope find_files hidden=true<cr>",
+			"<cmd>Telescope find_files",
 			mode = { "n" },
 			desc = "Find files",
 		},
