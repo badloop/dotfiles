@@ -48,7 +48,9 @@ return {
 	config = function()
 		local progress_handle
 		require("xcodebuild").setup({
-			show_build_progress_bar = false,
+			code_coverage = {
+				enabled = true,
+			},
 			logs = {
 				notify = function(message, severity)
 					local fidget = require("fidget")
