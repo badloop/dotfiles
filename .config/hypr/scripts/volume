@@ -16,25 +16,25 @@ if [[ $MUTED == "yes" ]]; then
 fi
 
 case $1 in
-    up)
-        pamixer -u
-        pamixer -i 5 --allow-boost
-        send_notification "$1" "high"
-        ;;
-    down)
-        pamixer -u
-        pamixer -d 5 --allow-boost
-        send_notification "$1" "low"
-        ;;
-    mute)
-        pamixer -t
-        if $(pamixer --get-mute); then
-            dunstify -r 9999 -a "volume" -i "audio-volume-muted-symbolic.symbolic" -t 2000  -u low "Muted"
-        else
-            send_notification up high
-        fi
-        ;;
-    *)
-        echo "<span color=\"#eba0ac\">$ICON ${VOL}</span>"
-        ;;
+up)
+    pamixer -u
+    pamixer -i 5 --allow-boost
+    send_notification "$1" "high"
+    ;;
+down)
+    pamixer -u
+    pamixer -d 5 --allow-boost
+    send_notification "$1" "low"
+    ;;
+mute)
+    pamixer -t
+    if $(pamixer --get-mute); then
+        dunstify -r 9999 -a "volume" -i "audio-volume-muted-symbolic.symbolic" -t 2000 -u low "Muted"
+    else
+        send_notification up high
+    fi
+    ;;
+*)
+    echo "<span color=\"#eba0ac\">$ICON ${VOL}</span>"
+    ;;
 esac

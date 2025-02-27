@@ -19,10 +19,16 @@ return {
 			desc = "Show workspace diagnostics",
 		},
 		{
-			"<leader>ff",
+			"<leader>fa",
 			"<cmd>Telescope find_files hidden=true<cr>",
 			mode = { "n" },
 			desc = "Find files including hidden ones",
+		},
+		{
+			"<leader>ff",
+			"<cmd>Telescope find_files hidden=true<cr>",
+			mode = { "n" },
+			desc = "Find files",
 		},
 		{
 			"<leader>fg",
