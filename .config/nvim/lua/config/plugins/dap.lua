@@ -101,7 +101,8 @@ return {
 
 			-- Add xcoedbuild
 			local xcodedap = require("xcodebuild.integrations.dap")
-			local codelldbpath = os.getenv("HOME") .. "/tools/codelldb-aarch64-darwin/extension/adapter/codelldb"
+			local codelldbpath = os.getenv("HOME")
+				.. ".local/bin/codelldb/tools/codelldb-aarch64-darwin/extension/adapter/codelldb"
 			xcodedap.setup(codelldbpath)
 
 			-- Add pythonPath to user defined configurations
