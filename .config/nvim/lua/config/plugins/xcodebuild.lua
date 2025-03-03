@@ -7,44 +7,6 @@ return {
 		"stevearc/oil.nvim", -- (optional) to manage project files
 		"nvim-treesitter/nvim-treesitter", -- (optional) for Quick tests support (required Swift parser)
 	},
-	keys = {
-		{
-			"<leader>X",
-			"<cmd>XcodebuildPicker<cr>",
-			mode = { "n" },
-			desc = "XCode Run",
-		},
-		{
-			"<leader>xr",
-			"<cmd>XcodebuildRun<cr>",
-			mode = { "n" },
-			desc = "XCode Run",
-		},
-		{
-			"<leader>xc",
-			"<cmd>XcodebuildCleanBuild<cr>",
-			mode = { "n" },
-			desc = "XCode Clean Build",
-		},
-		{
-			"<leader>xb",
-			"<cmd>XcodebuildBuild<cr>",
-			mode = { "n" },
-			desc = "XCode Build",
-		},
-		{
-			"<leader>xs",
-			"<cmd>XcodebuildSetup<cr>",
-			mode = { "n" },
-			desc = "XCode Setup",
-		},
-		{
-			"<leader>xt",
-			"<cmd>XcodebuildTestExplorerToggle<cr>",
-			mode = { "n" },
-			desc = "XCode Toggle Test Explorer",
-		},
-	},
 	config = function()
 		local progress_handle
 		require("xcodebuild").setup({
@@ -83,4 +45,42 @@ return {
 			},
 		})
 	end,
+	keys = {
+		{
+			"<leader>X",
+			"<cmd>XcodebuildPicker<cr>",
+			mode = { "n" },
+			desc = "XCode Run",
+		},
+		{
+			"<leader>xr",
+			"<cmd>XcodebuildRun<cr>",
+			mode = { "n" },
+			desc = "XCode Run",
+		},
+		{
+			"<leader>xc",
+			"<cmd>XcodebuildCleanBuild<cr>",
+			mode = { "n" },
+			desc = "XCode Clean Build",
+		},
+		{
+			"<leader>xb",
+			"<cmd>XcodebuildBuild<cr>",
+			mode = { "n" },
+			desc = "XCode Build",
+		},
+		{
+			"<leader>xs",
+			"<cmd>XcodebuildSetup<cr>",
+			mode = { "n" },
+			desc = "XCode Setup",
+		},
+		{
+			"<leader>xt",
+			"<cmd>XcodebuildTestExplorerToggle<cr>",
+			mode = { "n" },
+			desc = "XCode Toggle Test Explorer",
+		},
+	},
 }

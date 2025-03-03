@@ -99,6 +99,11 @@ return {
 				{ text = "", texthl = "Stopped", linehl = "Stopped", numhl = "Stopped" }
 			)
 
+			-- Add xcoedbuild
+			local xcodedap = require("xcodebuild.integrations.dap")
+			local codelldbpath = os.getenv("HOME") .. "/tools/codelldb-aarch64-darwin/extension/adapter/codelldb"
+			xcodedap.setup(codelldbpath)
+
 			-- Add pythonPath to user defined configurations
 			for _, config in pairs(dap.configurations.python) do
 				if not config.pythonPath then
