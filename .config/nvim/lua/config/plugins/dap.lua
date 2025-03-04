@@ -27,6 +27,9 @@ return {
 			{ "<leader>do", '<cmd>lua require("dap").step_out()<cr>' },
 			{ "<leader>dt", '<cmd>lua require("dap").terminate()<cr>' },
 			{ "<leader>dr", '<cmd>lua require("dap").repl.toggle()<cr>' },
+			{ "<leader>xd", '<cmd>lua require("xcodebuild.integrations.dap").build_and_debug<cr>' },
+			{ "<leader>xt", '<cmd>lua require("xcodebuild.integrations.dap").terminate_session<cr>' },
+			{ "<leader>xb", '<cmd>lua require("xcodebuild.integrations.dap").toggle_breakpoint<cr>' },
 		},
 		dependencies = {
 			{
@@ -82,6 +85,9 @@ return {
 			{
 				"nvim-neotest/nvim-nio",
 			},
+			dependencies = {
+				"wojciech-kulik/xcodebuild.nvim",
+			},
 		},
 		config = function()
 			local dap = require("dap")
@@ -100,9 +106,9 @@ return {
 			)
 
 			-- Add xcoedbuild
-			local xcodedap = require("xcodebuild.integrations.dap")
+			local xcodebuild = require("xcodebuild.integrations.dap")
 			local codelldbpath = os.getenv("HOME") .. "/.local/bin/codelldb/extension/adapter/codelldb"
-			xcodedap.setup(codelldbpath)
+			xcodebuild.setup(codelldbpath)
 
 			-- Add pythonPath to user defined configurations
 			for _, config in pairs(dap.configurations.python) do
