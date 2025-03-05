@@ -10,6 +10,12 @@ return {
 	config = function()
 		local progress_handle
 		require("xcodebuild").setup({
+			integrations = {
+
+				pymobiledevice = {
+					enabled = true,
+				},
+			},
 			code_coverage = {
 				enabled = true,
 			},
