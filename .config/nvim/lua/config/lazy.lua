@@ -29,9 +29,14 @@ require("lazy").setup({
 	spec = {
 		-- Colorscheme
 		{
+			"catppuccin/nvim",
+			name = "catppuccin",
+			priority = 1000,
+		},
+		{
 			"folke/tokyonight.nvim",
 			config = function()
-				vim.cmd.colorscheme("tokyonight")
+				vim.cmd.colorscheme("catppuccin")
 			end,
 		},
 		-- import your plugins
