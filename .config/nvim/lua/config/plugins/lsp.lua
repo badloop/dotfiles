@@ -73,7 +73,7 @@ return {
 			},
 			"williamboman/mason-lspconfig.nvim",
 			"mfussenegger/nvim-jdtls",
-			"kkoomen/vim-doge",
+			{ "kkoomen/vim-doge", lazy = false },
 			{
 				"j-hui/fidget.nvim",
 				opts = {
