@@ -4,6 +4,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"nvim-telescope/telescope-live-grep-args.nvim",
+		"Myzel394/jsonfly.nvim",
 	},
 	keys = {
 		{
@@ -65,6 +66,13 @@ return {
 			"<cmd>Telescope undo<cr>",
 			mode = { "n" },
 			desc = "Show undo history",
+		},
+		{
+			"<leader>fj",
+			"<cmd>Telescope jsonfly<cr>",
+			desc = "Open json(fly)",
+			ft = { "json", "xml", "yaml" },
+			mode = "n",
 		},
 	},
 	config = function()

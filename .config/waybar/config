@@ -1,64 +1,97 @@
-{
+[
+  {
     "layer": "top",
+    "output": [
+      "HDMI-A-2"
+    ],
     "margin": 5,
-    "modules-left": ["hyprland/workspaces"],
-    "modules-center": ["custom/cider"],
-    "modules-right": ["custom/weather", "custom/mouse", "custom/notify", "cpu", "custom/memory", "network", "pulseaudio", "tray", "clock"],
-
+    "modules-left": [
+      "hyprland/workspaces"
+    ],
+    "modules-center": [
+      "custom/cider"
+    ],
+    "modules-right": [
+      "custom/weather",
+      "custom/mouse",
+      "custom/notify",
+      "cpu",
+      "custom/memory",
+      "network",
+      "pulseaudio",
+      "tray",
+      "clock"
+    ],
     "custom/weather": {
-        "interval": 60,
-        "exec": "~/.config/hypr/scripts/weather.sh"
+      "interval": 60,
+      "exec": "~/.config/hypr/scripts/weather.sh"
     },
     "custom/cider": {
-        "interval": 5,
-        "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
-        "escape": true,
+      "interval": 5,
+      "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+      "escape": true
     },
-
     "custom/mouse": {
-        "interval": 30,
-        "exec": "~/.config/hypr/scripts/mouse",
+      "interval": 30,
+      "exec": "~/.config/hypr/scripts/mouse"
     },
-
     "custom/memory": {
       "interval": 1,
       "exec": "~/.config/hypr/scripts/mem"
     },
-
     "cpu": {
       "interval": 1,
       "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
-      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+      "format-icons": [
+        "▁",
+        "▂",
+        "▃",
+        "▄",
+        "▅",
+        "▆",
+        "▇",
+        "█"
+      ]
     },
-
     "network": {
-        "interval": 2,
-        "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
-        "format-ethernet": "{ifname} ",
-        "format-disconnected": "",
-        "max-length": 30,
+      "interval": 2,
+      "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
+      "format-ethernet": "{ifname} ",
+      "format-disconnected": "",
+      "max-length": 30
     },
-
     "tray": {
-        "icon-size": 15,
-        "spacing": 10
+      "icon-size": 15,
+      "spacing": 10
     },
-
     "clock": {
-        "interval": 60,
-        "format": "{:%a %Y-%m-%d %I:%M %p}"
+      "interval": 60,
+      "format": "{:%a %Y-%m-%d %I:%M %p}"
     },
-
     "pulseaudio": {
-        "format": "{volume}% {icon} ",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": "0% {icon} ",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
-        "format-icons": {
-            "default": ["", "", ""]
-        },
-        "on-click": "pavucontrol"
-    },
-}
+      "format": "{volume}% {icon} ",
+      "format-bluetooth": "{volume}% {icon} {format_source}",
+      "format-bluetooth-muted": " {icon} {format_source}",
+      "format-muted": "0% {icon} ",
+      "format-source": "{volume}% ",
+      "format-source-muted": "",
+      "format-icons": {
+        "default": [
+          "",
+          "",
+          ""
+        ]
+      },
+      "on-click": "pavucontrol"
+    }
+  },
+  {
+    "layer": "top",
+    "output": [
+      "DP-1", "DP-2"
+    ],
+    "modules-left": [
+      "hyprland/workspaces"
+    ]
+  }
+]
