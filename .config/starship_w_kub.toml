@@ -139,7 +139,7 @@ symbol = "󰏗 "
 symbol = " "
 
 [env_var.HTTPS_PROXY]
-format = "with [  $env_value](#565f89) "
+format = "with [ $env_value](#565f89) "
 
 [python]
 symbol = " "
