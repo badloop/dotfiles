@@ -72,7 +72,7 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 -- Format on save
--- vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
+vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
 
 -- Vertical Help
 vim.cmd([[autocmd! FileType help :wincmd L | :vert resize 90]])
