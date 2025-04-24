@@ -25,6 +25,7 @@ g.loaded_netrwPlugin = 1
 g.mkdp_browser = "/usr/bin/thorium-browser"
 
 -- Options
+o.conceallevel = 0
 o.termguicolors = true
 o.tabstop = 4
 o.shiftwidth = 4
@@ -59,20 +60,37 @@ o.guicursor = ""
 d.source = true
 d.severity_sort = true
 d.float = {
-	source = "always",
-	border = "rounded",
+    source = "always",
+    border = "rounded",
 }
 vim.diagnostic.config(d)
 
+-- AUTOCMDS
 -- Undercurl
 vim.cmd([[let &t_Cs = '\e[4:3m']])
 vim.cmd([[let &t_Ce = '\e[4:0m']])
 
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
-
 -- Format on save
-vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format({timeout_ms=10000})]])
+-- List of filetypes to exclude from LSP formatting
+local excluded_lsps = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+}
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+    pattern = "*",
+    callback = function(args)
+        -- Check if the filetype is in the excluded list
+        -- If it is, skip formatting
+        local filetype = vim.api.nvim_get_option_value("filetype", { buf = args.buf })
+        if vim.tbl_contains(excluded_lsps, filetype) then
+            return
+        end
+        vim.lsp.buf.format()
+    end,
+})
 
 -- Vertical Help
 vim.cmd([[autocmd! FileType help :wincmd L | :vert resize 90]])
