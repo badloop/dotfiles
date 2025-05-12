@@ -25,6 +25,7 @@ return {
                         "js-debug-adapter",
                         "json-lsp",
                         "jsonlint",
+                        "kulala-fmt",
                         "lua-language-server",
                         "markdownlint",
                         "marksman",
@@ -194,9 +195,8 @@ return {
             end
             require("mason-lspconfig").setup({
                 ensure_installed = opts.ensure_installed,
-                automatic_installation = true,
+                automatic_enable = true,
             })
-            require("mason-lspconfig").setup_handlers({ setup })
         end,
     },
 }

@@ -23,7 +23,7 @@ return {
         config = function()
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             local lspconfig = require("lspconfig")
-            local servers = { "clangd", "rust_analyzer", "pyright", "eslint", "lua_ls", "gopls" }
+            local servers = { "clangd", "rust_analyzer", "pyright", "eslint", "ts_ls", "lua_ls", "gopls" }
             local luasnip = require("luasnip")
             local cmp = require("cmp")
             local lspkind = require("lspkind")
@@ -85,7 +85,7 @@ return {
                     { name = "nvim_lua" },
                     { name = "nvim_lsp" },
                     { name = "path" },
-                    { name = "buffer",  keyword_length = 5 },
+                    { name = "buffer" },
                 }),
                 preselect = cmp.PreselectMode.None,
                 formatting = {
