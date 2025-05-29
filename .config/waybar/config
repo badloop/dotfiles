@@ -12,9 +12,9 @@
       "custom/cider"
     ],
     "modules-right": [
+      "custom/notify",
       "custom/weather",
       "custom/mouse",
-      "custom/notify",
       "cpu",
       "custom/memory",
       "network",
@@ -22,6 +22,11 @@
       "tray",
       "clock"
     ],
+    "custom/notify": {
+      "interval": 1,
+      "exec": "~/.config/hypr/scripts/notify",
+      "on-click": "dunstctl set-paused toggle"
+    },
     "custom/weather": {
       "interval": 60,
       "exec": "~/.config/hypr/scripts/weather.sh"

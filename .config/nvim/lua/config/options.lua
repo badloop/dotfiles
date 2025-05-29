@@ -81,6 +81,7 @@ local excluded_lsps = {
     "javascriptreact",
     "typescript",
     "typescriptreact",
+    "python",
 }
 
 vim.api.nvim_create_autocmd("BufWritePre", {

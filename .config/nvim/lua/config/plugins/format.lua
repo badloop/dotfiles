@@ -4,16 +4,9 @@ return {
         "mason.nvim",
     },
     opts = {
-        formatters = {
-            kulala = {
-                command = "kulala-fmt",
-                args = { "format", "$FILENAME" },
-                stdin = false,
-            },
-        },
         format_on_save = {
             timeout_ms = 3000,
-            lsp_fallback = true,
+            lsp_format = "fallback",
         },
         format = {
             timeout_ms = 3000,
@@ -36,6 +29,11 @@ return {
         -- You can also define any custom formatters here.
         formatters = {
             injected = { options = { ignore_errors = true } },
+            kulala = {
+                command = "kulala-fmt",
+                args = { "format", "$FILENAME" },
+                stdin = false,
+            },
         },
     },
 }
