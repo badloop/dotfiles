@@ -30,6 +30,7 @@
 #custom-notify {
     color: rgba(180, 190, 254, .8);
     border-left: none;
+    padding-right: 12px;
 }
 #custom-weather {
     color: rgba(180, 190, 254, .8);
