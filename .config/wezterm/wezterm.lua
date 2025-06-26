@@ -61,9 +61,13 @@ return {
     enable_wayland = false,
 
     -- Basic configurations
+    -- font = wezterm.font_with_fallback({
+    --     { family = "Spline Sans Mono" },
+    --     { family = "FiraCode Nerd Font" },
+    -- }),
     font = wezterm.font_with_fallback({
-        { family = "Spline Sans Mono" },
-        { family = "FiraCode Nerd Font" },
+        { family = "Iosevka Nerd Font Mono", weight = "Regular" },
+        { family = "Iosevka Nerd Font Mono", scale = 1.5 },
     }),
     -- font = wezterm.font("JetBrains Mono"),
     -- font = wezterm.font("Hack Nerd Font"),

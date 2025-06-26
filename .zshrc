@@ -15,6 +15,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
 
 zinit ice as"command" from"gh-r" \
     atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
@@ -66,6 +67,9 @@ function c() {
     dev)
         kubectl config use-context aks08-dev-eus
         ;;
+    local)
+        kubectl config use-context local
+        ;;
     esac
 }
 
@@ -86,12 +90,12 @@ function proxy() {
     case $1 in
     up)
         echo "Enabling proxy..."
-        export http_proxy=work:8028
-        export HTTP_PROXY=work:8028
-        export https_proxy=work:8028
-        export HTTPS_PROXY=work:8028
+        export http_proxy=http://work:8028
+        export HTTP_PROXY=http://work:8028
+        export https_proxy=http://work:8028
+        export HTTPS_PROXY=http://work:8028
         export no_proxy=localhost
-        export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
+        # export STARSHIP_CONFIG="/home/aaron/.config/starship_w_kub.toml"
         ;;
     down)
         echo "Disabling proxy..."
@@ -100,7 +104,7 @@ function proxy() {
         unset https_proxy
         unset HTTPS_PROXY
         unset no_proxy
-        export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
+        # export STARSHIP_CONFIG="/home/aaron/.config/starship.toml"
         ;;
     esac
 }
@@ -178,6 +182,7 @@ autoload -U compinit
 compinit
 zstyle ':completion:*:*:cp:*' file-sort size
 zstyle ':completion:*' file-sort modification
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # Rust
 source "$HOME/.cargo/env"
@@ -194,6 +199,11 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # shellcheck disable=1090
 [ -f ~/.fzf.colors ] && source ~/.fzf.colors
 source "$HOME/.zsh_profile"
+
+# Set color theme for real ttys
+if [[ -z $DISPLAY && -z $WAYLAND_DISPLAY && -t 0 ]]; then
+  setvtrgb "$HOME/.config/fb/tokyonight.vtrgb"
+fi
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/home/aaron/.lmstudio/bin"
