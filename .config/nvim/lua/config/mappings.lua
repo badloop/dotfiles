@@ -8,7 +8,7 @@ local function map(mode, bind, command, opts)
         if opts then
             options = vim.tbl_extend("force", options, opts)
         end
-        vim.api.nvim_set_keymap(v, bind, command, opts)
+        vim.api.nvim_set_keymap(v, bind, command, options)
     end
 end
 
@@ -28,7 +28,7 @@ map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
 map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
 map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})
 map("n", "<C-k>", ":TmuxNavigateUp<cr>", {})
--- map("n", "J", "mzJ`z", {})
+map("n", "J", "mzJ`z", {})
 map("n", "<M-k>", "kzz", {})
 map("n", "<M-j>", "jzz", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
