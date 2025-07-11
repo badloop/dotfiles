@@ -20,9 +20,9 @@ format = "on [$symbol$context](bold $style) "
 symbol = "󱃾 "
 style = "purple"
 contexts = [
-    { context_pattern = "aks08-dev-eus", context_alias = "dev" },
-    { context_pattern = "aks06-dev-eus", context_alias = "qa" },
-    { context_pattern = "aks04-prod-eus", context_alias = "prod" },
+    { context_pattern = "aks08-dev-eus", context_alias = "dev (aks08)" },
+    { context_pattern = "aks06-dev-eus", context_alias = "qa (aks06)" },
+    { context_pattern = "aks04-prod-eus", context_alias = "prod (aks04)" },
     { context_pattern = "local", context_alias = "local" },
 ]
 

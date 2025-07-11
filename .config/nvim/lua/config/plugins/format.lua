@@ -23,6 +23,7 @@ return {
             sh = { "shfmt" },
             typescript = { "prettierd", "prettier" },
             typescriptreact = { "prettierd", "prettier" },
+            yaml = { "prettierd", "prettier" },
             ["_"] = { "trim_whitespace" },
         },
         -- The options you set here will be merged with the builtin formatters.
