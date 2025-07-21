@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
 # Mouse power
-mouse_device=$(upower -e | grep hidpp)
+mouse_device=$(upower -e | grep hidpp | grep 0)
 power=$(upower -i "${mouse_device}" | grep percentage | awk '{print $2}')
 echo "󰍽 ${power}"
