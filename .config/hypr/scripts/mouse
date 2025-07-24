@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 # Mouse power
-mouse_device=$(upower -e | grep hidpp | grep 0)
+mouse_device=$(upower -e | grep hidpp | tail -n 1)
+if [ "$(upower -i "${mouse_device}" | grep state | awk '{print $2}')" = "charging" ]; then charging="󱐋"; else charging=""; fi
 power=$(upower -i "${mouse_device}" | grep percentage | awk '{print $2}')
-echo "󰍽 ${power}"
+echo "󰍽 ${power} ${charging}"

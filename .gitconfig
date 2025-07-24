@@ -7,8 +7,6 @@
     path = ~/.gitconfig-home
 [includeIf "gitdir:~/.config/"]
     path = ~/.gitconfig-home
-[url "git@ssh.dev.azure.com:v3/Windstream/"]
-	insteadOf = https://dev.azure.com/Windstream/
 [core]
 	editor = vim
 [init]

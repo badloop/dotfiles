@@ -12,3 +12,9 @@
         required = true
         clean = git-lfs clean -- %f
         smudge = git-lfs smudge -- %f
+
+[url "git@ssh.dev.azure.com:v3/Windstream/"]
+	insteadOf = https://dev.azure.com/Windstream/
+
+[url "git@github.com:uniti-it"]
+	insteadOf = https://github.com/uniti-it
