@@ -12,6 +12,7 @@
       "custom/cider"
     ],
     "modules-right": [
+      "custom/mic",
       "custom/notify",
       "custom/weather",
       "custom/mouse",
@@ -22,6 +23,11 @@
       "tray",
       "clock"
     ],
+    "custom/mic": {
+      "interval": 1,
+      "exec": "~/.config/hypr/scripts/mic",
+      "on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle"
+    },
     "custom/notify": {
       "interval": 1,
       "exec": "~/.config/hypr/scripts/notify",
