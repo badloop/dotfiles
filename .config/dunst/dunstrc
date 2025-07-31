@@ -17,7 +17,7 @@
     progress_bar_max_width = 300
     progress_bar_corner_radius = 0
     icon_corner_radius = 0
-    indicate_hidden = yes
+    indicate_hidden = false
     transparency = 10
     separator_height = 2
     padding = 8
@@ -93,3 +93,8 @@
     foreground = "#11111b"
     timeout = 0
 
+[custom_interface_notification]
+    appname = "Custom"
+    background = "#b4befecc"
+    foreground = "#11111b"
+    override_pause_level = 100

@@ -31,7 +31,7 @@
     "custom/notify": {
       "interval": 1,
       "exec": "~/.config/hypr/scripts/notify",
-      "on-click": "dunstctl set-paused toggle"
+      "on-click": "dunstctl set-paused toggle; notify-send -a Custom 'Notifications Toggled'"
     },
     "custom/weather": {
       "interval": 60,
