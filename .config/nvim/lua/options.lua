@@ -14,17 +14,16 @@ g.loaded_ruby_provider = 0
 g.loaded_node_provider = 0
 
 -- NETRW
-g.loaded_netrw = 1
-g.loaded_netrwPlugin = 1
--- g.netrw_liststyle = 3
--- g.netrw_banner = 0
--- g.netrw_browse_split = 0
--- g.netrw_winsize = 25
-
--- Markdown Preview
-g.mkdp_browser = "/usr/bin/thorium-browser"
+-- g.loaded_netrw = 1
+-- g.loaded_netrwPlugin = 1
+g.netrw_liststyle = 3
+g.netrw_banner = 0
+g.netrw_browse_split = 0
+g.netrw_winsize = 25
 
 -- Options
+vim.opt.completeopt = { "menuone", "noselect", "popup" }
+
 o.conceallevel = 0
 o.termguicolors = true
 o.tabstop = 4
@@ -73,30 +72,6 @@ vim.diagnostic.config(d)
 -- Undercurl
 vim.cmd([[let &t_Cs = '\e[4:3m']])
 vim.cmd([[let &t_Ce = '\e[4:0m']])
-
--- Format on save
--- List of filetypes to exclude from LSP formatting
-local excluded_lsps = {
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "python",
-    "yaml",
-}
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    callback = function(args)
-        -- Check if the filetype is in the excluded list
-        -- If it is, skip formatting
-        local filetype = vim.api.nvim_get_option_value("filetype", { buf = args.buf })
-        if vim.tbl_contains(excluded_lsps, filetype) then
-            return
-        end
-        vim.lsp.buf.format()
-    end,
-})
 
 -- Vertical Help
 vim.cmd([[autocmd! FileType help :wincmd L | :vert resize 90]])

@@ -1,7 +1,7 @@
 [general]
-import = [
-    "~/.config/alacritty/themes/tokyonight-moon.toml"
-]
+# import = [
+#     "~/.config/alacritty/themes/tokyonight-moon.toml"
+# ]
 # [keyboard]
 # bindings = [
 #       { key="J", mods="Alt", chars="\x1bj" },

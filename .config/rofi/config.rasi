@@ -1,13 +1,12 @@
 configuration {
   display-drun: "apps";
   display-run: "run";
-  display-ssh: "ssh";
   display-filebrowser: "files";
   drun-display-format: "{name}";
   disable-history: false;
   hide-scrollbar: true;
   show-icons: true;
-  modi: "drun,run,ssh,filebrowser";
+  modi: "drun,run,filebrowser";
   sidebar-mode: true;
 }
 

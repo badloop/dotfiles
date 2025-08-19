@@ -21,7 +21,8 @@ map("n", "<leader>c", "<cmd>bdelete<cr>", {})
 map("n", "<leader>C", "<cmd>bdelete!<cr>", {})
 map("n", "<leader>\\", "<C-w>v", {}) -- Vertical buffer split
 map("n", "<leader>-", "<C-w>s", {})  -- Horizontal buffer split
-map("n", "<leader>'", "ciw'<ESC>p", {})
+map("n", "<leader>'", "ciw'<ESC>pwi'<ESC>", {})
+map("n", "<leader>\"", "ciw\"<ESC>pwi\"<ESC>", {})
 map("n", "<leader>o", "o<esc><cr>", {})
 map("n", "<leader>O", "O<esc><cr>", {})
 map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
@@ -39,6 +40,7 @@ map(
     "<cmd>!sesh list -tz | fzf-tmux -p 55%,60% --no-sort --border-label 'Tmux Session Manager' --prompt ' '<cr>",
     {}
 )
+
 map("n", "<C-d>", "<C-d>zz", {})
 map("n", "<C-u>", "<C-u>zz", {})
 map("v", "J", ":m '>+1<cr>gv=gv", {})
@@ -63,3 +65,13 @@ map("n", "gh", "<cmd>diffget //2<cr>", {})
 map("n", "gl", "<cmd>diffget //3<cr>", {})
 map("n", "gH", "<cmd>%diffget //2<cr>", {})
 map("n", "gL", "<cmd>%diffget //3<cr>", {})
+
+-- FZF Lua
+map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
+map("n", "<leader>fg", "<cmd>FzfLua grep_project<cr>", {})
+
+-- Bufferline
+map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})
+
+-- Blink
+map("i", "<C-E>", ":Blink.accept()<cr>", {})
