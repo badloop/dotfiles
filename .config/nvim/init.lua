@@ -1,8 +1,5 @@
-require('options')
-require('mappings')
-
--- Add plugins
 vim.pack.add({
+    { src = "https://github.com/folke/snacks.nvim" },
     { src = "https://github.com/rose-pine/neovim" },
     { src = "https://github.com/vague2k/vague.nvim" },
     { src = "https://github.com/folke/neodev.nvim" },
@@ -19,7 +16,8 @@ vim.pack.add({
     { src = "https://github.com/rcarriga/nvim-notify" },
     { src = "https://github.com/j-hui/fidget.nvim" },
     { src = "https://github.com/Saghen/blink.cmp" },
-    { src = "https://github.com/github/copilot.vim" }
+    { src = "https://github.com/github/copilot.vim" },
+    { src = "https://github.com/NickvanDyke/opencode.nvim" },
 })
 
 -- Colorscheme
@@ -38,11 +36,19 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 local settings = {
-    ["vim-fugitive"] = { opts = { setup = false } },
+    ["neovim"]             = { opts = { setup = false } },
+    ["vim-fugitive"]       = { opts = { setup = false } },
+    ["nvim-notify"]        = { name = "notify" },
     ["vim-tmux-navigator"] = { opts = { setup = false } },
-    ["nvim-notify"] = { opts = { setup = false } },
-    ["copilot.vim"] = { opts = { setup = false } },
-    ["nvim-lspconfig"] = {
+    ["copilot.vim"]        = { opts = { setup = false } },
+    ["snacks.nvim"]        = {
+        opts = {
+            terminal = {
+                enabled = true
+            }
+        }
+    },
+    ["nvim-lspconfig"]     = {
         opts = {
             lua_ls = {
                 settings = {
@@ -57,7 +63,12 @@ local settings = {
                             callSnippet = "Replace",
                         }
                     }
-                }
+                },
+                capabilities = vim.tbl_deep_extend(
+                    "force",
+                    vim.lsp.protocol.make_client_capabilities(),
+                    { window = { workDoneProgress = true } }
+                )
             },
             ts_ls = {},
             pyright = {},
@@ -68,7 +79,7 @@ local settings = {
         }
     },
 
-    ["fzf-lua"] = {
+    ["fzf-lua"]            = {
         opts = {
             files = {
                 rg_opts = "--color=never --files --hidden --follow -g '!.git' -g '!.next'",
@@ -77,7 +88,7 @@ local settings = {
         }
     },
 
-    ['blink.cmp'] = {
+    ['blink.cmp']          = {
         opts = {
             signature = { enabled = true },
             cmdline = {
@@ -101,7 +112,7 @@ local settings = {
             }
         }
     },
-    fidget = {
+    fidget                 = {
         opts = {
             integration = {
                 ["nvim-tree"] = {
@@ -121,10 +132,10 @@ local settings = {
                     align = "bottom",     -- How to align the notification window
                     relative = "editor",  -- What the notification window position is relative to
                 },
-            }
+            },
         }
     },
-    lualine = {
+    lualine                = {
         opts = {
             globalstatus = true,
             sections = {
@@ -146,6 +157,7 @@ local delList = {}
 for _, plugin in ipairs(vim.pack.get()) do
     -- Delete plugins that are not active
     if not plugin.active then
+        vim.notify("Deleting inactive plugin: " .. plugin.spec.name, vim.log.levels.INFO)
         table.insert(delList, plugin.spec.name)
     end
     if delList and #delList > 0 then
@@ -173,20 +185,18 @@ for _, plugin in ipairs(vim.pack.get()) do
             vim.lsp.config(name, lsp or {})
         end
     else
-        -- if o.setup == false then
-        --     print("Skipping setup for plugin: " .. p)
-        -- else
-        local ok, mod = pcall(require, p)
-        if ok then
-            mod.setup(o)
-        end
-        -- local ok, err = pcall(function()
-        --     -- print("Setting up plugin: " .. p .. " with options: " .. vim.inspect(o))
-        --     require(p).setup(o)
-        -- end)
-        if not ok then
-            -- vim.notify(err, vim.log.levels.WARN)
+        if o.setup == false then
+            print("Skipping setup for plugin: " .. p)
+        else
+            local ok, mod = pcall(require, p)
+            if ok then
+                mod.setup(o)
+            else
+                vim.notify(mod, vim.log.levels.WARN)
+            end
         end
     end
-    -- end
 end
+
+require('options')
+require('mappings')

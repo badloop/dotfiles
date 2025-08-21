@@ -8,7 +8,7 @@ local function map(mode, bind, command, opts)
         if opts then
             options = vim.tbl_extend("force", options, opts)
         end
-        vim.api.nvim_set_keymap(v, bind, command, options)
+        vim.keymap.set(v, bind, command, options)
     end
 end
 
@@ -30,8 +30,8 @@ map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
 map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})
 map("n", "<C-k>", ":TmuxNavigateUp<cr>", {})
 map("n", "J", "mzJ`z", {})
-map("n", "<M-k>", "kzz", {})
-map("n", "<M-j>", "jzz", {})
+map("n", "<A-k>", "kzz", {})
+map("n", "<A-j>", "jzz", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
 map("n", "∆", "<cmd><m+<cr>", {}) -- Move current line/visual block down one
 map(
@@ -41,6 +41,7 @@ map(
     {}
 )
 
+map({ "n", "v" }, "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
 map("n", "<C-d>", "<C-d>zz", {})
 map("n", "<C-u>", "<C-u>zz", {})
 map("v", "J", ":m '>+1<cr>gv=gv", {})
@@ -53,11 +54,11 @@ map("v", "<leader>y", '"+y', { desc = "Enter yank to system clipboard mode" })
 map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
 
 -- LSP
-map("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", {})                          -- Variable rename
-map("n", "<leader>lR", '<cmd>lua require("telescope.builtin").lsp_references()<cr>', {}) -- Variable rename
-map("n", "<S-k>", "<cmd>lua vim.lsp.buf.hover({border = 'rounded'})<cr>", {})            -- Variable rename
-map("n", "<leader>gD", "<cmd> lua vim.lsp.buf.declaration()<cr>", {})
-map("n", "<leader>gd", "<cmd> lua vim.lsp.buf.definition()<cr>", {})
+map("n", "<leader>lr", vim.lsp.buf.rename, {})
+map("n", "<leader>lR", function() require('fzf-lua').lsp_references() end, {})
+map("n", "<S-k>", function() vim.lsp.buf.hover({ border = 'rounded' }) end, {})
+map("n", "<leader>gD", vim.lsp.buf.declaration, {})
+map("n", "<leader>gd", vim.lsp.buf.definition, {})
 map("n", "<leader>ld", "<cmd>lua vim.diagnostic.open_float()<cr>", {})
 
 -- Git
@@ -75,3 +76,10 @@ map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})
 
 -- Blink
 map("i", "<C-E>", ":Blink.accept()<cr>", {})
+
+-- OpenCode
+map({ "n", "v", "i", "t" }, "<leader>ot", function() require('opencode').toggle() end, {})
+
+-- GitSigns
+map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<cr>", { desc = "Git Preview Hunk" })
+map("n", "<leader>gr", "<cmd>Gitsigns reset_hunk<cr>", { desc = "Git Reset Hunk" })

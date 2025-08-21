@@ -39,6 +39,16 @@ ZSH_HIGHLIGHT_PATTERNS+=('PUT' bg=yellow,fg=black)
 ZSH_HIGHLIGHT_PATTERNS+=('DELETE' bg=17,fg=ffffff)
 ZSH_HIGHLIGHT_PATTERNS+=('INFO' fg=cyan)
 
+# Bind Ctrl+O to run "opencode"
+function _launch_opencode() {
+  zle -I                     # flush any pending input
+  BUFFER="opencode"          # put the command in the buffer
+  zle accept-line            # execute it
+}
+zle -N _launch_opencode
+bindkey '^O' _launch_opencode
+
+
 # zsh vi mode
 autoload edit-command-line
 zle -N edit-command-line
@@ -207,3 +217,9 @@ fi
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/home/aaron/.lmstudio/bin"
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /home/aaron/.dart-cli-completion/zsh-config.zsh ]] && . /home/aaron/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+

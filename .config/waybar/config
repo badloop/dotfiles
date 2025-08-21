@@ -1,108 +1,137 @@
-[
-  {
-    "layer": "top",
-    "output": [
-      "HDMI-A-2"
-    ],
-    "margin": 5,
-    "modules-left": [
-      "hyprland/workspaces"
-    ],
-    "modules-center": [
-      "custom/cider"
-    ],
-    "modules-right": [
-      "custom/mic",
-      "custom/notify",
-      "custom/weather",
-      "custom/mouse",
-      "cpu",
-      "custom/memory",
-      "network",
-      "pulseaudio",
-      "tray",
-      "clock"
-    ],
-    "custom/mic": {
-      "interval": 1,
-      "exec": "~/.config/hypr/scripts/mic",
-      "on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle"
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "output": [
+    "HDMI-A-2"
+  ],
+  "margin": 5,
+  "modules-left": [
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "custom/cider"
+  ],
+  "modules-right": [
+    "custom/mic",
+    "custom/notify",
+    "custom/weather",
+    "custom/mouse",
+    "cpu",
+    "custom/memory",
+    "network",
+    "pulseaudio",
+    "group/tray-expander",
+    "clock"
+  ],
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "󱓻"
     },
-    "custom/notify": {
-      "interval": 1,
-      "exec": "~/.config/hypr/scripts/notify",
-      "on-click": "dunstctl set-paused toggle; notify-send -a Custom 'Notifications Toggled'"
-    },
-    "custom/weather": {
-      "interval": 60,
-      "exec": "~/.config/hypr/scripts/weather.sh"
-    },
-    "custom/cider": {
-      "interval": 5,
-      "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
-      "escape": true
-    },
-    "custom/mouse": {
-      "interval": 30,
-      "exec": "~/.config/hypr/scripts/mouse"
-    },
-    "custom/memory": {
-      "interval": 1,
-      "exec": "~/.config/hypr/scripts/mem"
-    },
-    "cpu": {
-      "interval": 1,
-      "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
-      "format-icons": [
-        "▁",
-        "▂",
-        "▃",
-        "▄",
-        "▅",
-        "▆",
-        "▇",
-        "█"
-      ]
-    },
-    "network": {
-      "interval": 2,
-      "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
-      "format-ethernet": "{ifname} ",
-      "format-disconnected": "",
-      "max-length": 30
-    },
-    "tray": {
-      "icon-size": 15,
-      "spacing": 10
-    },
-    "clock": {
-      "interval": 60,
-      "format": "{:%a %Y-%m-%d %I:%M %p}"
-    },
-    "pulseaudio": {
-      "format": "{volume}% {icon} ",
-      "format-bluetooth": "{volume}% {icon} {format_source}",
-      "format-bluetooth-muted": " {icon} {format_source}",
-      "format-muted": "0% {icon} ",
-      "format-source": "{volume}% ",
-      "format-source-muted": "",
-      "format-icons": {
-        "default": [
-          "",
-          "",
-          ""
-        ]
-      },
-      "on-click": "pavucontrol"
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
     }
   },
-  {
-    "layer": "top",
-    "output": [
-      "DP-1", "DP-2"
-    ],
-    "modules-left": [
-      "hyprland/workspaces"
+  "custom/mic": {
+    "interval": 1,
+    "exec": "~/.config/hypr/scripts/mic",
+    "on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle"
+  },
+  "custom/notify": {
+    "interval": 1,
+    "exec": "~/.config/hypr/scripts/notify",
+    "on-click": "dunstctl set-paused toggle; notify-send -a Custom 'Notifications Toggled'"
+  },
+  "custom/weather": {
+    "interval": 60,
+    "exec": "~/.config/hypr/scripts/weather.sh"
+  },
+  "custom/cider": {
+    "interval": 5,
+    "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+    "escape": true
+  },
+  "custom/mouse": {
+    "interval": 30,
+    "exec": "~/.config/hypr/scripts/mouse"
+  },
+  "custom/memory": {
+    "interval": 1,
+    "exec": "~/.config/hypr/scripts/mem"
+  },
+  "cpu": {
+    "interval": 1,
+    "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
+    "format-icons": [
+      "▁",
+      "▂",
+      "▃",
+      "▄",
+      "▅",
+      "▆",
+      "▇",
+      "█"
     ]
+  },
+  "network": {
+    "interval": 2,
+    "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes} {signalStrength}% ",
+    "format-ethernet": "{ifname} ",
+    "format-disconnected": "",
+    "max-length": 30
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": [
+      "custom/expand-icon",
+      "tray"
+    ]
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 10
+  },
+    "custom/expand-icon": {
+    "format": " ",
+    "tooltip": false
+  },
+  "clock": {
+    "interval": 60,
+    "format": "{:%a %Y-%m-%d %I:%M %p}"
+  },
+  "pulseaudio": {
+    "format": "{volume}% {icon} ",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": "0% {icon} ",
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "on-click": "pavucontrol"
   }
-]
+}

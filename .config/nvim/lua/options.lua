@@ -3,6 +3,9 @@ local o = vim.o
 local g = vim.g
 local d = {}
 
+-- Notify
+vim.notify = require("notify")
+
 -- vim.cmd("autocmd!")
 
 -- Globals
