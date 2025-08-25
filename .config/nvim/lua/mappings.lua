@@ -12,6 +12,9 @@ local function map(mode, bind, command, opts)
     end
 end
 
+-- Netrw
+map("n", "<leader>e", "<cmd>Explore<cr>", { desc = "Open Netrw" })
+
 -- Key Maps
 map("n", "<leader>f", "<cmd>terminal ~/.local/bin/tmux-sessionizer<cr>", {})
 map("n", "<leader>w", "<cmd>w<cr>", {})
@@ -55,7 +58,7 @@ map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
 
 -- LSP
 map("n", "<leader>lr", vim.lsp.buf.rename, {})
-map("n", "<leader>lR", function() require('fzf-lua').lsp_references() end, {})
+-- map("n", "<leader>lR", "<cmd>Telescope lsp_references<cr>", {})
 map("n", "<S-k>", function() vim.lsp.buf.hover({ border = 'rounded' }) end, {})
 map("n", "<leader>gD", vim.lsp.buf.declaration, {})
 map("n", "<leader>gd", vim.lsp.buf.definition, {})
@@ -68,8 +71,9 @@ map("n", "gH", "<cmd>%diffget //2<cr>", {})
 map("n", "gL", "<cmd>%diffget //3<cr>", {})
 
 -- FZF Lua
-map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
-map("n", "<leader>fg", "<cmd>FzfLua grep_project<cr>", {})
+map("n", "<leader>ff", "<cmd>FzfLua global<cr>", {})
+map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>", {})
+-- map("n", "<leader>fa", "<cmd>Telescope find_files hidden=true<cr>", {})
 
 -- Bufferline
 map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})

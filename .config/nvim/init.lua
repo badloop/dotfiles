@@ -1,23 +1,22 @@
 vim.pack.add({
-    { src = "https://github.com/folke/snacks.nvim" },
-    { src = "https://github.com/rose-pine/neovim" },
-    { src = "https://github.com/vague2k/vague.nvim" },
-    { src = "https://github.com/folke/neodev.nvim" },
-    { src = "https://github.com/folke/tokyonight.nvim" },
-    { src = "https://github.com/ibhagwan/fzf-lua" },
-    { src = "https://github.com/nvim-lualine/lualine.nvim" },
-    { src = "https://github.com/akinsho/bufferline.nvim" },
-    { src = "https://github.com/neovim/nvim-lspconfig" },
-    { src = "https://github.com/tpope/vim-fugitive" },
-    { src = "https://github.com/echasnovski/mini.icons" },
-    { src = "https://github.com/christoomey/vim-tmux-navigator" },
-    { src = "https://github.com/lewis6991/gitsigns.nvim" },
-    { src = "https://github.com/windwp/nvim-autopairs" },
-    { src = "https://github.com/rcarriga/nvim-notify" },
-    { src = "https://github.com/j-hui/fidget.nvim" },
-    { src = "https://github.com/Saghen/blink.cmp" },
-    { src = "https://github.com/github/copilot.vim" },
-    { src = "https://github.com/NickvanDyke/opencode.nvim" },
+    { src = "https://github.com/folke/snacks.nvim",              name = "snacks" },
+    { src = "https://github.com/rose-pine/neovim",               name = "rose-pine" },
+    { src = "https://github.com/folke/neodev.nvim",              name = "neodev" },
+    { src = "https://github.com/folke/tokyonight.nvim",          name = "tokyonight" },
+    { src = "https://github.com/ibhagwan/fzf-lua/",              name = "fzf-lua" },
+    { src = "https://github.com/nvim-lualine/lualine.nvim",      name = "lualine" },
+    { src = "https://github.com/akinsho/bufferline.nvim",        name = "bufferline" },
+    { src = "https://github.com/neovim/nvim-lspconfig",          name = "nvim-lspconfig" },
+    { src = "https://github.com/tpope/vim-fugitive",             name = "vim-fugitive" },
+    { src = "https://github.com/echasnovski/mini.icons",         name = "mini.icons" },
+    { src = "https://github.com/christoomey/vim-tmux-navigator", name = "vim-tmux-navigator" },
+    { src = "https://github.com/lewis6991/gitsigns.nvim",        name = "gitsigns" },
+    { src = "https://github.com/windwp/nvim-autopairs",          name = "nvim-autopairs" },
+    { src = "https://github.com/rcarriga/nvim-notify",           name = "notify" },
+    { src = "https://github.com/j-hui/fidget.nvim",              name = "fidget" },
+    { src = "https://github.com/Saghen/blink.cmp",               name = "blink.cmp" },
+    { src = "https://github.com/github/copilot.vim",             name = "copilot.vim" },
+    { src = "https://github.com/NickvanDyke/opencode.nvim",      name = "opencode" }
 })
 
 -- Colorscheme
@@ -27,7 +26,8 @@ vim.cmd('colorscheme rose-pine')
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",
     callback = function(_)
-        local excluded_lsps = { "javascript", "javascriptreact", "typescript", "typescriptreact", "python", "yaml" }
+        local excluded_lsps = { "javascript", "javascriptreact", "typescript", "typescriptreact", "python",
+            "yaml" }
         -- Skip formatting when language server in excluded list
         vim.lsp.buf.format({
             filter = function(client) return not vim.tbl_contains(excluded_lsps, client.name) end
@@ -41,10 +41,19 @@ local settings = {
     ["nvim-notify"]        = { name = "notify" },
     ["vim-tmux-navigator"] = { opts = { setup = false } },
     ["copilot.vim"]        = { opts = { setup = false } },
+    ["fzf-lua"]            = {
+        opts = {
+            fzf_opts = {
+                ['--layout'] = 'default'
+            }
+        }
+    },
     ["snacks.nvim"]        = {
         opts = {
-            terminal = {
-                enabled = true
+            fzf_opts = {
+                terminal = {
+                    enabled = true
+                }
             }
         }
     },
@@ -76,15 +85,6 @@ local settings = {
             bashls = {},
             gopls = {},
             rust_analyzer = {}
-        }
-    },
-
-    ["fzf-lua"]            = {
-        opts = {
-            files = {
-                rg_opts = "--color=never --files --hidden --follow -g '!.git' -g '!.next'",
-                fd_opts = "--color=never --type f --hidden --follow --exclude .git --exclude .next",
-            }
         }
     },
 
@@ -186,10 +186,11 @@ for _, plugin in ipairs(vim.pack.get()) do
         end
     else
         if o.setup == false then
-            print("Skipping setup for plugin: " .. p)
+            -- print("Skipping setup for plugin: " .. p)
         else
             local ok, mod = pcall(require, p)
             if ok then
+                -- print("Setting up plugin: " .. p)
                 mod.setup(o)
             else
                 vim.notify(mod, vim.log.levels.WARN)
