@@ -44,7 +44,8 @@ local settings = {
     ["fzf-lua"]            = {
         opts = {
             fzf_opts = {
-                ['--layout'] = 'default'
+                ['--layout'] = 'default',
+                ['--exact'] = ''
             }
         }
     },
