@@ -106,6 +106,7 @@ local settings = {
                     enabled = vim.g.ai_cmp
                 },
                 menu = {
+                    border = "rounded",
                     draw = {
                         treesitter = { 'lsp' },
                     }

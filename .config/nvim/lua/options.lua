@@ -57,18 +57,19 @@ o.list = true
 o.listchars = o.listchars .. ",space:⋅"
 o.listchars = o.listchars .. ",eol:↴"
 o.guicursor = ""
+o.winborder = "rounded"
 
 -- Diagnostics
 d.virtual_text = true
 d.source = true
 d.severity_sort = true
-d.float = {
-    source = "always",
-    border = "rounded",
-    prefix = function(diagnostic)
-        return vim.diagnostic.severity[diagnostic.severity] .. ": "
-    end,
-}
+-- d.float = {
+--     source = "always",
+--     border = "rounded",
+--     prefix = function(diagnostic)
+--         return vim.diagnostic.severity[diagnostic.severity] .. ": "
+--     end,
+-- }
 vim.diagnostic.config(d)
 
 -- AUTOCMDS
