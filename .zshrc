@@ -173,6 +173,7 @@ export PATH=$PATH:~/Desktop
 export PATH=$PATH:~/.bun/bin
 export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 export PATH=$HOME/.config/tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
+export PATH=$HOME/.config/bin/:$PATH
 
 # Shell Integrations
 eval "$(fzf --zsh)"
@@ -207,7 +208,7 @@ source "$HOME/.cargo/env"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 # shellcheck disable=1090
-[ -f ~/.fzf.colors ] && source ~/.fzf.colors
+[ -f ~/.config/themes/current/fzf.colors ] && source ~/.config/themes/current/fzf.colors
 source "$HOME/.zsh_profile"
 
 # Set color theme for real ttys

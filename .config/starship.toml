@@ -13,6 +13,15 @@ vimcmd_symbol = '[❯](bold red)'
 [git_branch]
 symbol = " "
 
+[lua]
+symbol = " "
+
+[package]
+symbol = "󰏗 "
+
+[swift]
+symbol = "󱈙 "
+
 [kubernetes]
 # detect_env_vars = ["HTTPS_PROXY"]
 disabled = false

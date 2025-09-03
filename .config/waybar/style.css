@@ -70,10 +70,10 @@ tooltip label{
 #workspaces,
 #custom-cider,
 .modules-right {
-    background-color: rgba(50, 50, 50, .6);
+    background-color: rgba(50, 50, 50, .5);
     border-radius: 5px;
     margin: 0px;
-    border: 1px solid rgba(255, 255, 255, .6)
+    border: 1px solid rgba(255, 255, 255, .5)
 }
 
 #workspaces button {

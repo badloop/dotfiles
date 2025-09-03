@@ -3,11 +3,6 @@ local o = vim.o
 local g = vim.g
 local d = {}
 
--- Notify
-vim.notify = require("notify")
-
--- vim.cmd("autocmd!")
-
 -- Globals
 g.mapleader = " "
 g.loaded_perl_provider = 0
@@ -27,6 +22,8 @@ g.netrw_browse_split = 0
 -- Options
 vim.opt.completeopt = { "menuone", "noselect", "popup" }
 
+o.autoread = true
+o.swapfile = false
 o.conceallevel = 0
 o.termguicolors = true
 o.tabstop = 4

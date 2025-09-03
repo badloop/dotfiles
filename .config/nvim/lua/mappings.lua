@@ -71,7 +71,7 @@ map("n", "gH", "<cmd>%diffget //2<cr>", {})
 map("n", "gL", "<cmd>%diffget //3<cr>", {})
 
 -- FZF Lua
-map("n", "<leader>ff", "<cmd>FzfLua global<cr>", {})
+map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
 map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>", {})
 -- map("n", "<leader>fa", "<cmd>Telescope find_files hidden=true<cr>", {})
 
@@ -82,7 +82,8 @@ map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})
 map("i", "<C-E>", ":Blink.accept()<cr>", {})
 
 -- OpenCode
-map({ "n", "v", "i", "t" }, "<leader>ot", function() require('opencode').toggle() end, {})
+map({ "n", "v", "t" }, "<leader>ot", function() require('opencode').toggle() end, {})
+map({ "n", "v", "t" }, "<leader>oa", function() require('opencode').ask('@file ') end, {})
 
 -- GitSigns
 map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<cr>", { desc = "Git Preview Hunk" })
