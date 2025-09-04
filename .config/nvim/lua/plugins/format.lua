@@ -1,7 +1,19 @@
 return {
 	"stevearc/conform.nvim",
 	opts = {
-		formatters = { options = { ignore_errors = true } },
+		formatters = {
+			options = { ignore_errors = true },
+			stylua = {
+				args = {
+					"--search-parent-directories",
+					"--indent-type",
+					"Spaces",
+					"--stdin-filepath",
+					"$FILENAME",
+					"-",
+				},
+			},
+		},
 		format_on_save = {
 			timeout_ms = 500,
 			lsp_format = "fallback",

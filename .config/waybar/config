@@ -51,6 +51,11 @@
     "interval": 60,
     "exec": "~/.config/hypr/scripts/weather.sh"
   },
+  "custom/cider": {
+    "interval": 5,
+    "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+    "escape": true
+  },
   "custom/mouse": {
     "interval": 30,
     "exec": "~/.config/hypr/scripts/mouse"

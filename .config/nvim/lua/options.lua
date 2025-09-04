@@ -55,6 +55,7 @@ o.listchars = o.listchars .. ",space:⋅"
 o.listchars = o.listchars .. ",eol:↴"
 o.guicursor = ""
 o.winborder = "rounded"
+o.smartcase = true
 
 -- Diagnostics
 d.virtual_text = true

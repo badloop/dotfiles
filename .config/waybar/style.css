@@ -86,6 +86,8 @@ tooltip label{
     background: #74c7ec;
     border-radius: 3px;
     margin: 0px;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+
 }
 
 #workspaces button.urgent {

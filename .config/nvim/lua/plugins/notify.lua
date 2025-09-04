@@ -1,3 +1,6 @@
 return {
-	"folke/noice.nvim",
+	"rcarriga/nvim-notify",
+	config = function()
+		vim.notify = require("notify")
+	end,
 }

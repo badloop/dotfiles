@@ -175,6 +175,9 @@ export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 export PATH=$HOME/.config/tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 export PATH=$HOME/.config/bin/:$PATH
 
+# FZF
+export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/config"
+
 # Shell Integrations
 eval "$(fzf --zsh)"
 eval "$(pyenv init -)"
