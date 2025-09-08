@@ -1,17 +1,19 @@
 -- User Functions
 local function map(mode, bind, command, opts)
-	local options = { noremap = true, silent = true }
-	if type(mode) ~= "table" then
-		mode = { mode }
-	end
-	for _, v in pairs(mode) do
-		if opts then
-			options = vim.tbl_extend("force", options, opts)
-		end
-		vim.keymap.set(v, bind, command, options)
-	end
+    local options = { noremap = true, silent = true }
+    if type(mode) ~= "table" then
+        mode = { mode }
+    end
+    for _, v in pairs(mode) do
+        if opts then
+            options = vim.tbl_extend("force", options, opts)
+        end
+        vim.keymap.set(v, bind, command, options)
+    end
 end
 
+-- Lazy
+map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Open Lazy" })
 -- Netrw
 map("n", "<leader>e", "<cmd>Explore<cr>", { desc = "Open Netrw" })
 
@@ -40,10 +42,10 @@ map("n", "<A-j>", "jzz", {})
 map("n", "˚", "<cmd>>m-2<cr>", {}) -- Move current line
 map("n", "∆", "<cmd><m+<cr>", {}) -- Move current line/visual block down one
 map(
-	"n",
-	"<C-f>",
-	"<cmd>!sesh list -tz | fzf-tmux -p 55%,60% --no-sort --border-label 'Tmux Session Manager' --prompt ' '<cr>",
-	{}
+    "n",
+    "<C-f>",
+    "<cmd>!sesh list -tz | fzf-tmux -p 55%,60% --no-sort --border-label 'Tmux Session Manager' --prompt ' '<cr>",
+    {}
 )
 
 map({ "n", "v" }, "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
@@ -62,7 +64,7 @@ map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
 map("n", "<leader>lr", vim.lsp.buf.rename, {})
 -- map("n", "<leader>lR", "<cmd>Telescope lsp_references<cr>", {})
 map("n", "<S-k>", function()
-	vim.lsp.buf.hover({ border = "rounded" })
+    vim.lsp.buf.hover({ border = "rounded" })
 end, {})
 map("n", "<leader>gD", vim.lsp.buf.declaration, {})
 map("n", "<leader>gd", vim.lsp.buf.definition, {})
@@ -87,10 +89,10 @@ map("i", "<C-E>", ":Blink.accept()<cr>", {})
 
 -- OpenCode
 map({ "n", "v", "t" }, "<leader>ot", function()
-	require("opencode").toggle()
+    require("opencode").toggle()
 end, {})
 map({ "n", "v", "t" }, "<leader>oa", function()
-	require("opencode").ask("@file ")
+    require("opencode").ask("@file ")
 end, {})
 
 -- GitSigns
