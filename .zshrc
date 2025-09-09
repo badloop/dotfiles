@@ -175,14 +175,19 @@ export PATH=$HOME/.tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 export PATH=$HOME/.config/tmux/plugins/t-smart-tmux-session-manager/bin:$PATH
 export PATH=$HOME/.config/bin/:$PATH
 
-# FZF
-export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/config"
-
 # Shell Integrations
 eval "$(fzf --zsh)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv shell $(pyenv latest 3)
+
+# FZF
+[ -f ~/.config/themes/current/fzf.colors ] && source ~/.config/themes/current/fzf.colors
+export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS" --preview-window=right,60%"
+if [ -z "$TMUX" ]; then
+    export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS' --border'
+else
+fi
 
 # Aliases
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
@@ -197,6 +202,8 @@ compinit
 zstyle ':completion:*:*:cp:*' file-sort size
 zstyle ':completion:*' file-sort modification
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+zstyle ':fzf-tab:*' popup-min-size 80 12
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always $realpath'
 
 # Rust
 source "$HOME/.cargo/env"
@@ -211,7 +218,6 @@ source "$HOME/.cargo/env"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 # shellcheck disable=1090
-[ -f ~/.config/themes/current/fzf.colors ] && source ~/.config/themes/current/fzf.colors
 source "$HOME/.zsh_profile"
 
 # Set color theme for real ttys

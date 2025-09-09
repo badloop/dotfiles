@@ -79,7 +79,8 @@ map("n", "gL", "<cmd>%diffget //3<cr>", {})
 -- FZF Lua
 map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
 map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>", {})
--- map("n", "<leader>fa", "<cmd>Telescope find_files hidden=true<cr>", {})
+map("n", "<leader>fb", "<cmd>FzfLua git_branches<cr>", {})
+map("n", "<leader>F", "<cmd>FzfLua builtin<cr>", {})
 
 -- Bufferline
 map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})
