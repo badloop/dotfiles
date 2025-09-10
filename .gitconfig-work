@@ -16,5 +16,3 @@
 [url "git@ssh.dev.azure.com:v3/Windstream/"]
 	insteadOf = https://dev.azure.com/Windstream/
 
-[url "git@github.com:uniti-it"]
-	insteadOf = https://github.com/uniti-it

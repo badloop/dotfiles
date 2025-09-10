@@ -14,3 +14,5 @@
 	defaultBranch = main
 [http]
     sslBackend = openssl
+[user]
+	name = Aaron Dunlap

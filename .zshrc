@@ -157,7 +157,7 @@ GOPATH=$(go env GOPATH)
 export GOPATH
 export PYENV_ROOT=${HOME}/.pyenv
 export GO111MODULE="on"
-export GOPRIVATE="dev.azure.com"
+export GOPRIVATE="dev.azure.com,github.com/uniti-it"
 export TERM=xterm-256color
 export BASH_SILENCE_DEPRECATION_WARNING=1
 export GIT_EDITOR=nvim
