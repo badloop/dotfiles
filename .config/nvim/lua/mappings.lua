@@ -81,6 +81,8 @@ map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
 -- map("n", "<leader>fg", "<cmd>FzfLua live_grep keymap.fzf.ctrl-q=select-all+accept actions.ctrl-q=false<cr>", {})
 map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>", {})
 map("n", "<leader>fb", "<cmd>FzfLua git_branches<cr>", {})
+map("n", "<leader>fd", "<cmd>FzfLua lsp_document_diagnostics<cr>", {})
+map("n", "<leader>fD", "<cmd>FzfLua lsp_workspace_diagnostics<cr>", {})
 map("n", "<leader>F", "<cmd>FzfLua builtin<cr>", {})
 
 -- Bufferline

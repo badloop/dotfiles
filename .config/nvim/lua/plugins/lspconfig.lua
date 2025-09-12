@@ -10,7 +10,6 @@ return {
                 ensure_installed = {
                     "bash-language-server",
                     "beautysh",
-                    "black",
                     "delve",
                     "eslint_d",
                     "eslint-lsp",
@@ -20,7 +19,6 @@ return {
                     "golangci-lint-langserver",
                     "gopls",
                     "html-lsp",
-                    "isort",
                     "js-debug-adapter",
                     "json-lsp",
                     "jsonlint",
@@ -32,6 +30,7 @@ return {
                     "pylint",
                     "pyright",
                     "revive",
+                    "ruff",
                     "shellcheck",
                     "shfmt",
                     "swiftlint",
