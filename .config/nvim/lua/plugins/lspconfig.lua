@@ -28,7 +28,6 @@ return {
                     "marksman",
                     "prettier",
                     "pylint",
-                    "pyright",
                     "revive",
                     "ruff",
                     "shellcheck",
@@ -79,23 +78,24 @@ return {
             eslint = {},
             ts_ls = {},
             jdtls = {},
-            pyright = {
-                settings = {
-                    python = {
-                        venvPath = ".",
-                        venv = "venv",
-                        analysis = {
-                            autoSearchPaths = true,
-                            useLibraryCodeForTypes = true,
-                            diagnosticMode = "workspace",
-                            diagnosticSeverityOverrides = {
-                                reportGeneralTypeIssues = "none",
-                                reportOptionalMemberAccess = "none",
-                            },
-                        },
-                    },
-                },
-            },
+            ruff = {},
+            -- pyright = {
+            --     settings = {
+            --         python = {
+            --             venvPath = ".",
+            --             venv = "venv",
+            --             analysis = {
+            --                 autoSearchPaths = true,
+            --                 useLibraryCodeForTypes = true,
+            --                 diagnosticMode = "workspace",
+            --                 diagnosticSeverityOverrides = {
+            --                     reportGeneralTypeIssues = "none",
+            --                     reportOptionalMemberAccess = "none",
+            --                 },
+            --             },
+            --         },
+            --     },
+            -- },
             yamlls = {
                 settings = {
                     yaml = {
