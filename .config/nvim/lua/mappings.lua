@@ -62,7 +62,7 @@ map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
 
 -- LSP
 map("n", "<leader>lr", vim.lsp.buf.rename, {})
--- map("n", "<leader>lR", "<cmd>Telescope lsp_references<cr>", {})
+map("n", "<leader>lR", "<cmd>FzfLua lsp_references<cr>", {})
 map("n", "<S-k>", function()
     vim.lsp.buf.hover({ border = "rounded" })
 end, {})

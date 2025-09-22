@@ -1,3 +1,81 @@
+local language_servers = {
+    { "basedpyright" },
+    { "bash-language-server", {
+        filetypes = { "bash", "sh", "zsh" },
+    } },
+    { "beautysh" },
+    { "delve" },
+    { "eslint_d" },
+    { "eslint-lsp" },
+    { "gofumpt" },
+    { "goimports-reviser" },
+    { "golangci-lint" },
+    { "golangci-lint-langserver" },
+    { "gopls" },
+    {
+        "html-lsp",
+        {
+            settings = {
+                init_options = {
+                    configurationSection = { "html", "css", "javascript" },
+                    embeddedLanguages = {
+                        css = true,
+                        javascript = true,
+                    },
+                    provideFormatter = true,
+                },
+            },
+        },
+    },
+    { "js-debug-adapter" },
+    { "json-lsp" },
+    { "jsonlint" },
+    { "kulala-fmt" },
+    {
+        { "lua_ls", "lua-language-server" },
+        {
+            single_file_support = true,
+            settings = {
+                Lua = {
+                    inlay_hints = true,
+                    workspace = {
+                        checkThirdParty = false,
+                    },
+                    diagnostics = {
+                        globals = { "vim" },
+                        disable = { "missing-fields" },
+                    },
+                    completion = {
+                        callSnippet = "Replace",
+                    },
+                },
+            },
+        },
+    },
+    { "markdownlint" },
+    { "marksman" },
+    { "prettier" },
+    { "pylint" },
+    { "revive" },
+    { "ruff" },
+    { "shellcheck" },
+    { "shfmt" },
+    { "swiftlint" },
+    { "sqlfluff" },
+    { "stylua" },
+    { "tailwindcss-language-server" },
+    { "typescript-language-server" },
+    {
+        "yaml-language-server",
+        {
+            settings = {
+                yaml = {
+                    keyOrdering = false,
+                },
+            },
+        },
+    },
+}
 return {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -7,38 +85,12 @@ return {
         {
             "williamboman/mason.nvim",
             opts = {
-                ensure_installed = {
-                    "bash-language-server",
-                    "beautysh",
-                    "delve",
-                    "eslint_d",
-                    "eslint-lsp",
-                    "gofumpt",
-                    "goimports-reviser",
-                    "golangci-lint",
-                    "golangci-lint-langserver",
-                    "gopls",
-                    "html-lsp",
-                    "js-debug-adapter",
-                    "json-lsp",
-                    "jsonlint",
-                    "kulala-fmt",
-                    "lua-language-server",
-                    "markdownlint",
-                    "marksman",
-                    "prettier",
-                    "pylint",
-                    "revive",
-                    "ruff",
-                    "shellcheck",
-                    "shfmt",
-                    "swiftlint",
-                    "sqlfluff",
-                    "stylua",
-                    "tailwindcss-language-server",
-                    "typescript-language-server",
-                    "yaml-language-server",
-                },
+                ensure_installed = (vim.tbl_map(function(server)
+                    if type(server[1]) == "table" then
+                        return server[1][2]
+                    end
+                    return server[1]
+                end, language_servers)),
                 ui = {
                     icons = {
                         package_installed = "✓",
@@ -72,124 +124,36 @@ return {
             end,
         },
     },
-    name = "nvim-lspconfig",
-    opts = {
-        servers = {
-            eslint = {},
-            ts_ls = {},
-            jdtls = {},
-            ruff = {},
-            -- pyright = {
-            --     settings = {
-            --         python = {
-            --             venvPath = ".",
-            --             venv = "venv",
-            --             analysis = {
-            --                 autoSearchPaths = true,
-            --                 useLibraryCodeForTypes = true,
-            --                 diagnosticMode = "workspace",
-            --                 diagnosticSeverityOverrides = {
-            --                     reportGeneralTypeIssues = "none",
-            --                     reportOptionalMemberAccess = "none",
-            --                 },
-            --             },
-            --         },
-            --     },
-            -- },
-            yamlls = {
-                settings = {
-                    yaml = {
-                        keyOrdering = false,
-                    },
-                },
-            },
-            bashls = {
-                filetypes = { "bash", "sh", "zsh" },
-            },
-            marksman = {},
-            html = {
-                settings = {
-                    init_options = {
-                        configurationSection = { "html", "css", "javascript" },
-                        embeddedLanguages = {
-                            css = true,
-                            javascript = true,
-                        },
-                        provideFormatter = true,
-                    },
-                },
-            },
-            lua_ls = {
-                single_file_support = true,
-                settings = {
-                    Lua = {
-                        inlay_hints = true,
-                        workspace = {
-                            checkThirdParty = false,
-                        },
-                        diagnostics = {
-                            globals = { "vim" },
-                            disable = { "missing-fields" },
-                        },
-                        completion = {
-                            callSnippet = "Replace",
-                        },
-                    },
-                },
-            },
-            gopls = {},
-            rust_analyzer = {},
-            sourcekit = {},
-        },
-        inlay_hints = {
-            enabled = true,
-        },
-        setup = {
-            ["*"] = function(server, opts) end,
-        },
-    },
+    opts = {},
     config = function(_, opts)
-        local servers = opts.servers
-
         local capabilities = {}
 
         -- Add cmp nvim capabilities
         local cmp = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
         vim.tbl_extend("force", capabilities, cmp)
 
-        -- Add capabilities for blink to each server
-        -- local blink = require("blink.cmp").get_lsp_capabilities()
-        -- vim.tbl_extend("force", capabilities, blink)
-
-        local lsp = require("lspconfig")
-        local function setup(server)
-            local server_opts = servers[server] or {}
-            server_opts.capabilities = capabilities
-            server_opts.on_attach = function(client, _)
-                if client.server_capabilities.inlayHintProvider then
-                    vim.lsp.inlay_hint.enable(true)
-                end
-            end
-
-            -- print("Setting up " .. server .. " with " .. vim.inspect(server_opts))
-            lsp[server].setup(server_opts)
-            if opts.setup[server] then
-                if opts.setup[server](server, server_opts) then
-                    return
-                end
-            elseif opts.setup["*"] then
-                if opts.setup["*"](server, server_opts) then
-                    return
-                end
-            end
-            -- require("lspconfig")[server].setup(server_opts)
-        end
-
         local ensure_installed = {}
-        for server in pairs(servers) do
-            ensure_installed[#ensure_installed + 1] = server
-            setup(server)
+        for _, lsp in pairs(language_servers) do
+            -- Check if lsp is table and if so use the second element as the lsp name
+            local lsp_name
+            local lsp_server
+            lsp_name = lsp[1]
+            if type(lsp[1]) == "table" then
+                lsp_name = lsp[1][1]
+                lsp_server = lsp[1][2]
+            else
+                lsp_name = lsp[1]
+                lsp_server = lsp[1]
+            end
+
+            ensure_installed[#ensure_installed + 1] = lsp_server
+            local config = lsp[2]
+            vim.lsp.enable(lsp_name)
+            if config then
+                vim.lsp.config(lsp_name, config)
+            end
         end
+
         require("mason-lspconfig").setup({
             ensure_installed = opts.ensure_installed,
             automatic_enable = true,

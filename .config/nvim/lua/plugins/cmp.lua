@@ -22,7 +22,6 @@ return {
         },
         config = function()
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            local lspconfig = require("lspconfig")
             local servers = { "clangd", "rust_analyzer", "ruff", "eslint", "ts_ls", "lua_ls", "gopls" }
             local luasnip = require("luasnip")
             local cmp = require("cmp")
@@ -32,7 +31,7 @@ return {
 
             capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
             for _, lsp in ipairs(servers) do
-                lspconfig[lsp].setup({
+                vim.lsp.config(lsp, {
                     capabilities = capabilities,
                 })
             end
