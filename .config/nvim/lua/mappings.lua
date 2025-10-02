@@ -15,7 +15,7 @@ end
 -- Lazy
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Open Lazy" })
 -- Netrw
-map("n", "<leader>e", "<cmd>Explore<cr>", { desc = "Open Netrw" })
+map("n", "<leader>e", "<cmd>Sex<cr>", { desc = "Open Netrw" })
 
 -- Key Maps
 map("v", "<", "<dv", {})

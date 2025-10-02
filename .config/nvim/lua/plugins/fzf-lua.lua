@@ -8,7 +8,7 @@ return {
             ["--exact"] = "",
         },
         files = {
-            cmd = " rg --files -g '!venv/' -g '!.git/' --color=never --hidden",
+            cmd = "rg --files --no-ignore -g '!venv/' -g '!.git/' --color=never --hidden",
             cwd_prompt = false,
         },
     },
