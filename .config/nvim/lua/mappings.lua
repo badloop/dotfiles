@@ -15,7 +15,34 @@ end
 -- Lazy
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Open Lazy" })
 -- Netrw
-map("n", "<leader>e", "<cmd>Sex<cr>", { desc = "Open Netrw" })
+-- Open netrw in a floating window
+function OpenNetrwFloat()
+    -- Open a new empty buffer
+    local buf = vim.api.nvim_create_buf(false, true)
+
+    -- Determine window size and position
+    local width = math.floor(vim.o.columns * 0.8)
+    local height = math.floor(vim.o.lines * 0.8)
+    local row = math.floor((vim.o.lines - height) / 2)
+    local col = math.floor((vim.o.columns - width) / 2)
+
+    -- Create the floating window
+    vim.api.nvim_open_win(buf, true, {
+        relative = "editor",
+        width = width,
+        height = height,
+        row = row,
+        col = col,
+        style = "minimal",
+        border = "rounded",
+    })
+
+    -- Open netrw in that buffer
+    vim.cmd("Ex")
+end
+
+-- Keybinding example:
+vim.keymap.set("n", "<leader>e", OpenNetrwFloat, { desc = "Open netrw in float" })
 
 -- Key Maps
 map("v", "<", "<dv", {})
@@ -77,13 +104,24 @@ map("n", "gH", "<cmd>%diffget //2<cr>", {})
 map("n", "gL", "<cmd>%diffget //3<cr>", {})
 
 -- FZF Lua
-map("n", "<leader>ff", "<cmd>FzfLua files<cr>", {})
--- map("n", "<leader>fg", "<cmd>FzfLua live_grep keymap.fzf.ctrl-q=select-all+accept actions.ctrl-q=false<cr>", {})
-map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>", {})
-map("n", "<leader>fb", "<cmd>FzfLua git_branches<cr>", {})
-map("n", "<leader>fd", "<cmd>FzfLua lsp_document_diagnostics<cr>", {})
-map("n", "<leader>fD", "<cmd>FzfLua lsp_workspace_diagnostics<cr>", {})
-map("n", "<leader>F", "<cmd>FzfLua builtin<cr>", {})
+map("n", "<leader>ff", function()
+    require("fzf-lua").files()
+end, {})
+map("n", "<leader>fg", function()
+    require("fzf-lua").live_grep()
+end, {})
+map("n", "<leader>fb", function()
+    require("fzf-lua").git_branches()
+end, {})
+map("n", "<leader>fd", function()
+    require("fzf-lua").lsp_document_diagnostics()
+end, {})
+map("n", "<leader>fD", function()
+    require("fzf-lua").lsp_workspace_diagnostics()
+end, {})
+map("n", "<leader>F", function()
+    require("fzf-lua").builtin()
+end, {})
 
 -- Bufferline
 map("n", "<leader>bj", "<cmd>BufferLinePick<cr>", {})

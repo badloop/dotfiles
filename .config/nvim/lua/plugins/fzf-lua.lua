@@ -8,7 +8,11 @@ return {
             ["--exact"] = "",
         },
         files = {
-            cmd = "rg --files --no-ignore -g '!venv/' -g '!.git/' --color=never --hidden",
+            cmd = "rg --files --no-ignore -g '!venv/' -g '!.git/' -g '!node_modules/' --color=never --hidden --smart-case",
+            cwd_prompt = false,
+        },
+        grep = {
+            cmd = "rg --vimgrep --no-ignore -g '!venv/' -g '!.git/'  -g '!node_modules/' --color=never --hidden --smart-case --column --line-number",
             cwd_prompt = false,
         },
     },
