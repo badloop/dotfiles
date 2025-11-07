@@ -17,17 +17,23 @@ map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Open Lazy" })
 -- Netrw
 -- Open netrw in a floating window
 function OpenNetrwFloat()
+    -- Store the current buffer to check if it's unnamed
+    local orig_buf = vim.api.nvim_get_current_buf()
+    local orig_buf_name = vim.api.nvim_buf_get_name(orig_buf)
+    local is_unnamed = orig_buf_name == ""
+
+    -- Store the original window to return to
+    local orig_win = vim.api.nvim_get_current_win()
+
     -- Open a new empty buffer
     local buf = vim.api.nvim_create_buf(false, true)
-
     -- Determine window size and position
     local width = math.floor(vim.o.columns * 0.8)
     local height = math.floor(vim.o.lines * 0.8)
     local row = math.floor((vim.o.lines - height) / 2)
     local col = math.floor((vim.o.columns - width) / 2)
-
     -- Create the floating window
-    vim.api.nvim_open_win(buf, true, {
+    local win = vim.api.nvim_open_win(buf, true, {
         relative = "editor",
         width = width,
         height = height,
@@ -36,11 +42,56 @@ function OpenNetrwFloat()
         style = "minimal",
         border = "rounded",
     })
-
     -- Open netrw in that buffer
     vim.cmd("Ex")
-end
 
+    -- Set up autocommand to close floating window when opening a file
+    local augroup = vim.api.nvim_create_augroup("NetrwFloat", { clear = true })
+    vim.api.nvim_create_autocmd("BufEnter", {
+        group = augroup,
+        callback = function()
+            -- Check if we're leaving netrw (filetype changes from netrw to something else)
+            if vim.bo.filetype ~= "netrw" and vim.api.nvim_win_is_valid(win) then
+                local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+                local temp_buf = vim.api.nvim_get_current_buf()
+
+                -- Close the floating window first
+                vim.api.nvim_win_close(win, true)
+
+                -- Switch back to the original window
+                if vim.api.nvim_win_is_valid(orig_win) then
+                    vim.api.nvim_set_current_win(orig_win)
+                end
+
+                -- Delete the temp buffer that was in the float
+                if vim.api.nvim_buf_is_valid(temp_buf) then
+                    vim.api.nvim_buf_delete(temp_buf, { force = true })
+                end
+
+                -- Now open the file properly with :edit! to trigger all autocommands
+                vim.cmd("edit! " .. vim.fn.fnameescape(filename))
+
+                -- Force filetype detection
+                vim.cmd("filetype detect")
+
+                -- Close the original unnamed buffer if it exists and is unmodified
+                if
+                    is_unnamed
+                    and vim.api.nvim_buf_is_valid(orig_buf)
+                    and orig_buf ~= vim.api.nvim_get_current_buf()
+                then
+                    local is_modified = vim.api.nvim_buf_get_option(orig_buf, "modified")
+                    if not is_modified then
+                        vim.api.nvim_buf_delete(orig_buf, { force = false })
+                    end
+                end
+
+                -- Clean up the autocommand group
+                vim.api.nvim_del_augroup_by_id(augroup)
+            end
+        end,
+    })
+end
 -- Keybinding example:
 vim.keymap.set("n", "<leader>e", OpenNetrwFloat, { desc = "Open netrw in float" })
 
@@ -59,10 +110,6 @@ map("n", "<leader>'", "ciw'<ESC>pwi'<ESC>", {})
 map("n", '<leader>"', 'ciw"<ESC>pwi"<ESC>', {})
 map("n", "<leader>o", "o<esc><cr>", {})
 map("n", "<leader>O", "O<esc><cr>", {})
-map("n", "<C-h>", ":TmuxNavigateLeft<cr>", {})
-map("n", "<C-l>", ":TmuxNavigateRight<cr>", {})
-map("n", "<C-j>", ":TmuxNavigateDown<cr>", {})
-map("n", "<C-k>", ":TmuxNavigateUp<cr>", {})
 map("n", "J", "mzJ`z", {})
 map("n", "<A-k>", "kzz", {})
 map("n", "<A-j>", "jzz", {})
@@ -86,6 +133,10 @@ map("x", "<leader>p", '"_dP', {})
 map("n", "<leader>y", '"+y', { desc = "Enter yank to system clipboard mode" })
 map("v", "<leader>y", '"+y', { desc = "Enter yank to system clipboard mode" })
 map("n", "<leader>Y", '"+Y', { desc = "Enter yank to system clipboard mode" })
+map("n", ">", ">>", {})
+map("n", "<", "<<", {})
+map("v", "<", "<gv", {})
+map("v", ">", ">gv", {})
 
 -- LSP
 map("n", "<leader>lr", vim.lsp.buf.rename, {})

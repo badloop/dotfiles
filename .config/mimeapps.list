@@ -17,6 +17,8 @@ x-scheme-handler/mailto=brave-browser.desktop
 x-scheme-handler/betterdiscord=discord.desktop
 text/markdown=firefox.desktop
 text/plain=firefox.desktop
+application/x-rdp=xfreerdp3.desktop
+application/rdp=xfreerdp3.desktop
 
 [Added Associations]
 x-scheme-handler/http=firefox.desktop;
