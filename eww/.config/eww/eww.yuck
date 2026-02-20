@@ -1,0 +1,417 @@
+;; ============================================================
+;; EWW Popup Widgets for Waybar - GitHub News + Weather
+;; Reads cached JSON from ~/.cache/waybar/
+;; ============================================================
+
+;; ==================== DATA POLLS ====================
+;; GitHub polls use jq for fast cache reads. Python only for HTML-stripped unread list.
+
+;; GitHub data — fast jq reads from local cache
+(defpoll github-status-json :interval "30s"
+  `cat ~/.cache/waybar/github-news/status.json 2>/dev/null || echo '{}'`)
+(defpoll github-incidents-json :interval "30s"
+  `cat ~/.cache/waybar/github-news/incidents.json 2>/dev/null || echo '[]'`)
+(defpoll github-unread-json :interval "2s"
+  `~/.config/waybar/scripts/eww-data.py github-unread-json`)
+
+;; Weather data
+(defpoll weather-json :interval "30s"
+  `cat ~/.cache/waybar/weather/weather.json 2>/dev/null || echo '{}'`)
+
+;; ==================== HELPER VARIABLES ====================
+
+;; GitHub derived values — jq for instant cache reads
+(defpoll github-status-indicator :interval "30s"
+  `jq -r '.status.indicator // "none"' ~/.cache/waybar/github-news/status.json 2>/dev/null || echo 'none'`)
+(defpoll github-status-description :interval "30s"
+  `jq -r '.status.description // "Unknown"' ~/.cache/waybar/github-news/status.json 2>/dev/null || echo 'Unknown'`)
+(defpoll github-incidents-count :interval "30s"
+  `jq 'length' ~/.cache/waybar/github-news/incidents.json 2>/dev/null || echo '0'`)
+(defpoll github-unread-count :interval "2s"
+  `jq 'length' ~/.cache/waybar/github-news/unread.json 2>/dev/null || echo '0'`)
+
+;; Weather derived values
+(defpoll weather-temp :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-temp`)
+(defpoll weather-feels :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-feels`)
+(defpoll weather-desc :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-desc`)
+(defpoll weather-icon :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-icon`)
+(defpoll weather-humidity :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-humidity`)
+(defpoll weather-wind :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-wind`)
+(defpoll weather-pressure :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-pressure`)
+(defpoll weather-uv :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-uv`)
+(defpoll weather-cloud :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-cloud`)
+(defpoll weather-last-update :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py weather-last-update`)
+
+;; SPC outlook
+(defpoll spc-active :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py spc-active`)
+(defpoll spc-label :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py spc-label`)
+(defpoll spc-full :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py spc-full`)
+(defpoll spc-color :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py spc-color`)
+
+;; MDs
+(defpoll md-count :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py md-count`)
+(defpoll md-items-json :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py md-items-json`)
+
+;; HWO
+(defpoll hwo-active :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py hwo-active`)
+(defpoll hwo-summary :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py hwo-summary`)
+(defpoll hwo-issued :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py hwo-issued`)
+
+;; Forecast
+(defpoll forecast-json :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py forecast-json`)
+
+;; Alerts
+(defpoll watches-json :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py watches-json`)
+(defpoll warnings-json :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py warnings-json`)
+(defpoll advisories-json :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py advisories-json`)
+(defpoll watches-count :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py watches-count`)
+(defpoll warnings-count :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py warnings-count`)
+(defpoll advisories-count :interval "30s"
+  `~/.config/waybar/scripts/eww-data.py advisories-count`)
+
+
+;; ==================== REUSABLE WIDGETS ====================
+
+;; Weather detail row (icon + label + value)
+(defwidget weather-detail [icon label value]
+  (box :class "detail-item" :orientation "h" :space-evenly false :spacing 8
+    (label :class "detail-icon" :text icon)
+    (box :orientation "v" :space-evenly false :spacing 0
+      (label :class "detail-label" :text label :halign "start")
+      (label :class "detail-value" :text value :halign "start"))))
+
+
+;; ==================== GITHUB STATUS POPUP ====================
+
+(defwidget github-status-content []
+  (box :class "popup-container github-status-popup" :orientation "v" :space-evenly false :spacing 12
+    ;; Header
+    (box :class "popup-header" :orientation "h" :space-evenly false :spacing 8
+      (label :class "header-icon" :text "󰊤")
+      (label :text "GitHub Status")
+      (box :hexpand true)
+      (button :class "close-btn" :onclick "eww close github-status-popup"
+        (label :text "󰅖")))
+
+    ;; Overall status banner
+    (box :class "status-banner ${github-status-indicator == 'critical' || github-status-indicator == 'major' ? 'critical' : github-status-indicator == 'minor' ? 'minor' : 'ok'}"
+         :orientation "h" :space-evenly false :spacing 10
+      (label :class "status-icon ${github-status-indicator == 'critical' || github-status-indicator == 'major' ? 'status-icon-bad' : github-status-indicator == 'minor' ? 'status-icon-minor' : 'status-icon-ok'}"
+             :text {github-status-indicator == "critical" || github-status-indicator == "major" ? "󰅙" :
+                    github-status-indicator == "minor" ? "󰀨" : "󰗡"})
+      (box :orientation "v" :space-evenly false :spacing 4 :hexpand true
+        (label :class "status-description"
+               :text {github-status-description ?: "All Systems Operational"}
+               :halign "start" :wrap true)
+        (label :class "status-updated"
+               :text "Updated just now"
+               :halign "start")))
+
+    ;; Incidents section
+    (box :visible {github-incidents-count == 0}
+      (label :class "no-incidents" :text "No active incidents"))
+
+    ;; Incident list - rendered by a script that reads the JSON
+    (box :visible {github-incidents-count > 0} :orientation "v" :space-evenly false :spacing 8
+      (label :class "incident-card incident-title" :halign "start" :wrap true
+             :text {github-incidents-count > 0 ? "Active incidents: ${github-incidents-count}" : ""}))
+
+    ;; Footer link
+    (button :class "status-footer-btn"
+            :onclick "xdg-open https://www.githubstatus.com &"
+      (box :orientation "h" :space-evenly false :spacing 6
+        (label :class "footer-icon" :text "󰖟")
+        (label :text "View Full Status Page") (box :hexpand true) (label :class "link-arrow" :text "󰁔")))))
+
+
+;; ==================== GITHUB CHANGELOG POPUP ====================
+
+(defwidget github-changelog-content []
+  (box :class "popup-container github-changelog-popup" :orientation "v" :space-evenly false :spacing 8
+    ;; Header
+    (box :class "popup-header" :orientation "h" :space-evenly false :spacing 8
+      (label :class "header-icon" :text "")
+      (label :text "GitHub Changelog")
+      (box :hexpand true)
+      ;; Unread count badge
+      (box :class "badge-count"
+        (label :text github-unread-count))
+      ;; Mark all read button
+      (button :class "action-btn mark-all-btn"
+              :onclick "echo '[]' > ~/.cache/waybar/github-news/unread.json &"
+              :visible {github-unread-count > 0}
+              :tooltip "Mark all as read"
+        (label :text "󰄲"))
+      ;; Refresh button
+      (button :class "action-btn"
+              :onclick "~/.config/waybar/scripts/github-news.py > /dev/null 2>&1 &"
+              :tooltip "Refresh feed"
+        (label :text "󰑓"))
+      ;; Close button
+      (button :class "close-btn" :onclick "eww close github-changelog-popup"
+        (label :text "󰅖")))
+
+    ;; Separator
+    (box :class "separator")
+
+    ;; Empty state
+    (box :class "empty-state" :visible {github-unread-count == 0}
+         :orientation "v" :space-evenly false :spacing 8 :halign "center"
+      (label :class "empty-icon" :text "󰄬")
+      (label :class "empty-text" :text "All caught up!"))
+
+    ;; Stories list (scrollable)
+    (scroll :visible {github-unread-count > 0}
+            :class "scroll-container"
+            :vscroll true :hscroll false
+            :height 500
+      (box :orientation "v" :space-evenly false :spacing 4
+        (for entry in {github-unread-json}
+          (eventbox :class "story-item"
+                    :onclick "xdg-open '${entry.url}' & F=~/.cache/waybar/github-news/unread.json && jq '[.[] | select(.id != \"${entry.id}\")]' $F > $F.tmp && mv $F.tmp $F &"
+            (box :orientation "h" :space-evenly false :spacing 8
+              ;; Left accent bar
+              (box :class "story-accent" :width 3 :height 40)
+              ;; Content
+              (box :orientation "v" :space-evenly false :spacing 4 :hexpand true
+                (label :class "story-title" :text {entry.title} :halign "start" :wrap true :limit-width 60)
+                (label :class "story-desc" :text {entry.description ?: ""} :halign "start" :wrap true :limit-width 80 :visible {entry.description != ""})
+                (label :class "story-date" :text {entry.pubDate ?: ""} :halign "start"))
+              ;; Mark as read (removes without opening)
+              (button :class "mark-read-btn"
+                      :onclick "F=~/.cache/waybar/github-news/unread.json && jq '[.[] | select(.id != \"${entry.id}\")]' $F > $F.tmp && mv $F.tmp $F &"
+                      :tooltip "Mark as read"
+                (label :text "󰄬")))))))))
+
+
+;; ==================== WEATHER POPUP ====================
+
+(defwidget weather-content []
+  (box :class "popup-container weather-popup" :orientation "v" :space-evenly false :spacing 12
+    ;; Header
+    (box :class "popup-header" :orientation "h" :space-evenly false :spacing 8
+      (label :class "header-icon" :text "☁")
+      (label :text "Weather")
+      (box :hexpand true)
+      ;; NWS link
+      (button :class "nws-link" :onclick "xdg-open https://www.weather.gov/$(grep '^OFFICE=' ~/.local/share/weather/config | cut -d= -f2 | tr '[:upper:]' '[:lower:]')/ &"
+              :tooltip "Open NWS"
+        (label :text "NWS"))
+      (button :class "close-btn" :onclick "eww close weather-popup"
+        (label :text "󰅖")))
+
+    ;; === CURRENT CONDITIONS ===
+    (box :class "weather-current" :orientation "h" :space-evenly false :spacing 16
+      (label :class "weather-emoji" :text weather-icon)
+      (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
+        (label :class "weather-temp" :text weather-temp :halign "start")
+        (label :class "weather-desc" :text weather-desc :halign "start")
+        (label :class "weather-feels" :text "Feels like ${weather-feels}" :halign "start")))
+
+    ;; === SPC OUTLOOK (conditional) ===
+    (box :visible {spc-active == "true"} :class "spc-card" :orientation "v" :space-evenly false :spacing 4
+         :style "background-color: alpha(${spc-color}, 0.25); border-color: ${spc-color};"
+      (box :orientation "h" :space-evenly false :spacing 8
+        (label :class "spc-header-icon" :text "⛈")
+        (label :class "spc-title" :text "SPC Day 1 Outlook")
+        (box :hexpand true)
+        (box :class "spc-risk-badge" :style "background-color: ${spc-color};"
+          (label :text spc-label
+                 :style {spc-label == "SLGT" || spc-label == "MRGL" ? "color: #000;" : "color: #FFF;"})))
+      (label :class "spc-full-name" :text spc-full :halign "start")
+      (button :class "spc-link" :onclick "xdg-open https://www.spc.noaa.gov/products/outlook/day1otlk.html &"
+        (box :orientation "h" :space-evenly false :spacing 6
+          (label :text "View full SPC outlook") (box :hexpand true) (label :class "link-arrow" :text "󰁔"))))
+
+    ;; === MESOSCALE DISCUSSIONS (conditional) ===
+    (box :visible {md-count > 0} :class "md-card" :orientation "v" :space-evenly false :spacing 6
+      (box :orientation "h" :space-evenly false :spacing 8
+        (label :class "md-icon" :text "󰙅")
+        (label :class "md-title" :text {md-count > 1 ? "Mesoscale Discussions" : "Mesoscale Discussion"})
+        (box :hexpand true)
+        (box :class "md-count-badge"
+          (label :text "MD ${md-count}")))
+      (for md in {md-items-json}
+        (button :class "md-item" :onclick "xdg-open '${md.url}' &"
+          (box :orientation "v" :space-evenly false :spacing 2
+            (box :orientation "h" :space-evenly false
+              (label :class "md-number" :text "MD ${md.number}" :halign "start")
+              (box :hexpand true))
+            (label :class "md-summary" :text {md.summary} :halign "start" :wrap true :limit-width 60)))))
+
+    ;; Separator
+    (box :class "separator")
+
+    ;; === DETAILS GRID ===
+    (box :orientation "v" :space-evenly false :spacing 6
+      (box :orientation "h" :space-evenly true
+        (weather-detail :icon "󰖎" :label "Humidity" :value "${weather-humidity}%")
+        (weather-detail :icon "󰖝" :label "Wind" :value weather-wind))
+      (box :orientation "h" :space-evenly true
+        (weather-detail :icon "󰗠" :label "Pressure" :value weather-pressure)
+        (weather-detail :icon "󰖨" :label "UV Index" :value weather-uv))
+      (box :orientation "h" :space-evenly true
+        (weather-detail :icon "󰖐" :label "Cloud Cover" :value weather-cloud)
+        (box)))  ;; empty box for grid alignment
+
+    ;; Separator
+    (box :class "separator")
+
+    ;; === 3-DAY FORECAST ===
+    (label :class "forecast-section-title" :text "3-Day Forecast" :halign "start")
+    (box :orientation "h" :space-evenly true :spacing 8
+      (for day in {forecast-json}
+        (box :class "forecast-card" :orientation "v" :space-evenly false :spacing 4 :halign "center"
+          (label :class "forecast-day" :text {day.dayName} :halign "center")
+          (label :class "forecast-icon" :text {day.icon} :halign "center")
+          (label :class "forecast-high" :text "${day.high}°" :halign "center")
+          (label :class "forecast-low" :text "${day.low}°" :halign "center"))))
+
+    ;; === WATCHES (conditional) ===
+    (box :visible {watches-count > 0} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "alert-section watch-section" :orientation "v" :space-evenly false :spacing 6
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "alert-header-icon watch-icon" :text "󰈈")
+          (label :class "alert-header-label" :text {watches-count > 1 ? "Watches" : "Watch"})
+          (box :hexpand true)
+          (box :class "alert-count-badge watch-badge"
+            (label :text watches-count)))
+        (for watch in {watches-json}
+          (button :class "alert-item" :onclick "xdg-open '${watch.url}' &"
+            (box :orientation "v" :space-evenly false :spacing 2
+              (label :class "alert-event" :text {watch.event} :halign "start" :limit-width 50)
+              (label :class "alert-headline" :text {watch.headline ?: watch.description ?: ""}
+                     :halign "start" :wrap true :limit-width 60
+                     :visible {(watch.headline ?: "") != ""}))))))
+
+    ;; === WARNINGS (conditional) ===
+    (box :visible {warnings-count > 0} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "alert-section warning-section" :orientation "v" :space-evenly false :spacing 6
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "alert-header-icon warning-icon" :text "󰀦")
+          (label :class "alert-header-label" :text {warnings-count > 1 ? "Warnings" : "Warning"})
+          (box :hexpand true)
+          (box :class "alert-count-badge warning-badge"
+            (label :text warnings-count)))
+        (for warning in {warnings-json}
+          (button :class "alert-item" :onclick "xdg-open '${warning.url}' &"
+            (box :orientation "v" :space-evenly false :spacing 2
+              (label :class "alert-event" :text {warning.event} :halign "start" :limit-width 50)
+              (label :class "alert-headline" :text {warning.headline ?: warning.description ?: ""}
+                     :halign "start" :wrap true :limit-width 60
+                     :visible {(warning.headline ?: "") != ""}))))))
+
+    ;; === ADVISORIES (conditional) ===
+    (box :visible {advisories-count > 0} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "alert-section advisory-section" :orientation "v" :space-evenly false :spacing 6
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "alert-header-icon advisory-icon" :text "󰋼")
+          (label :class "alert-header-label" :text {advisories-count > 1 ? "Advisories" : "Advisory"})
+          (box :hexpand true)
+          (box :class "alert-count-badge advisory-badge"
+            (label :text advisories-count)))
+        (for advisory in {advisories-json}
+          (button :class "alert-item" :onclick "xdg-open '${advisory.url}' &"
+            (box :orientation "v" :space-evenly false :spacing 2
+              (label :class "alert-event" :text {advisory.event} :halign "start" :limit-width 50)
+              (label :class "alert-headline" :text {advisory.headline ?: advisory.description ?: ""}
+                     :halign "start" :wrap true :limit-width 60
+                     :visible {(advisory.headline ?: "") != ""}))))))
+
+    ;; === HWO (conditional) ===
+    (box :visible {hwo-active == "true"} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "hwo-card" :orientation "v" :space-evenly false :spacing 4
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "hwo-icon" :text "󰖟")
+          (label :class "hwo-title" :text "Hazardous Weather Outlook")
+          (box :hexpand true)
+          (box :class "hwo-badge"
+            (label :text "HWO")))
+        (label :class "hwo-summary" :text hwo-summary :halign "start" :wrap true)
+        (button :class "hwo-link"
+                :onclick "OFFICE=$(grep '^OFFICE=' ~/.local/share/weather/config | cut -d= -f2); xdg-open \"https://forecast.weather.gov/product.php?site=${OFFICE}&issuedby=${OFFICE}&product=HWO\" &"
+          (box :orientation "h" :space-evenly false :spacing 6
+            (label :text "View full HWO")
+            (box :hexpand true)
+            (label :class "hwo-issued" :text {hwo-issued != "" ? "Issued: ${hwo-issued}" : ""})))))
+
+    ;; === LAST UPDATE ===
+    (box :class "refresh-section" :orientation "h" :space-evenly false :spacing 8
+      (label :class "last-update" :text "Updated: ${weather-last-update}" :halign "start")
+      (box :hexpand true)
+      (button :class "refresh-btn" :onclick "~/.config/waybar/scripts/weather.py > /dev/null 2>&1 &"
+        (label :text "󰑐  Refresh")))))
+
+
+;; ==================== POPUP WINDOWS ====================
+
+(defwindow github-status-popup
+  :monitor 0
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  :namespace "eww-popup"
+  :geometry (geometry
+    :x "0px"
+    :y "4px"
+    :width "0px"
+    :height "0px"
+    :anchor "top left")
+  (github-status-content))
+
+(defwindow github-changelog-popup
+  :monitor 0
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  :namespace "eww-popup"
+  :geometry (geometry
+    :x "0px"
+    :y "4px"
+    :width "0px"
+    :height "0px"
+    :anchor "top left")
+  (github-changelog-content))
+
+(defwindow weather-popup
+  :monitor 0
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  :namespace "eww-popup"
+  :geometry (geometry
+    :x "0px"
+    :y "4px"
+    :width "0px"
+    :height "0px"
+    :anchor "top right")
+  (weather-content))

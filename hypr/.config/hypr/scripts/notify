@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ICON_ON=""
+ICON_OFF=""
+COLOR_ON="9ccfd8"   # rp_foam
+COLOR_OFF="eb6f92"  # rp_love
+
+ICON="${ICON_ON}"
+
+if [[ $(dunstctl get-pause-level) == 0 ]]; then
+    ICON=$ICON_ON
+    COLOR=$COLOR_ON
+else
+    ICON=$ICON_OFF
+    COLOR=$COLOR_OFF
+fi
+
+echo "<span foreground=\"#${COLOR}\">${ICON}</span>"

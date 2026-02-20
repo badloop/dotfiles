@@ -1,0 +1,188 @@
+@import "theme/theme.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "TX\-02";
+    font-size: 14px;
+    min-height: 0;
+    padding: 1px;
+    margin: 0;
+}
+
+window#waybar {
+    background: alpha(@rp_base, 0.35);
+    color: @rp_text;
+    padding: 0px;
+}
+
+#custom-cider {
+    color: @rp_iris;
+    padding: 0 2px;
+}
+
+#clock {
+    padding: 0 6px;
+}
+
+#workspaces button {
+    color: @rp_muted;
+    background: transparent;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin: 2px 1px;
+    min-width: 1em;
+}
+
+#workspaces button:hover {
+    background: @rp_surface;
+    color: @rp_text;
+}
+
+#workspaces button.empty {
+    color: @rp_muted;
+    background: transparent;
+}
+
+#workspaces button.visible {
+    color: @rp_text;
+    background: @rp_surface;
+}
+
+#workspaces button.active {
+    color: @rp_surface;
+    background: @rp_rose;
+}
+
+#workspaces button.urgent {
+    color: @rp_base;
+    background: @rp_love;
+}
+
+/* ===== GitHub News Module ===== */
+#custom-github-news {
+    /* padding: 0 6px; */
+    color: @rp_text;
+    font-size: 20px;
+}
+
+#custom-github-news.ok {
+    color: @rp_foam;
+}
+
+#custom-github-news.minor {
+    color: @rp_gold;
+}
+
+#custom-github-news.major {
+    color: #FFA500;
+}
+
+#custom-github-news.critical {
+    color: @rp_love;
+}
+
+/* ===== Weather Modules ===== */
+
+/* Hidden fetch module + hidden state for inactive badges */
+#custom-weather-fetch,
+#custom-weather-spc.hidden,
+#custom-weather-md.hidden,
+#custom-weather-watches.hidden,
+#custom-weather-warnings.hidden,
+#custom-weather-advisories.hidden,
+#custom-weather-hwo.hidden {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    font-size: 0;
+    border: none;
+    opacity: 0;
+}
+
+/* Shared badge base style for SPC, MD, HWO, watches, warnings, advisories */
+#custom-weather-spc,
+#custom-weather-md,
+#custom-weather-watches,
+#custom-weather-warnings,
+#custom-weather-advisories,
+#custom-weather-hwo {
+    border-radius: 6px;
+    padding: 0 6px;
+    margin: 3px 1px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* SPC outlook badges - colors matching quickshell/SPC GeoJSON */
+#custom-weather-spc.spc-mrgl {
+    background: #66A366;
+    color: #000000;
+}
+
+#custom-weather-spc.spc-slgt {
+    background: #FFE066;
+    color: #000000;
+}
+
+#custom-weather-spc.spc-enh {
+    background: #FFA500;
+    color: #FFFFFF;
+}
+
+#custom-weather-spc.spc-mdt {
+    background: #FF0000;
+    color: #FFFFFF;
+}
+
+#custom-weather-spc.spc-high {
+    background: #FF00FF;
+    color: #FFFFFF;
+}
+
+/* Mesoscale Discussion badge - pine/blue */
+#custom-weather-md.active {
+    background: @rp_pine;
+    color: #FFFFFF;
+}
+
+/* Watch badge - gold */
+#custom-weather-watches.active {
+    background: alpha(@rp_gold, 0.25);
+    color: @rp_gold;
+    border: 1px solid alpha(@rp_gold, 0.5);
+}
+
+/* Warning badge - red */
+#custom-weather-warnings.active {
+    background: alpha(@rp_love, 0.25);
+    color: @rp_love;
+    border: 1px solid alpha(@rp_love, 0.5);
+}
+
+/* Advisory badge - purple */
+#custom-weather-advisories.active {
+    background: alpha(@rp_iris, 0.25);
+    color: @rp_iris;
+    border: 1px solid alpha(@rp_iris, 0.5);
+}
+
+/* HWO badge - tan */
+#custom-weather-hwo.active {
+    background: #D4A574;
+    color: #000000;
+}
+
+/* Temperature/conditions module */
+#custom-weather-temp {
+    padding: 0 6px;
+    color: @rp_text;
+}
+
+/* ===== System Tray ===== */
+#tray {
+    padding: 0 4px;
+    border: 1px solid @rp_muted;
+    border-radius: 3px;
+    margin: 2px 2px;
+}

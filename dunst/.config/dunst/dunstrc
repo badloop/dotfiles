@@ -1,0 +1,108 @@
+# See dunst(5) for all configuration options
+[global]
+    monitor = 0
+    follow = keyboard
+    # geometry = 0x0-30+20
+    # width = 300
+    # height = 300
+    # max_height = 300
+    origin = top-right
+    offset = (10, 30)
+    scale = 0
+    notification_limit = 20
+    progress_bar = true
+    progress_bar_height = 10
+    progress_bar_frame_width = 0
+    progress_bar_min_width = 150
+    progress_bar_max_width = 300
+    progress_bar_corner_radius = 4
+    icon_corner_radius = 0
+    indicate_hidden = false
+    transparency = 15
+    separator_height = 2
+    padding = 12
+    horizontal_padding = 12
+    text_icon_padding = 8
+    frame_width = 2
+    frame_color = "#403d52"
+    gap_size = 5
+    separator_color = frame
+    sort = yes
+    font = TX-02 10
+    line_height = 0
+    markup = full
+
+    # The format of the message.  Possible variables are:
+    #   %a  appname
+    #   %s  summary
+    #   %b  body
+    #   %i  iconname (including its path)
+    #   %I  iconname (without its path)
+    #   %p  progress value if set ([  0%] to [100%]) or nothing
+    #   %n  progress value if set without any extra characters
+    #   %%  Literal %
+    # Markup is allowed
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = no
+    enable_recursive_icon_lookup = true
+    icon_theme = Adwaita
+    icon_position = left
+    min_icon_size = 32
+    max_icon_size = 64
+    default_icon = dialog-information
+    sticky_history = yes
+    history_length = 20
+    dmenu = /usr/bin/dmenu -p dunst:
+    browser = /usr/bin/xdg-open
+    always_run_script = true
+    title = Dunst
+    class = Dunst
+    corner_radius = 8
+    ignore_dbusclose = false
+    force_xwayland = false
+    force_xinerama = false
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[experimental]
+    per_monitor_dpi = false
+
+[history-ignore]
+    appname = volume
+    history_ignore = yes
+
+[urgency_low]
+    background = "#1f1d2ecc"
+    foreground = "#908caa"
+    frame_color = "#31748f"
+    highlight = "#9ccfd8"
+    timeout = 10
+
+[urgency_normal]
+    background = "#1f1d2ecc"
+    foreground = "#e0def4"
+    frame_color = "#c4a7e7"
+    highlight = "#c4a7e7"
+    timeout = 10
+
+[urgency_critical]
+    background = "#1f1d2ecc"
+    foreground = "#e0def4"
+    frame_color = "#eb6f92"
+    highlight = "#eb6f92"
+    timeout = 0
+
+[custom_interface_notification]
+    appname = "Custom"
+    background = "#1f1d2ecc"
+    foreground = "#e0def4"
+    frame_color = "#c4a7e7"
+    override_pause_level = 100

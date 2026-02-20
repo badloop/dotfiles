@@ -1,0 +1,756 @@
+// Rose Pine color palette - matching waybar theme
+$rp_base: #191724;
+$rp_surface: #1f1d2e;
+$rp_overlay: #26233a;
+$rp_muted: #6e6a86;
+$rp_subtle: #908caa;
+$rp_text: #e0def4;
+$rp_love: #eb6f92;
+$rp_gold: #f6c177;
+$rp_rose: #ebbcba;
+$rp_pine: #31748f;
+$rp_foam: #9ccfd8;
+$rp_iris: #c4a7e7;
+
+// Derived
+$border: rgba($rp_muted, 0.4);
+$popup_bg: rgba($rp_base, 0.85);
+$card_bg: rgba($rp_surface, 0.5);
+$highlight: rgba($rp_overlay, 0.6);
+
+// ========== GLOBAL: transparent window backgrounds ==========
+window {
+  background-color: transparent;
+}
+
+// ========== BACKDROP (click-outside-to-close) ==========
+.backdrop {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.popup-container {
+  background-color: $popup_bg;
+  border-radius: 12px;
+  border: 1px solid $border;
+  padding: 14px;
+}
+
+.popup-header {
+  margin-bottom: 8px;
+
+  label {
+    color: $rp_text;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .header-icon {
+    color: $rp_text;
+    font-size: 18px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+  }
+}
+
+.close-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: transparent;
+
+  &:hover {
+    background-color: $highlight;
+  }
+
+  label {
+    color: $rp_text;
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+  }
+}
+
+.separator {
+  background-color: $border;
+  min-height: 1px;
+  margin: 4px 0;
+}
+
+.link-arrow {
+  color: $rp_muted;
+  font-size: 14px;
+  font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+}
+
+// ========== GITHUB STATUS POPUP ==========
+.github-status-popup {
+  min-width: 400px;
+}
+
+.status-banner {
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+
+  &.ok {
+    background-color: rgba($rp_foam, 0.15);
+  }
+  &.minor {
+    background-color: rgba($rp_gold, 0.15);
+  }
+  &.major, &.critical {
+    background-color: rgba($rp_love, 0.15);
+  }
+
+  .status-icon {
+    font-size: 24px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 10px;
+  }
+  .status-icon-ok { color: $rp_foam; }
+  .status-icon-minor { color: $rp_gold; }
+  .status-icon-bad { color: $rp_love; }
+
+  .status-description {
+    color: $rp_text;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .status-updated {
+    color: $rp_subtle;
+    font-size: 10px;
+    font-family: "TX-02";
+  }
+}
+
+.no-incidents {
+  color: $rp_subtle;
+  font-size: 11px;
+  font-style: italic;
+  font-family: "TX-02";
+  padding: 8px;
+}
+
+.incident-card {
+  background-color: $card_bg;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+
+  &.impact-minor {
+    border: 1px solid $rp_gold;
+  }
+  &.impact-major, &.impact-critical {
+    border: 1px solid $rp_love;
+  }
+
+  .incident-title {
+    color: $rp_text;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: "TX-02";
+    margin-bottom: 6px;
+  }
+
+  .incident-divider {
+    background-color: $highlight;
+    min-height: 1px;
+    margin: 6px 0;
+  }
+}
+
+.update-entry {
+  margin-bottom: 6px;
+  padding: 2px 0;
+
+  .update-dot {
+    min-width: 6px;
+    min-height: 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .dot-investigating { background-color: $rp_gold; }
+  .dot-identified { background-color: $rp_iris; }
+  .dot-monitoring { background-color: $rp_foam; }
+  .dot-resolved { background-color: $rp_pine; }
+
+  .update-status {
+    color: $rp_text;
+    font-size: 10px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .update-time {
+    color: $rp_muted;
+    font-size: 10px;
+    font-family: "TX-02";
+    margin-left: 4px;
+  }
+
+  .update-body {
+    color: $rp_subtle;
+    font-size: 10px;
+    font-family: "TX-02";
+    
+  }
+}
+
+.status-footer-btn {
+  border-radius: 6px;
+  padding: 8px 12px;
+  background-color: $highlight;
+  margin-top: 8px;
+
+  &:hover {
+    background-color: rgba($rp_overlay, 0.8);
+  }
+
+  label {
+    color: $rp_iris;
+    font-size: 11px;
+    font-family: "TX-02";
+  }
+
+  .footer-icon {
+    color: $rp_iris;
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 6px;
+  }
+}
+
+// ========== GITHUB CHANGELOG POPUP ==========
+.github-changelog-popup {
+  min-width: 420px;
+}
+
+.badge-count {
+  background-color: rgba($rp_foam, 0.2);
+  border-radius: 10px;
+  padding: 2px 8px;
+
+  label {
+    color: $rp_foam;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+}
+
+.action-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: transparent;
+
+  &:hover {
+    background-color: $highlight;
+  }
+
+  label {
+    color: $rp_muted;
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+  }
+
+  &:hover label {
+    color: $rp_foam;
+  }
+}
+
+.mark-all-btn:hover label {
+  color: $rp_pine;
+}
+
+.empty-state {
+  padding: 20px;
+
+  .empty-icon {
+    color: $rp_foam;
+    font-size: 32px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+  }
+
+  .empty-text {
+    color: $rp_subtle;
+    font-size: 12px;
+    font-family: "TX-02";
+  }
+}
+
+.story-item {
+  border-radius: 8px;
+  padding: 8px 8px 8px 14px;
+  margin-bottom: 4px;
+  background-color: transparent;
+
+  &:hover {
+    background-color: rgba($rp_foam, 0.12);
+  }
+
+  .story-accent {
+    min-width: 3px;
+    border-radius: 2px;
+    background-color: $rp_iris;
+    margin-right: 8px;
+    opacity: 0.6;
+  }
+
+  .story-title {
+    color: $rp_text;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  &:hover .story-title {
+    color: $rp_rose;
+  }
+
+  .story-desc {
+    color: $rp_subtle;
+    font-size: 11px;
+    font-family: "TX-02";
+    
+  }
+
+  .story-date {
+    color: $rp_muted;
+    font-size: 10px;
+    font-family: "TX-02";
+  }
+
+  .mark-read-btn {
+    padding: 4px;
+    border-radius: 6px;
+    background-color: transparent;
+
+    &:hover {
+      background-color: rgba($rp_foam, 0.2);
+    }
+
+    label {
+      color: $rp_muted;
+      font-size: 16px;
+      font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    }
+
+    &:hover label {
+      color: $rp_foam;
+    }
+  }
+}
+
+// ========== WEATHER POPUP ==========
+.weather-popup {
+  min-width: 340px;
+}
+
+.weather-current {
+  margin-bottom: 8px;
+
+  .weather-emoji {
+    font-size: 48px;
+    font-family: "Noto Color Emoji";
+    margin-right: 12px;
+  }
+
+  .weather-temp {
+    color: $rp_text;
+    font-size: 38px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .weather-desc {
+    color: $rp_subtle;
+    font-size: 14px;
+    font-family: "TX-02";
+  }
+
+  .weather-feels {
+    color: $rp_muted;
+    font-size: 12px;
+    font-family: "TX-02";
+  }
+}
+
+.nws-link {
+  padding: 4px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: $highlight;
+  }
+
+  label {
+    color: $rp_foam;
+    font-size: 10px;
+    font-family: "TX-02";
+  }
+}
+
+// SPC Outlook card
+.spc-card {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid;
+
+  .spc-header-icon {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+
+  .spc-title {
+    color: $rp_text;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .spc-risk-badge {
+    border-radius: 4px;
+    padding: 2px 7px;
+
+    label {
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+  }
+
+  .spc-full-name {
+    color: $rp_subtle;
+    font-size: 11px;
+    font-family: "TX-02";
+  }
+
+  .spc-link {
+    padding: 3px;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba($rp_foam, 0.15);
+    }
+
+    label {
+      color: $rp_foam;
+      font-size: 10px;
+      font-family: "TX-02";
+    }
+  }
+}
+
+// Mesoscale Discussion card
+.md-card {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  background-color: rgba($rp_pine, 0.25);
+  border: 1px solid $rp_pine;
+
+  .md-icon {
+    color: $rp_pine;
+    font-size: 18px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 8px;
+  }
+
+  .md-title {
+    color: $rp_text;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .md-count-badge {
+    background-color: $rp_pine;
+    border-radius: 4px;
+    padding: 2px 7px;
+
+    label {
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+  }
+
+  .md-item {
+    padding: 4px;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: rgba($rp_pine, 0.2);
+    }
+
+    .md-number {
+      color: $rp_foam;
+      font-size: 11px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+
+    .md-summary {
+      color: $rp_subtle;
+      font-size: 10px;
+      font-family: "TX-02";
+      
+    }
+  }
+}
+
+// Weather details grid
+.detail-item {
+  padding: 2px 0;
+
+  .detail-icon {
+    color: $rp_foam;
+    font-size: 16px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 8px;
+  }
+
+  .detail-label {
+    color: $rp_muted;
+    font-size: 10px;
+    font-family: "TX-02";
+  }
+
+  .detail-value {
+    color: $rp_text;
+    font-size: 12px;
+    font-family: "TX-02";
+  }
+}
+
+// Forecast cards
+.forecast-section-title {
+  color: $rp_text;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: "TX-02";
+  margin-bottom: 4px;
+}
+
+.forecast-card {
+  background-color: $card_bg;
+  border-radius: 8px;
+  padding: 8px;
+
+  .forecast-day {
+    color: $rp_subtle;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .forecast-icon {
+    font-size: 28px;
+    font-family: "Noto Color Emoji";
+    margin: 4px 0;
+  }
+
+  .forecast-high {
+    color: $rp_text;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .forecast-low {
+    color: $rp_muted;
+    font-size: 12px;
+    font-family: "TX-02";
+  }
+}
+
+// Alert sections (watches, warnings, advisories)
+.alert-section {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid;
+
+  &.watch-section {
+    background-color: rgba($rp_gold, 0.25);
+    border-color: $rp_gold;
+  }
+  &.warning-section {
+    background-color: rgba($rp_love, 0.25);
+    border-color: $rp_love;
+  }
+  &.advisory-section {
+    background-color: rgba($rp_iris, 0.25);
+    border-color: $rp_iris;
+  }
+
+  .alert-header-icon {
+    font-size: 18px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 8px;
+  }
+  .watch-icon { color: $rp_gold; }
+  .warning-icon { color: $rp_love; }
+  .advisory-icon { color: $rp_iris; }
+
+  .alert-header-label {
+    color: $rp_text;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .alert-count-badge {
+    border-radius: 4px;
+    padding: 2px 7px;
+
+    label {
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+  }
+  .watch-badge {
+    background-color: $rp_gold;
+    label { color: black; }
+  }
+  .warning-badge {
+    background-color: $rp_love;
+    label { color: white; }
+  }
+  .advisory-badge {
+    background-color: $rp_iris;
+    label { color: white; }
+  }
+
+  .alert-item {
+    padding: 4px;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: rgba(white, 0.08);
+    }
+
+    .alert-event {
+      color: $rp_text;
+      font-size: 11px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+
+    .alert-headline {
+      color: $rp_subtle;
+      font-size: 10px;
+      font-family: "TX-02";
+      
+    }
+  }
+}
+
+// HWO section
+.hwo-card {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  background-color: rgba(#D4A574, 0.25);
+  border: 1px solid #D4A574;
+
+  .hwo-icon {
+    color: #D4A574;
+    font-size: 18px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 8px;
+  }
+
+  .hwo-title {
+    color: $rp_text;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .hwo-badge {
+    background-color: #D4A574;
+    border-radius: 4px;
+    padding: 2px 7px;
+
+    label {
+      color: black;
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+  }
+
+  .hwo-summary {
+    color: $rp_subtle;
+    font-size: 11px;
+    font-family: "TX-02";
+    
+  }
+
+  .hwo-link {
+    padding: 3px;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(#D4A574, 0.2);
+    }
+
+    label {
+      color: #D4A574;
+      font-size: 10px;
+      font-family: "TX-02";
+    }
+
+    .hwo-issued {
+      color: $rp_muted;
+      font-size: 9px;
+      font-family: "TX-02";
+    }
+  }
+}
+
+// Refresh / error section
+.refresh-section {
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 4px;
+
+  &.has-error {
+    background-color: rgba($rp_love, 0.15);
+    border: 1px solid rgba($rp_love, 0.4);
+  }
+
+  .refresh-btn {
+    border-radius: 4px;
+    padding: 4px 10px;
+    background-color: rgba($rp_foam, 0.15);
+    border: 1px solid rgba($rp_foam, 0.4);
+
+    &:hover {
+      background-color: rgba($rp_foam, 0.3);
+    }
+
+    label {
+      color: $rp_foam;
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    }
+  }
+
+  .last-update {
+    color: $rp_muted;
+    font-size: 9px;
+    font-family: "TX-02";
+  }
+}
+
+// Scrollable areas
+.scroll-container {
+  border-radius: 8px;
+}

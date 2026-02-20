@@ -1,0 +1,19 @@
+/* Rose Pine color palette - matching quickshell Theme.qml */
+@define-color rp_base #191724;
+@define-color rp_surface #1f1d2e;
+@define-color rp_overlay #26233a;
+@define-color rp_muted #6e6a86;
+@define-color rp_subtle #908caa;
+@define-color rp_text #e0def4;
+@define-color rp_love #eb6f92;
+@define-color rp_gold #f6c177;
+@define-color rp_rose #ebbcba;
+@define-color rp_pine #31748f;
+@define-color rp_foam #9ccfd8;
+@define-color rp_iris #c4a7e7;
+
+/* Derived colors */
+@define-color bar_bg alpha(@rp_base, 0.5);
+@define-color bar_bg_tinted shade(alpha(@rp_base, 0.75), 1.1);
+@define-color module_bg alpha(@rp_surface, 0.6);
+@define-color separator alpha(@rp_muted, 0.4);

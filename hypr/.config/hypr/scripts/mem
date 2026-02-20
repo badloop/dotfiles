@@ -1,0 +1,12 @@
+#!/bin/sh 
+
+# Define array
+ramp_arr=(▁ ▂ ▃ ▄ ▅ ▆ ▇ █)
+
+sar -r 1 1 | grep -E 'Average:' | while read -r line ; do
+    val=$(echo $line | awk '{mem_usage=$5} END {printf "%0.2f", mem_usage}')
+    idx=$(echo "scale=4; $val/14.3" | bc)
+    intidx=$( printf "%.0f" $idx )
+    printf "${ramp_arr[$intidx]}"
+done
+echo

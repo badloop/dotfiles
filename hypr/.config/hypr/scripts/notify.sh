@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Displays the default device, volume, and mute status for i3blocks
+
+ICON_ON=""
+ICON_ON=""
+function send_notification() {
+    vol=$(pamixer --get-volume)
+    dunstify -r 9999 -a "volume" -u low -h int:value:"$vol" -i "audio-volume-$2-symbolic.symbolic" "Volume: ${vol}%" -t 2000
+}
+
+MUTED=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+VOL=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')
+ICON_FULL=""
+ICON_MUTE=""
+ICON="${ICON_FULL}"
+if [[ $MUTED == "yes" ]]; then
+    ICON="${ICON_MUTE}"
+fi
+
+case $1 in
+up)
+    pamixer -u
+    pamixer -i 5 --allow-boost
+    send_notification "$1" "high"
+    ;;
+down)
+    pamixer -u
+    pamixer -d 5 --allow-boost
+    send_notification "$1" "low"
+    ;;
+mute)
+    pamixer -t
+    if $(pamixer --get-mute); then
+        dunstify -r 9999 -a "volume" -i "audio-volume-muted-symbolic.symbolic" -t 2000 -u low "Muted"
+        ICON=${ICON_MUTE}
+    else
+        send_notification up high
+        ICON=${ICON_FULL}
+    fi
+    ;;
+*)
+    echo "<span color=\"#eba0ac\">$ICON ${VOL}</span>"
+    ;;
+esac

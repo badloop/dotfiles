@@ -1,0 +1,4 @@
+[[session]]
+name = "nvim config"
+path = "~/.config/nvim"
+startup_command = "vim"

@@ -1,0 +1,104 @@
+{
+    "reload_style_on_change": true,
+    "layer": "top",
+    "output": [
+        "HDMI-A-1"
+    ],
+    "modules-left": [
+        "hyprland/workspaces",
+        "custom/github-news"
+    ],
+    "modules-center": [
+        "custom/cider"
+    ],
+    "modules-right": [
+        "custom/weather-fetch",
+        "custom/weather-spc",
+        "custom/weather-md",
+        "custom/weather-watches",
+        "custom/weather-warnings",
+        "custom/weather-advisories",
+        "custom/weather-hwo",
+        "custom/weather-temp",
+        "tray",
+        "clock"
+    ],
+    "hyprland/workspaces": {
+        "on-click": "activate",
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        "format": "{name}"
+    },
+    "custom/cider": {
+        "interval": 5,
+        "exec": "playerctl -p cider metadata -f '{{xesam:artist}} - {{xesam:title}}'",
+        "escape": true
+    },
+    "tray": {
+        "icon-size": 12,
+        "spacing": 8
+    },
+    "clock": {
+        "interval": 60,
+        "format": "{:%a %b %d %I:%M %p}"
+    },
+    "custom/github-news": {
+        "exec": "~/.config/waybar/scripts/github-news.py",
+        "return-type": "json",
+        "interval": 21600,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh github-changelog-popup",
+        "on-click-right": "~/.config/waybar/scripts/popup-toggle.sh github-status-popup"
+    },
+    "custom/weather-fetch": {
+        "exec": "~/.config/waybar/scripts/weather.py",
+        "interval": 600,
+        "return-type": "json"
+    },
+    "custom/weather-spc": {
+        "exec": "~/.config/waybar/scripts/weather.py --module spc",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-md": {
+        "exec": "~/.config/waybar/scripts/weather.py --module md",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-watches": {
+        "exec": "~/.config/waybar/scripts/weather.py --module watches",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-warnings": {
+        "exec": "~/.config/waybar/scripts/weather.py --module warnings",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-advisories": {
+        "exec": "~/.config/waybar/scripts/weather.py --module advisories",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-hwo": {
+        "exec": "~/.config/waybar/scripts/weather.py --module hwo",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/weather-temp": {
+        "exec": "~/.config/waybar/scripts/weather.py --module temp",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    }
+}

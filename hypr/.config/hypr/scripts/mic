@@ -1,0 +1,19 @@
+#!/bin/bash
+
+ICON_ON=""  # Mic on
+ICON_OFF="󰍭" # Mic muted
+COLOR_ON="9ccfd8"   # rp_foam
+COLOR_OFF="eb6f92"  # rp_love
+
+# Get mute status
+MUTED=$(wpctl get-volume @DEFAULT_SOURCE@ | grep -q MUTED && echo "yes" || echo "no")
+
+if [[ $MUTED == "yes" ]]; then
+    ICON=$ICON_OFF
+    COLOR=$COLOR_OFF
+else
+    ICON=$ICON_ON
+    COLOR=$COLOR_ON
+fi
+
+echo "<span foreground=\"#${COLOR}\">${ICON}</span>"

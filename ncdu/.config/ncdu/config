@@ -1,0 +1,8 @@
+# Dark mode
+--color dark
+
+--group-directories-first
+
+--graph-style eighth-block
+
+-e
