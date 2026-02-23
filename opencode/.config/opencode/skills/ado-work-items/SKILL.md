@@ -1,6 +1,6 @@
 ---
 name: ado-work-items
-description: Creates, updates, and closes Azure DevOps work items (user stories) via the Azure CLI. Handles required fields, user tagging, iteration selection, and resolution summaries. Use when the user asks to create a story, close a ticket, update a work item, or manage ADO tasks.
+description: Creates, updates, closes, and queries Azure DevOps work items via the Azure CLI. Handles required fields, user tagging, iteration selection, and resolution summaries. Use when the user asks to create a story, close a ticket, update a work item, query the backlog, check sprint status, run a WIQL query, or manage ADO tasks.
 compatibility: Requires Azure CLI (az) with Azure DevOps extension. Requires jq for user lookups.
 metadata:
   author: ""
@@ -83,6 +83,18 @@ Plain `@Name` does NOT work in the API. You must use HTML mentions:
    ```html
    <a href="#" data-vss-mention="version:2.0,{userID}">@Display Name</a>
    ```
+
+## Querying Work Items
+
+Use `az boards query --wiql` to search and list work items. Always include a `[System.TeamProject]` filter.
+
+```bash
+az boards query \
+  --wiql "SELECT [System.Id], [System.Title], [System.State] FROM WorkItems WHERE [System.TeamProject] = 'Process' AND [System.AssignedTo] = @me AND [System.State] <> 'Closed' ORDER BY [System.ChangedDate] DESC" \
+  --org "https://dev.azure.com/${ADO_ORG}"
+```
+
+Useful date macros: `@today`, `@startOfWeek`, `@startOfMonth`. Use `UNDER` for area path hierarchy. See [references/field-reference.md](references/field-reference.md) for WIQL tips and common query templates.
 
 ## Rules
 

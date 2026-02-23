@@ -1,5 +1,15 @@
 # ADO Work Item Field Reference
 
+## Work Item Types & States
+
+| Type | States |
+|------|--------|
+| **Epic** | New → Active → Closed |
+| **Feature** | New → Active → Closed |
+| **User Story** | New → Active → Resolved → Closed |
+| **Task** | To Do → In Progress → Done |
+| **Bug** | New → Active → Resolved → Closed |
+
 ## Required Fields (All Stories)
 
 | Display Name | API Field | Type | Notes |
@@ -11,6 +21,16 @@
 | Iteration Path | `System.IterationPath` | TreePath | Select based on current date |
 | Story Points | `Microsoft.VSTS.Scheduling.StoryPoints` | Double | Required before close. Scale: 1/2/3/5/8/13 |
 | Application Name | `Custom.ParentApplication` | String | Required. Values: `AI APPS`, `JAK`, `TECHMATE` |
+
+## Other Useful Fields
+
+| Display Name | API Field | Type | Notes |
+|-------------|-----------|------|-------|
+| Priority | `Microsoft.VSTS.Common.Priority` | Integer | 1 (critical) through 4 (low) |
+| Tags | `System.Tags` | String | Semicolon-separated values |
+| Description | `System.Description` | HTML | Body/details of the work item |
+| Changed Date | `System.ChangedDate` | DateTime | Last modified timestamp |
+| Created Date | `System.CreatedDate` | DateTime | Creation timestamp |
 
 ## Fields Used on Close
 
@@ -65,4 +85,60 @@ az boards work-item update --id <id> --org "https://dev.azure.com/${ADO_ORG}" \
 # Query work items
 az boards query --wiql "SELECT [System.Id] FROM WorkItems WHERE [System.AssignedTo] = @me AND [System.State] = 'Active'" \
   --org "https://dev.azure.com/${ADO_ORG}"
+```
+
+## WIQL Tips
+
+- Always filter by `[System.TeamProject]` to scope to the correct project
+- Use `ASOF '<date>'` clause for point-in-time queries
+- Tags are semicolon-separated: `[System.Tags] CONTAINS 'AI'`
+- Date filters: `[System.ChangedDate] >= '2026-01-01'`
+- Date macros: `@today`, `@startOfWeek`, `@startOfMonth`
+- Assigned to current user: `[System.AssignedTo] = @me`
+- Area path hierarchy: `[System.AreaPath] UNDER 'Project\Parent'` matches all children
+
+## Common WIQL Queries
+
+### All active stories assigned to me
+
+```wiql
+SELECT [System.Id], [System.Title], [System.State], [System.AssignedTo]
+FROM WorkItems
+WHERE [System.TeamProject] = 'Process'
+  AND [System.WorkItemType] = 'User Story'
+  AND [System.State] <> 'Closed'
+  AND [System.AssignedTo] = @me
+ORDER BY [System.ChangedDate] DESC
+```
+
+### Stories changed this week
+
+```wiql
+SELECT [System.Id], [System.Title], [System.State]
+FROM WorkItems
+WHERE [System.TeamProject] = 'Process'
+  AND [System.WorkItemType] = 'User Story'
+  AND [System.ChangedDate] >= @startOfWeek
+ORDER BY [System.ChangedDate] DESC
+```
+
+### Blocked items (by tag)
+
+```wiql
+SELECT [System.Id], [System.Title], [System.State], [System.AssignedTo]
+FROM WorkItems
+WHERE [System.TeamProject] = 'Process'
+  AND [System.Tags] CONTAINS 'Blocked'
+  AND [System.State] <> 'Closed'
+```
+
+### All open items under an area path
+
+```wiql
+SELECT [System.Id], [System.Title], [System.State], [System.AssignedTo], [Microsoft.VSTS.Scheduling.StoryPoints]
+FROM WorkItems
+WHERE [System.TeamProject] = 'Process'
+  AND [System.AreaPath] UNDER 'Process\AI DevOps'
+  AND [System.State] <> 'Closed'
+ORDER BY [System.ChangedDate] DESC
 ```
