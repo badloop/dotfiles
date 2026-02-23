@@ -1,0 +1,625 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# gh-uniti: unified GitHub repo migration + team assignment tool
+# Subcommands:
+#   assign  - apply team permissions to one or more GitHub repos
+#   migrate - migrate ADO repos to GitHub and then (optionally) assign teams
+#
+# Both subcommands support flag style arguments; interactive (TUI) mode
+# engages when required information isn't provided.
+#
+# Dependencies: gh (with ado2gh extension), curl, jq, gum, fzf
+# Environment: GH_PAT must be set for GitHub API calls (assign phase)
+
+VERSION="0.1.0"
+
+print_usage() {
+    cat <<'EOF'
+Usage: gh-uniti <subcommand> [flags]
+
+Subcommands:
+  assign    Assign teams to existing GitHub repositories.
+  migrate   Migrate ADO repositories to GitHub, then assign teams.
+  help      Show this help.
+  version   Show version.
+
+Run `gh-uniti <subcommand> --help` for subcommand details.
+
+Examples:
+  gh-uniti assign --org myorg --repos repo1,repo2 --group Platform
+  gh-uniti migrate --ado-org src --ado-project Core --ado-repos serviceA,serviceB \
+                   --github-org myorg --group Platform --concurrency 3
+EOF
+}
+
+print_assign_help() {
+    cat <<'EOF'
+Usage: gh-uniti assign [flags]
+
+Flags:
+  --org <github_org>
+  --repos <comma_list>            (mutually exclusive with --repos-file)
+  --repos-file <path>             (file with one repo per line)
+  --group <group_name>            (base group name; derives " - Developer" & " - Read Only")
+  --dry-run                       (show actions only)
+  --yes                           (skip interactive confirmations)
+  --help                          (show this help)
+
+Interactive Mode:
+  Omit any required flag to trigger gum/fzf selection for org, repos, and group.
+EOF
+}
+
+print_migrate_help() {
+    cat <<'EOF'
+Usage: gh-uniti migrate [flags]
+
+Flags:
+  --ado-org <ado_org>
+  --ado-project <ado_project>
+  --ado-pat <token>               (override ADO_PAT env var for API access)
+  --ado-repos <comma_list>        (mutually exclusive with --ado-repos-file)
+  --ado-repos-file <path>         (file with one ADO repo per line)
+  --github-org <github_org>
+  --group <group_name>            (team group for post-migration assignment)
+  --rename-prefix <prefix>        (prefix for new GitHub repo names)
+  --concurrency <n>               (default 2)
+  --refresh <seconds>             (dashboard refresh interval; default 2)
+  --no-assign                     (skip automatic team assignment after migrate)
+  --dry-run                       (show planned actions only)
+  --yes                           (skip interactive confirmations)
+  --help                          (show this help)
+
+Interactive Mode (no flags):
+  1. Prompt for ADO org, project, GitHub org.
+  2. Choose repo source:
+     - Select repo list file
+     - Fetch accessible ADO repos (Azure DevOps REST) and multi-select
+     - Manually enter names line-by-line
+     - Paste comma list
+  3. Optional group and other settings (prefix, concurrency, refresh).
+
+Azure DevOps Repo Fetch:
+  Uses REST: GET https://dev.azure.com/{org}/{project}/_apis/git/repositories?api-version=7.0
+  Auth: Basic with PAT (":<PAT>"). Requires ADO_PAT env or --ado-pat.
+EOF
+}
+
+need_cmd() { command -v "$1" >/dev/null 2>&1 || {
+    echo "❌ Missing dependency: $1"
+    exit 1
+}; }
+
+check_dependencies() {
+    for c in gh curl jq gum fzf; do need_cmd "$c"; done
+}
+
+ensure_pat() {
+    if [[ -z "${GH_PAT:-}" ]]; then
+        echo "❌ GH_PAT environment variable not set."
+        exit 1
+    fi
+}
+
+confirm() {
+    local msg="$1"
+    if [[ "${ASSUME_YES:-0}" == "1" ]]; then return 0; fi
+    gum confirm "$msg" || {
+        echo "Cancelled."
+        exit 1
+    }
+}
+
+parse_common_flags() {
+    ASSUME_YES=0
+    DRY_RUN=0
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        --yes)
+            ASSUME_YES=1
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=1
+            shift
+            ;;
+        *) break ;;
+        esac
+    done
+    # export for subcommands
+    export ASSUME_YES DRY_RUN
+    # remaining args passed back
+    REMAINING_ARGS=("$@")
+}
+
+assign_repos() {
+    local org="$1"
+    shift
+    local group="$1"
+    shift
+    local -a repos=("$@")
+    ensure_pat
+
+    echo "📡 Fetching teams for org '$org'..."
+    local teams_json
+    teams_json=$(curl -s -H "Authorization: token $GH_PAT" "https://api.github.com/orgs/$org/teams?per_page=100")
+    if ! echo "$teams_json" | jq -e 'type == "array"' >/dev/null 2>&1; then
+        local err_msg
+        err_msg=$(echo "$teams_json" | jq -r '.message // empty')
+        echo "❌ Failed to fetch teams: ${err_msg:-Unexpected response}"
+        return 1
+    fi
+
+    local team_dev="${group} - Developer"
+    local team_ro="${group} - Read Only"
+    local slug_dev slug_ro
+    slug_dev=$(echo "$teams_json" | jq -r --arg NAME "$team_dev" '.[] | select(.name == $NAME) | .slug')
+    slug_ro=$(echo "$teams_json" | jq -r --arg NAME "$team_ro" '.[] | select(.name == $NAME) | .slug')
+    if [[ -z "$slug_dev" || -z "$slug_ro" ]]; then
+        echo "❌ One or more expected teams not found for group '$group'"
+        return 1
+    fi
+
+    echo "⚙️ Applying team permissions for group '$group' (repos: ${#repos[@]})"
+    for repo in "${repos[@]}"; do
+        echo "🌀 Repo: $repo"
+        for def in "Developer:maintain:$slug_dev" "Read Only:pull:$slug_ro"; do
+            local role perm slug
+            role=${def%%:*}
+            local rest=${def#*:} # maintain:$slug_dev
+            perm=${rest%%:*}
+            slug=${def##*:}
+            echo "  🚀 Assigning ${group} - ${role} ($perm) -> $org/$repo"
+            if [[ "$DRY_RUN" == "1" ]]; then continue; fi
+            curl -s -X PUT -H "Authorization: token $GH_PAT" \
+                -H "Accept: application/vnd.github+json" \
+                -d "{\"permission\":\"$perm\"}" \
+                "https://api.github.com/orgs/$org/teams/$slug/repos/$org/$repo" |
+                jq -r '.message // "  ✅ OK"'
+        done
+    done
+    echo "🎉 Assign complete"
+}
+
+interactive_assign() {
+    local org repos group
+    if [[ -z "${ORG:-}" ]]; then
+        ORG=$(gum input --placeholder "GitHub org name" --prompt "Org > ")
+    fi
+    [[ -z "$ORG" ]] && {
+        echo "❌ Org required"
+        exit 1
+    }
+
+    ensure_pat
+    echo "📡 Fetching repositories for '$ORG'..."
+    local repos_json
+    repos_json=$(curl -s -H "Authorization: token $GH_PAT" "https://api.github.com/orgs/$ORG/repos?per_page=200")
+    if ! echo "$repos_json" | jq -e 'type == "array"' >/dev/null 2>&1; then
+        echo "❌ Failed fetching repos"
+        exit 1
+    fi
+    local all_repos
+    all_repos=$(echo "$repos_json" | jq -r '.[].name')
+    mapfile -t SELECTED_REPOS < <(echo "$all_repos" | fzf --multi --prompt "Select repositories > " --height 40% --border)
+    [[ ${#SELECTED_REPOS[@]} -eq 0 ]] && {
+        echo "❌ No repos selected"
+        exit 1
+    }
+
+    echo "📡 Fetching teams for '$ORG'..."
+    local teams_json
+    teams_json=$(curl -s -H "Authorization: token $GH_PAT" "https://api.github.com/orgs/$ORG/teams?per_page=200")
+    if ! echo "$teams_json" | jq -e 'type == "array"' >/dev/null 2>&1; then
+        echo "❌ Failed fetching teams"
+        exit 1
+    fi
+    local groups
+    groups=$(echo "$teams_json" | jq -r '.[].name' | sed -E 's/ - (Developer|Read Only)$//' | sort -u)
+    GROUP=$(echo "$groups" | fzf --prompt "Select group > " --height 40% --border)
+    [[ -z "$GROUP" ]] && {
+        echo "❌ Group required"
+        exit 1
+    }
+
+    confirm "Assign teams for ${#SELECTED_REPOS[@]} repos to group '$GROUP'?"
+    assign_repos "$ORG" "$GROUP" "${SELECTED_REPOS[@]}"
+}
+
+cmd_assign() {
+    local ORG="" REPOS_LIST="" REPOS_FILE="" GROUP=""
+    local pos_args=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        --org)
+            ORG="$2"
+            shift 2
+            ;;
+        --repos)
+            REPOS_LIST="$2"
+            shift 2
+            ;;
+        --repos-file)
+            REPOS_FILE="$2"
+            shift 2
+            ;;
+        --group)
+            GROUP="$2"
+            shift 2
+            ;;
+        --help | -h)
+            print_assign_help
+            return
+            ;;
+        --yes | --dry-run)
+            pos_args+=("$1")
+            shift
+            ;; # handled earlier
+        *)
+            echo "Unknown flag for assign: $1"
+            exit 1
+            ;;
+        esac
+    done
+
+    if [[ -z "$ORG" || (-z "$REPOS_LIST" && -z "$REPOS_FILE") || -z "$GROUP" ]]; then
+        interactive_assign
+        return
+    fi
+
+    if [[ -n "$REPOS_FILE" ]]; then
+        mapfile -t REPOS < <(grep -Ev '^\s*$' "$REPOS_FILE" | tr -d '\r')
+    else
+        IFS=',' read -r -a REPOS <<<"$REPOS_LIST"
+    fi
+    confirm "Assign teams for ${#REPOS[@]} repos to group '$GROUP'?"
+    assign_repos "$ORG" "$GROUP" "${REPOS[@]}"
+}
+
+# ---------------- Migrate ----------------
+
+interactive_migrate_collect() {
+    # gather ADO + GitHub org/project info
+    [[ -z "${ADO_ORG:-}" ]] && ADO_ORG=$(gum input --placeholder "ADO organization" --prompt "ADO Org > ")
+    [[ -z "$ADO_ORG" ]] && {
+        echo "❌ ADO org required"
+        exit 1
+    }
+    [[ -z "${ADO_PROJECT:-}" ]] && ADO_PROJECT=$(gum input --placeholder "ADO project" --prompt "ADO Project > " --value "Process")
+    [[ -z "$ADO_PROJECT" ]] && {
+        echo "❌ ADO project required"
+        exit 1
+    }
+    [[ -z "${GITHUB_ORG:-}" ]] && GITHUB_ORG=$(gum input --placeholder "GitHub org" --prompt "GitHub Org > ")
+    [[ -z "$GITHUB_ORG" ]] && {
+        echo "❌ GitHub org required"
+        exit 1
+    }
+
+    # Determine PAT (override env if given later)
+    if [[ -z "${ADO_PAT_OVERRIDE:-}" && -n "${ADO_PAT:-}" ]]; then
+        ADO_PAT_OVERRIDE="$ADO_PAT"
+    fi
+    if [[ -z "$ADO_PAT_OVERRIDE" ]]; then
+        if gum confirm "Provide Azure DevOps PAT for repo listing?"; then
+            ADO_PAT_OVERRIDE=$(gum input --placeholder "Azure DevOps PAT" --prompt "ADO PAT > ") || true
+        fi
+    fi
+
+    fetch_ado_repos() {
+        local org="$1" project="$2" pat="$3"
+        [[ -z "$pat" ]] && return 1
+        local url="https://dev.azure.com/${org}/${project}/_apis/git/repositories?api-version=7.0"
+        curl -s -u ":$pat" "$url" | jq -r '.value[]?.name' 2>/dev/null || true
+    }
+
+    # repo sources: file, fetched list, manual entry, paste list
+    local choice
+    choice=$(gum choose "Select file of repos" "Fetch & select ADO repos" "Enter repo names" "Paste comma list" --header "Repo source")
+    case "$choice" in
+    "Select file of repos")
+        local file
+        file=$(gum input --placeholder "Path to repo list file" --prompt "File > ")
+        [[ -f "$file" ]] || {
+            echo "❌ File not found"
+            exit 1
+        }
+        mapfile -t REPO_LIST < <(grep -Ev '^\s*$' "$file" | tr -d '\r')
+        ;;
+    "Fetch & select ADO repos")
+        if [[ -z "$ADO_PAT_OVERRIDE" ]]; then
+            echo "⚠️ No PAT provided; cannot fetch. Falling back to manual entry."
+        else
+            echo "📡 Fetching ADO repos via REST API..."
+            local fetched
+            fetched=$(fetch_ado_repos "$ADO_ORG" "$ADO_PROJECT" "$ADO_PAT_OVERRIDE")
+            if [[ -n "$fetched" ]]; then
+                mapfile -t REPO_LIST < <(echo "$fetched" | fzf --multi --prompt "Select ADO repos > " --height 50% --border)
+            else
+                echo "⚠️ Fetch returned no repos or failed; fallback to manual entry."
+            fi
+        fi
+        ;;
+    "Enter repo names")
+        echo "Type repo names. Finish with empty line."
+        local line
+        REPO_LIST=()
+        while true; do
+            line=$(gum input --placeholder "Repo name (enter to finish)" --prompt "Repo > ") || true
+            [[ -z "$line" ]] && break
+            REPO_LIST+=("$line")
+        done
+        ;;
+    "Paste comma list")
+        local pasted
+        pasted=$(gum input --placeholder "comma,separated,repos" --prompt "List > ")
+        IFS=',' read -r -a REPO_LIST <<<"$pasted"
+        ;;
+    esac
+
+    # fallback manual if empty
+    if [[ ${#REPO_LIST[@]} -eq 0 ]]; then
+        echo "🔁 Manual entry fallback: enter names (blank to finish)"
+        local line
+        while true; do
+            line=$(gum input --placeholder "Repo name" --prompt "Repo > ") || true
+            [[ -z "$line" ]] && break
+            REPO_LIST+=("$line")
+        done
+    fi
+
+    [[ ${#REPO_LIST[@]} -eq 0 ]] && {
+        echo "❌ No repositories collected"
+        exit 1
+    }
+
+    GROUP=${GROUP:-""}
+    if [[ -z "$GROUP" ]]; then
+        GROUP=$(gum input --placeholder "Team group (optional)" --prompt "Group > ") || true
+    fi
+    RENAME_PREFIX=${RENAME_PREFIX:-""}
+    if gum confirm "Set a rename prefix?"; then
+        RENAME_PREFIX=$(gum input --placeholder "prefix-" --prompt "Prefix > ") || true
+    fi
+    if gum confirm "Change concurrency? (current ${CONCURRENCY:-2})"; then
+        local c
+        c=$(gum input --placeholder "2" --prompt "Concurrency > ") || true
+        [[ -n "$c" ]] && CONCURRENCY="$c"
+    fi
+    if gum confirm "Change refresh interval? (current ${REFRESH:-2}s)"; then
+        local r
+        r=$(gum input --placeholder "2" --prompt "Refresh (s) > ") || true
+        [[ -n "$r" ]] && REFRESH="$r"
+    fi
+    CONCURRENCY=${CONCURRENCY:-2}
+    REFRESH=${REFRESH:-2}
+}
+
+run_migration_job() {
+    local ado_repo="$1" github_org="$2" rename_prefix="$3" ado_org="$4" ado_project="$5" ado_pat="$6"
+    local dest_repo
+    if [[ -n "$rename_prefix" ]]; then dest_repo="${rename_prefix}${ado_repo}"; else dest_repo="$ado_repo"; fi
+    local log_file="$SESSION_DIR/logs/${ado_repo}.log"
+    local cmd=(gh ado2gh migrate-repo --ado-org "$ado_org" --ado-team-project "$ado_project" --ado-repo "$ado_repo" --github-org "$github_org" --github-repo "$dest_repo")
+    if [[ -n "$ado_pat" ]]; then
+        cmd+=(--ado-pat "$ado_pat")
+    fi
+    if [[ "$DRY_RUN" == "1" ]]; then
+        echo "[DRY-RUN] ${cmd[*]}" >"$log_file" &
+        return 0
+    fi
+    "${cmd[@]}" &>"$log_file" &
+    echo $!
+}
+
+assign_after_migration() {
+    local repo="$1" group="$2" github_org="$3"
+    [[ -z "$group" ]] && return 0
+    assign_repos "$github_org" "$group" "$repo" || echo "❌ Assignment failed for $repo"
+}
+
+cmd_migrate() {
+    ADO_ORG="" ADO_PROJECT="" ADO_REPOS_LIST="" ADO_REPOS_FILE="" GITHUB_ORG="" GROUP="" RENAME_PREFIX="" CONCURRENCY=2 REFRESH=2 NO_ASSIGN=0 ADO_PAT_OVERRIDE=""
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        --ado-org)
+            ADO_ORG="$2"
+            shift 2
+            ;;
+        --ado-project)
+            ADO_PROJECT="$2"
+            shift 2
+            ;;
+        --ado-pat)
+            ADO_PAT_OVERRIDE="$2"
+            shift 2
+            ;;
+        --ado-repos)
+            ADO_REPOS_LIST="$2"
+            shift 2
+            ;;
+        --ado-repos-file)
+            ADO_REPOS_FILE="$2"
+            shift 2
+            ;;
+        --github-org)
+            GITHUB_ORG="$2"
+            shift 2
+            ;;
+        --group)
+            GROUP="$2"
+            shift 2
+            ;;
+        --rename-prefix)
+            RENAME_PREFIX="$2"
+            shift 2
+            ;;
+        --concurrency)
+            CONCURRENCY="$2"
+            shift 2
+            ;;
+        --refresh)
+            REFRESH="$2"
+            shift 2
+            ;;
+        --no-assign)
+            NO_ASSIGN=1
+            shift
+            ;;
+        --help | -h)
+            print_migrate_help
+            return
+            ;;
+        --yes | --dry-run) shift ;; # already parsed
+        *)
+            echo "Unknown flag for migrate: $1"
+            exit 1
+            ;;
+        esac
+    done
+
+    if [[ -z "$ADO_ORG" || -z "$ADO_PROJECT" || -z "$GITHUB_ORG" || (-z "$ADO_REPOS_LIST" && -z "$ADO_REPOS_FILE") ]]; then
+        interactive_migrate_collect
+    else
+        if [[ -n "$ADO_REPOS_FILE" ]]; then
+            mapfile -t REPO_LIST < <(grep -Ev '^\s*$' "$ADO_REPOS_FILE" | tr -d '\r')
+        else
+            IFS=',' read -r -a REPO_LIST <<<"$ADO_REPOS_LIST"
+        fi
+    fi
+
+    [[ ${#REPO_LIST[@]} -eq 0 ]] && {
+        echo "❌ No ADO repos specified"
+        exit 1
+    }
+
+    confirm "Start migration of ${#REPO_LIST[@]} repos (concurrency=$CONCURRENCY)?"
+
+    SESSION_DIR="/tmp/gh-uniti-$(date +%s)"
+    mkdir -p "$SESSION_DIR/logs"
+    declare -A STATUS PID START
+    for r in "${REPO_LIST[@]}"; do STATUS[$r]="Queued"; done
+
+    dashboard() {
+        tput clear || true
+        echo "🔄 gh-uniti migration dashboard (refresh=${REFRESH}s)"
+        echo "ADO Org: $ADO_ORG | Project: $ADO_PROJECT | GitHub Org: $GITHUB_ORG | Group: ${GROUP:-<none>}"
+        echo "Concurrency: $CONCURRENCY | Prefix: ${RENAME_PREFIX:-<none>} | Dry-run: $DRY_RUN"
+        echo "--------------------------------------------------------------------------"
+        printf "%-25s %-10s %-8s %-8s %-25s\n" "Repo" "Status" "PID" "Secs" "Last Log"
+        echo "--------------------------------------------------------------------------"
+        local now last
+        for r in "${REPO_LIST[@]}"; do
+            local st=${STATUS[$r]}
+            local pid=${PID[$r]:-"-"}
+            local secs="-"
+            if [[ -n "${START[$r]:-}" && -n "$pid" && "$pid" != "-" ]]; then
+                secs=$(($(date +%s) - START[$r]))
+            fi
+            local log_file="$SESSION_DIR/logs/${r}.log"
+            if [[ -f "$log_file" ]]; then
+                last=$(tail -n 1 "$log_file" | sed 's/^/…/;s/\t/ /g' | cut -c1-25)
+            else
+                last=""
+            fi
+            printf "%-25s %-10s %-8s %-8s %-25s\n" "$r" "$st" "$pid" "$secs" "$last"
+        done
+        echo "--------------------------------------------------------------------------"
+        echo "CTRL+C to abort dashboard (running jobs continue)"
+    }
+
+    launch_jobs() {
+        local running count
+        while true; do
+            running=0
+            for r in "${REPO_LIST[@]}"; do
+                if [[ ${STATUS[$r]} == "Running" ]]; then running=$((running + 1)); fi
+            done
+            # start new if capacity
+            for r in "${REPO_LIST[@]}"; do
+                if [[ $running -ge $CONCURRENCY ]]; then break; fi
+                if [[ ${STATUS[$r]} == "Queued" ]]; then
+                    STATUS[$r]="Running"
+                    START[$r]=$(date +%s)
+                    local pid
+                    pid=$(run_migration_job "$r" "$GITHUB_ORG" "$RENAME_PREFIX" "$ADO_ORG" "$ADO_PROJECT" "$ADO_PAT_OVERRIDE") || true
+                    PID[$r]="$pid"
+                    running=$((running + 1))
+                fi
+            done
+
+            # update statuses
+            count=0
+            for r in "${REPO_LIST[@]}"; do
+                case ${STATUS[$r]} in
+                Running)
+                    local p=${PID[$r]}
+                    if ! kill -0 "$p" 2>/dev/null; then
+                        # job finished; check success by log exit code assumption
+                        if wait "$p"; then
+                            STATUS[$r]="Success"
+                            if [[ $NO_ASSIGN -eq 0 ]]; then assign_after_migration "$r" "$GROUP" "$GITHUB_ORG"; fi
+                        else
+                            STATUS[$r]="Failed"
+                        fi
+                    fi
+                    ;;
+                Queued | Success | Failed) : ;;
+                esac
+            done
+
+            dashboard
+
+            # completion check
+            local all_done=1
+            for r in "${REPO_LIST[@]}"; do
+                [[ ${STATUS[$r]} == "Queued" || ${STATUS[$r]} == "Running" ]] && {
+                    all_done=0
+                    break
+                }
+            done
+            [[ $all_done -eq 1 ]] && break
+            sleep "$REFRESH"
+        done
+    }
+
+    launch_jobs
+    echo "✅ Migrations finished. Summary:"
+    for r in "${REPO_LIST[@]}"; do echo "  $r -> ${STATUS[$r]}"; done
+}
+
+main() {
+    if [[ $# -lt 1 ]]; then
+        print_usage
+        exit 1
+    fi
+    local sub="$1"
+    shift
+    case "$sub" in
+    help | --help | -h)
+        print_usage
+        exit 0
+        ;;
+    version | --version)
+        echo "gh-uniti $VERSION"
+        exit 0
+        ;;
+    assign | migrate) ;; # proceed
+    *)
+        echo "Unknown subcommand: $sub"
+        print_usage
+        exit 1
+        ;;
+    esac
+
+    check_dependencies
+    parse_common_flags "$@"
+    set -- "${REMAINING_ARGS[@]}"
+    case "$sub" in
+    assign) cmd_assign "$@" ;;
+    migrate) cmd_migrate "$@" ;;
+    esac
+}
+
+main "$@"

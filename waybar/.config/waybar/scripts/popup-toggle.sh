@@ -12,6 +12,9 @@ fi
 # All known popups
 ALL_POPUPS=(github-status-popup github-changelog-popup weather-popup)
 
+# Detect the focused monitor index (Hyprland)
+MONITOR=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused==true) | .id' 2>/dev/null)
+
 # Check if the target popup is currently open
 active_windows=$(eww active-windows 2>/dev/null)
 
@@ -30,6 +33,10 @@ else
         eww close "${close_list[@]}" 2>/dev/null
     fi
 
-    # Open the requested popup
-    eww open "$POPUP" 2>/dev/null
+    # Open the requested popup on the focused monitor
+    if [[ -n "$MONITOR" ]]; then
+        eww open "$POPUP" --screen "$MONITOR" 2>/dev/null
+    else
+        eww open "$POPUP" 2>/dev/null
+    fi
 fi

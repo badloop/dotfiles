@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# 
+REPO=$(gh repo ls "${GITHUB_ORG:?GITHUB_ORG environment variable must be set}" --json name | jq '.[].name' | tr -d '"' | fzf)
+

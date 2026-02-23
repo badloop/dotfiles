@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# --- Config ---
+VAULT_NAME="${AZURE_VAULT_NAME:?AZURE_VAULT_NAME environment variable must be set}"
+SUFFIX="-local"
+
+# --- Figure out project name from current directory ---
+PROJECT_NAME=$(basename "$PWD")
+SECRET_GROUP="${PROJECT_NAME}${SUFFIX}"
+
+echo "🔑 Loading secrets from vault: $VAULT_NAME / $SECRET_GROUP"
+
+# --- Fetch secrets ---
+secrets=$(az keyvault secret list \
+  --vault-name "$VAULT_NAME" \
+  --query "[?starts_with(id, 'https://$VAULT_NAME.vault.azure.net/secrets/$SECRET_GROUP')].name" \
+  -o tsv)
+
+if [ -z "$secrets" ]; then
+  echo "❌ No secrets found for $SECRET_GROUP in vault $VAULT_NAME"
+  exit 1
+fi
+
+# --- Export secrets ---
+for secret in $secrets; do
+  value=$(az keyvault secret show --vault-name "$VAULT_NAME" --name "$secret" --query value -o tsv)
+  
+  # Normalize the variable name: remove prefix and replace dashes with underscores
+  varname=$(echo "$secret" | sed "s/^${SECRET_GROUP}-//" | tr '-' '_')
+  
+  export "$varname=$value"
+  echo "✔️ Exported $varname"
+done
+
+# --- Run command with secrets in env ---
+echo "🚀 Running: $*"
+exec "$@"
+

@@ -155,8 +155,8 @@ def fetch_rss_and_update_unread():
     return unread
 
 
-def main():
-    # Fetch all data
+def gather_data():
+    """Fetch all data and return common state."""
     status_indicator, status_desc = fetch_status()
     incidents = fetch_incidents()
     unread = fetch_rss_and_update_unread()
@@ -178,31 +178,61 @@ def main():
     }
     css_class = css_classes.get(status_indicator, "ok")
 
-    # Build text: GitHub icon + optional incident title + optional unread badge
-    # U+E709 = nf-dev-github_badge, rendered via Nerd Font at 18px to match QuickShell sizing
-    # Pango size is in 1024ths of a point; 18 * 1024 = 18432
-    gh_icon = (
-        '<span font_family="JetBrainsMono Nerd Font Mono">\ue709</span>'
-    )
-    text = gh_icon
+    return status_desc, incident_title, unread_count, css_class
 
-    if incident_title:
-        if len(incident_title) > 30:
-            incident_title = incident_title[:27] + "..."
-        text += f" {incident_title}"
 
-    if unread_count > 0:
-        text += f"  {unread_count}"
-
-    # Tooltip
+def build_tooltip(status_desc, incident_title, unread_count):
     tooltip_lines = [f"GitHub: {status_desc}"]
     if unread_count > 0:
         tooltip_lines.append(f"{unread_count} unread changelog items")
     if incident_title:
         tooltip_lines.append(f"Active: {incident_title}")
-    tooltip = "\\n".join(tooltip_lines)
+    return "\\n".join(tooltip_lines)
 
-    print(json.dumps({"text": text, "tooltip": tooltip, "class": css_class}))
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--module",
+        choices=["text"],
+        default=None,
+        help="Output only the text portion (icon is a static waybar module)",
+    )
+    args = parser.parse_args()
+
+    status_desc, incident_title, unread_count, css_class = gather_data()
+    tooltip = build_tooltip(status_desc, incident_title, unread_count)
+
+    if args.module == "text":
+        # Text only: incident title + unread count
+        parts = []
+        if incident_title:
+            title = (
+                incident_title
+                if len(incident_title) <= 30
+                else incident_title[:27] + "..."
+            )
+            parts.append(title)
+        if unread_count > 0:
+            parts.append(f" {unread_count}")
+        text = " ".join(parts)
+        # Hide module when there's nothing to show
+        css_class = css_class if text else "hidden"
+        print(json.dumps({"text": text, "tooltip": tooltip, "class": css_class}))
+
+    else:
+        # Combined output (icon + text in one module)
+        gh_icon = '<span font_family="JetBrainsMono Nerd Font Mono">\ue709</span>'
+        text = gh_icon
+        if incident_title:
+            if len(incident_title) > 30:
+                incident_title = incident_title[:27] + "..."
+            text += f" {incident_title}"
+        if unread_count > 0:
+            text += f"  {unread_count}"
+        print(json.dumps({"text": text, "tooltip": tooltip, "class": css_class}))
 
 
 if __name__ == "__main__":

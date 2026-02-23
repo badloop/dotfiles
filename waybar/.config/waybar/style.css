@@ -26,7 +26,7 @@ window#waybar {
 }
 
 #workspaces button {
-    color: @rp_muted;
+    color: @rp_iris;
     background: transparent;
     border-radius: 3px;
     padding: 1px 4px;
@@ -59,11 +59,27 @@ window#waybar {
     background: @rp_love;
 }
 
-/* ===== GitHub News Module ===== */
+/* ===== GitHub Modules ===== */
+#custom-github-icon {
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-size: 22px;
+    padding: 0 0 0 4px;
+    color: @rp_iris;
+}
+
 #custom-github-news {
-    /* padding: 0 6px; */
+    /* font-size: 12px; */
+    padding: 0 0 0 4px;
     color: @rp_text;
-    font-size: 20px;
+}
+
+#custom-github-news.hidden {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    font-size: 0;
+    border: none;
+    opacity: 0;
 }
 
 #custom-github-news.ok {
@@ -185,4 +201,28 @@ window#waybar {
     border: 1px solid @rp_muted;
     border-radius: 3px;
     margin: 2px 2px;
+}
+
+/* ===== Toggle Buttons ===== */
+#custom-mic-toggle,
+#custom-dunst-toggle {
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-size: 16px;
+    padding: 0 6px;
+}
+
+#custom-mic-toggle.unmuted {
+    color: @rp_foam;
+}
+
+#custom-mic-toggle.muted {
+    color: @rp_love;
+}
+
+#custom-dunst-toggle.active {
+    color: @rp_foam;
+}
+
+#custom-dunst-toggle.paused {
+    color: @rp_love;
 }

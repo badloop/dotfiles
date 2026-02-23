@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Usage: rgfzf "pattern" [directory]
+# - Recursive smart-case search (ripgrep -S) with color.
+# - Interactive selection via fzf with bat preview centered on match line.
+# - Outputs selected file:line:column (useful for editors / tooling).
+
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $(basename "$0") \"pattern\" [directory]" >&2
+  exit 1
+fi
+
+pattern=$1
+dir=${2:-./}
+
+# Ensure required tools exist
+for cmd in rg fzf bat; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "Error: '$cmd' not found in PATH" >&2; exit 1; }
+done
+
+# Collect matches first so we can handle 'no matches' cleanly without killing the pipeline.
+# Capture with color codes intact so fzf --ansi still works.
+rg_out=$(rg -H -n -S --no-heading --color=always --no-messages -- "$pattern" "$dir")
+rg_exit=$?
+
+if [[ $rg_exit -ne 0 ]]; then
+  # rg exit code 1 => no matches; others are real errors.
+  if [[ $rg_exit -eq 1 ]]; then
+    echo "No matches for pattern: $pattern" >&2
+    exit 1
+  else
+    echo "ripgrep failed (exit $rg_exit)" >&2
+    exit $rg_exit
+  fi
+fi
+
+# Feed results to fzf. Delimiter ':' yields:
+#   {1} file path
+#   {2} line number
+#   {3} column number (if present)
+# Preview starts at matched line; highlight that line.
+selection=$(printf '%s\n' "$rg_out" | fzf --ansi \
+  --delimiter=':' \
+  --preview 'bat --style=numbers --color=always --line-range {2}: --highlight-line {2} {1}' \
+  --preview-window='right,60%,wrap') || exit 1
+
+# If user cancels (fzf returns non-zero) we exit above. Otherwise parse selection.
+# rg default output: file:line:column:matched text
+# We emit file:line:column for downstream usage.
+if [[ -n $selection ]]; then
+  awk -F':' '{printf "%s:%s:%s\n", $1, $2, $3}' <<< "$selection"
+fi

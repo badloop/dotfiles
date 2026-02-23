@@ -102,8 +102,8 @@ When reporting back to Jarvis, include:
 | Alias | Path | Description |
 |-------|------|-------------|
 | `repo-creator` | `~/code/work/github-repo-creator` | ADO to GitHub migration tool |
-| `ai-frontend` | `~/code/work/ai-frontend` | AI chat frontend |
-| `ai-backend` | `~/code/work/ai-agents-backend` | AI agents backend |
+| `ai-frontend` | `~/code/work/ai-frontend` | Chat frontend |
+| `ai-backend` | `~/code/work/ai-agents-backend` | Agents backend |
 | `unified-pipeline` | `~/code/work/unified-pipeline` | GitHub Actions reusable workflows |
 
 ## Constraints

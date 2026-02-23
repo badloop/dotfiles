@@ -1,17 +1,17 @@
 {
     "reload_style_on_change": true,
     "layer": "top",
-    "output": [
-        "HDMI-A-1"
-    ],
     "modules-left": [
         "hyprland/workspaces",
+        "custom/github-icon",
         "custom/github-news"
     ],
     "modules-center": [
         "custom/cider"
     ],
     "modules-right": [
+        "custom/mic-toggle",
+        "custom/dunst-toggle",
         "custom/weather-fetch",
         "custom/weather-spc",
         "custom/weather-md",
@@ -47,8 +47,13 @@
         "interval": 60,
         "format": "{:%a %b %d %I:%M %p}"
     },
+    "custom/github-icon": {
+        "format": "\ue709",
+        "on-click": "~/.config/waybar/scripts/popup-toggle.sh github-changelog-popup",
+        "on-click-right": "~/.config/waybar/scripts/popup-toggle.sh github-status-popup"
+    },
     "custom/github-news": {
-        "exec": "~/.config/waybar/scripts/github-news.py",
+        "exec": "~/.config/waybar/scripts/github-news.py --module text",
         "return-type": "json",
         "interval": 21600,
         "on-click": "~/.config/waybar/scripts/popup-toggle.sh github-changelog-popup",
@@ -100,5 +105,19 @@
         "return-type": "json",
         "interval": 60,
         "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "custom/mic-toggle": {
+        "exec": "~/.config/waybar/scripts/mic-toggle.sh",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "~/.config/waybar/scripts/mic-toggle.sh toggle",
+        "signal": 1
+    },
+    "custom/dunst-toggle": {
+        "exec": "~/.config/waybar/scripts/dunst-toggle.sh",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "~/.config/waybar/scripts/dunst-toggle.sh toggle",
+        "signal": 2
     }
 }

@@ -3,7 +3,7 @@ name: mermaid-diagrams
 description: Creates Mermaid diagrams (.mmd) and converts them to high-resolution PNG images. Use when the user asks for diagrams, flowcharts, sequence diagrams, architecture diagrams, ERDs, state machines, Gantt charts, mind maps, or any visual representation of processes, systems, or data flows.
 compatibility: Requires mmdc (Mermaid CLI) installed on the system. Bash access required.
 metadata:
-  author: uniti-it
+  author: ""
   version: "1.0"
 allowed-tools: Bash Read Write
 ---

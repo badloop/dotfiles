@@ -1,13 +1,14 @@
 # Theme
 
-font_size 9.0
+font_size 10.5
 disable_ligatures always
 
 # Key Binds
 map ctrl+shift+u none
+map ctrl+shift+n no_op
 map ctrl+cmd+r load_config_file
-map ctrl+shift+plus change_font_size current +1.0
-map ctrl+shift+minus change_font_size current -1.0
+map ctrl+shift+plus change_font_size current +0.5
+map ctrl+shift+minus change_font_size current -0.5
 map ctrl+shift+0 change_font_size current 0
 map ctrl+shift+k scroll_page_up
 map ctrl+shift+j scroll_page_down
@@ -20,8 +21,9 @@ map ctrl+cmd+e pipe @screen_scrollback overlay nvim - -c 'set filetype=scrollbac
 
 # Cursor config
 cursor_shape block
-cursor_trail 1
+cursor_trail 3
 cursor_trail_decay 0.05 0.2
+shell_integration no-cursor
 
 # Miscellaneous
 confirm_os_window_close 0
@@ -35,14 +37,14 @@ allow_remote_control yes
 disable_ligatures always
 
 # BEGIN_KITTY_THEME
-# Rosé Pine
+# Carbonfox
 include current-theme.conf
 # END_KITTY_THEME
 
 
 # BEGIN_KITTY_FONTS
-font_family      family="Berkeley Mono Trial"
+font_family      family=TX-02 style=Regular features=+ss02
 bold_font        auto
-italic_font      auto
-bold_italic_font auto
+italic_font     family="Iosevka Fixed" style="Medium Extended Italic" 
+bold_italic_font family="Iosevka Fixed" style="Medium Extended Italic"
 # END_KITTY_FONTS

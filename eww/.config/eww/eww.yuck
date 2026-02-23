@@ -358,7 +358,7 @@
             (label :text "HWO")))
         (label :class "hwo-summary" :text hwo-summary :halign "start" :wrap true)
         (button :class "hwo-link"
-                :onclick "OFFICE=$(grep '^OFFICE=' ~/.local/share/weather/config | cut -d= -f2); xdg-open \"https://forecast.weather.gov/product.php?site=${OFFICE}&issuedby=${OFFICE}&product=HWO\" &"
+                :onclick "OFFICE=$(grep '^OFFICE=' ~/.local/share/weather/config | cut -d= -f2); xdg-open \"https://forecast.weather.gov/product.php?site=$OFFICE&issuedby=$OFFICE&product=HWO\" &"
           (box :orientation "h" :space-evenly false :spacing 6
             (label :text "View full HWO")
             (box :hexpand true)

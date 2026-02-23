@@ -1,0 +1,578 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Sync GitHub repositories to Azure Boards GitHub Connections.
+#
+# This script:
+# 1. Lists ADO projects you have access to
+# 2. Finds projects with Azure Boards GitHub connections
+# 3. Lets you choose a connection to sync
+# 4. Gets repos from GitHub org and ADO project
+# 5. Adds matching repos to the Azure Boards connection
+
+# Configuration (override via environment variables)
+ADO_ORG="${ADO_ORG:?ADO_ORG environment variable must be set}"
+GITHUB_ORG="${GITHUB_ORG:?GITHUB_ORG environment variable must be set}"
+API_VERSION="7.2-preview.1"
+
+# Flags
+PROJECT=""
+LIST_PROJECTS=false
+DEBUG=false
+NO_BATCH=false
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Sync GitHub repositories to Azure Boards GitHub Connections.
+
+Options:
+  -p, --project NAME   Process only a single ADO project by name
+  -l, --list-projects  List all ADO projects and exit
+  -d, --debug          Enable debug output
+  --no-batch           Add repos one at a time (slower but shows which fail)
+  -h, --help           Show this help message
+EOF
+  exit 0
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -p|--project) PROJECT="$2"; shift 2 ;;
+    -l|--list-projects) LIST_PROJECTS=true; shift ;;
+    -d|--debug) DEBUG=true; shift ;;
+    --no-batch) NO_BATCH=true; shift ;;
+    -h|--help) usage ;;
+    *) echo "Unknown option: $1"; usage ;;
+  esac
+done
+
+# Ensure required tools exist
+for cmd in curl gh jq gum; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "Missing dependency: $cmd"; exit 1; }
+done
+
+# ─── Helpers ───────────────────────────────────────────────────────────────────
+
+gum_style() {
+  local text="$1" fg="${2:-}" bold="${3:-}" border="${4:-}"
+  local -a cmd=(gum style)
+  [[ -n "$fg" ]] && cmd+=(--foreground "$fg")
+  [[ "$bold" == "true" ]] && cmd+=(--bold)
+  [[ -n "$border" ]] && cmd+=(--border "$border" --padding "0 1")
+  cmd+=("$text")
+  "${cmd[@]}"
+}
+
+gum_log() { gum log --level "$1" "$2"; }
+
+debug_log() { [[ "$DEBUG" == true ]] && gum_log debug "$1" || true; }
+
+get_ado_pat() {
+  if [[ -z "${ADO_PAT:-}" ]]; then
+    gum_log error "ADO_PAT environment variable not set"
+    exit 1
+  fi
+  echo "$ADO_PAT"
+}
+
+ado_request() {
+  local endpoint="$1" pat="$2" method="${3:-GET}"
+  local url="https://dev.azure.com/${ADO_ORG}/${endpoint}"
+  local -a cmd=(curl -s -u ":${pat}" "$url")
+
+  if [[ "$method" == "POST" ]]; then
+    cmd+=(-X POST -H "Content-Type: application/json")
+    [[ -n "${4:-}" ]] && cmd+=(-d "$4")
+  fi
+
+  "${cmd[@]}"
+}
+
+# ─── API Functions ─────────────────────────────────────────────────────────────
+
+get_projects() {
+  local pat="$1"
+  local all_projects="[]"
+  local continuation_token=""
+
+  while true; do
+    local url="_apis/projects?api-version=7.1&\$top=100"
+    [[ -n "$continuation_token" ]] && url+="&continuationToken=${continuation_token}"
+
+    local full_url="https://dev.azure.com/${ADO_ORG}/${url}"
+    local response
+    response=$(curl -s -i -u ":${pat}" "$full_url")
+
+    # Split headers and body
+    local headers body
+    if [[ "$response" == *$'\r\n\r\n'* ]]; then
+      headers="${response%%$'\r\n\r\n'*}"
+      body="${response#*$'\r\n\r\n'}"
+    else
+      headers="${response%%$'\n\n'*}"
+      body="${response#*$'\n\n'}"
+    fi
+
+    local projects
+    projects=$(echo "$body" | jq -r '.value // empty') || break
+    [[ -z "$projects" ]] && break
+
+    all_projects=$(jq -s '.[0] + .[1]' <(echo "$all_projects") <(echo "$projects"))
+
+    # Check for continuation token
+    continuation_token=""
+    local token_line
+    token_line=$(echo "$headers" | grep -i '^x-ms-continuationtoken:' || true)
+    if [[ -n "$token_line" ]]; then
+      continuation_token="${token_line#*:}"
+      continuation_token="${continuation_token// /}"
+      continuation_token="$(echo "$continuation_token" | tr -d '\r')"
+    fi
+
+    [[ -z "$continuation_token" ]] && break
+  done
+
+  echo "$all_projects"
+}
+
+get_github_connections() {
+  local pat="$1" project="$2"
+  ado_request "${project}/_apis/githubconnections?api-version=${API_VERSION}" "$pat" | jq -r '.value // []'
+}
+
+get_connection_repos() {
+  local pat="$1" project="$2" connection_id="$3"
+  ado_request "${project}/_apis/githubconnections/${connection_id}/repos?api-version=${API_VERSION}&\$top=1000" "$pat" \
+    | jq -r '[.value[]?.gitHubRepositoryUrl // empty] | .[]'
+}
+
+get_github_pat() {
+  local token
+  token=$(gh auth token 2>/dev/null) || { gum_log error "Failed to get GitHub token. Run 'gh auth login' first."; exit 1; }
+  echo "$token"
+}
+
+create_github_connection() {
+  local ado_pat="$1" project="$2" github_pat="$3"
+  local url="https://dev.azure.com/${ADO_ORG}/${project}/_apis/githubconnections?api-version=${API_VERSION}"
+
+  local payload
+  payload=$(jq -n --arg name "GitHub-${GITHUB_ORG}" --arg token "$github_pat" '{
+    name: $name,
+    authorizationType: "PersonalAccessToken",
+    credentials: { accessToken: $token }
+  }')
+
+  debug_log "URL: ${url}"
+
+  local response
+  response=$(curl -s -w '\n%{http_code}' -u ":${ado_pat}" -X POST -H "Content-Type: application/json" -d "$payload" "$url")
+
+  local body status_code
+  status_code="${response##*$'\n'}"
+  body="${response%$'\n'*}"
+
+  debug_log "HTTP status: ${status_code}"
+  debug_log "Response: ${body:0:200}"
+
+  if [[ "$status_code" =~ ^[0-9]+$ ]] && (( status_code >= 400 )); then
+    echo "{\"error\":\"HTTP ${status_code}: ${body}\"}"
+    return
+  fi
+
+  if [[ -z "$body" ]]; then
+    echo "{\"error\":\"Empty response (HTTP ${status_code})\"}"
+    return
+  fi
+
+  # Check if response has an id (success)
+  if echo "$body" | jq -e '.id' >/dev/null 2>&1; then
+    echo "$body"
+  else
+    echo "{\"error\":$(echo "$body" | jq -c '.')}"
+  fi
+}
+
+get_github_repos() {
+  gh repo list "$GITHUB_ORG" --limit 500 --json url --jq '.[].url'
+}
+
+get_ado_repos() {
+  local pat="$1" project="$2"
+  ado_request "${project}/_apis/git/repositories?api-version=7.1" "$pat" | jq -r '[.value[]?.name // empty] | .[]'
+}
+
+# ─── Repo Addition ─────────────────────────────────────────────────────────────
+
+add_single_repo() {
+  local pat="$1" project="$2" connection_id="$3" repo_url="$4"
+  local url="https://dev.azure.com/${ADO_ORG}/${project}/_apis/githubconnections/${connection_id}/reposBatch?api-version=${API_VERSION}"
+
+  local payload
+  payload=$(jq -n --arg url "$repo_url" '{
+    gitHubRepositoryUrls: [{ gitHubRepositoryUrl: $url }],
+    operationType: "add"
+  }')
+
+  local response
+  response=$(curl -s -w '\n%{http_code}' -u ":${pat}" -X POST -H "Content-Type: application/json" -d "$payload" "$url")
+
+  local body status_code
+  status_code="${response##*$'\n'}"
+  body="${response%$'\n'*}"
+
+  debug_log "HTTP ${status_code}: ${body:0:200}"
+
+  if [[ "$status_code" =~ ^[0-9]+$ ]] && (( status_code >= 400 )); then
+    echo "error:HTTP ${status_code}"
+    return
+  fi
+
+  if [[ -z "$body" ]]; then
+    echo "error:Empty response"
+    return
+  fi
+
+  # Check for ADO error format
+  if echo "$body" | jq -e '.message and ."$id"' >/dev/null 2>&1; then
+    echo "error:$(echo "$body" | jq -r '.message')"
+    return
+  fi
+
+  local count
+  count=$(echo "$body" | jq -r '.count // 0')
+  if (( count == 0 )); then
+    echo "ignored"
+    return
+  fi
+
+  local error_msg
+  error_msg=$(echo "$body" | jq -r '.value[0].errorMessage // empty')
+  if [[ -n "$error_msg" ]]; then
+    echo "error:${error_msg}"
+    return
+  fi
+
+  echo "success"
+}
+
+add_repos_batch() {
+  local pat="$1" project="$2" connection_id="$3"
+  shift 3
+  local -a repo_urls=("$@")
+  local batch_size=200
+  local total=${#repo_urls[@]}
+  local -a all_results=()
+  local -a batch_errors=()
+
+  debug_log "Splitting ${total} repos into $(( (total + batch_size - 1) / batch_size )) batch(es)"
+
+  local i=0
+  local batch_num=0
+  while (( i < total )); do
+    batch_num=$((batch_num + 1))
+    local -a batch=("${repo_urls[@]:$i:$batch_size}")
+    i=$((i + batch_size))
+
+    local num_batches=$(( (total + batch_size - 1) / batch_size ))
+    (( num_batches > 1 )) && gum_log info "Processing batch ${batch_num}/${num_batches} (${#batch[@]} repos)..."
+
+    local url="https://dev.azure.com/${ADO_ORG}/${project}/_apis/githubconnections/${connection_id}/reposBatch?api-version=${API_VERSION}"
+
+    # Build JSON array of repo URLs
+    local urls_json
+    urls_json=$(printf '%s\n' "${batch[@]}" | jq -R '{ gitHubRepositoryUrl: . }' | jq -s '.')
+
+    local payload
+    payload=$(jq -n --argjson urls "$urls_json" '{ gitHubRepositoryUrls: $urls, operationType: "add" }')
+
+    debug_log "Batch ${batch_num}: Adding ${#batch[@]} repos"
+
+    local response
+    response=$(curl -s -w '\n%{http_code}' -u ":${pat}" -X POST -H "Content-Type: application/json" -d "$payload" "$url")
+
+    local body status_code
+    status_code="${response##*$'\n'}"
+    body="${response%$'\n'*}"
+
+    debug_log "HTTP status: ${status_code}"
+
+    if [[ "$status_code" =~ ^[0-9]+$ ]] && (( status_code >= 400 )); then
+      gum_log error "Batch ${batch_num} failed with HTTP ${status_code}"
+      batch_errors+=("Batch ${batch_num}: HTTP ${status_code}")
+      continue
+    fi
+
+    if [[ -z "$body" ]]; then
+      batch_errors+=("Batch ${batch_num}: Empty response")
+      continue
+    fi
+
+    # Check for ADO error format
+    if echo "$body" | jq -e '.message and ."$id"' >/dev/null 2>&1; then
+      local msg
+      msg=$(echo "$body" | jq -r '.message')
+      gum_log error "Batch ${batch_num}: ${msg}"
+      batch_errors+=("Batch ${batch_num}: ${msg}")
+      continue
+    fi
+
+    # Process results
+    local repo_url error_msg
+    while IFS=$'\t' read -r repo_url error_msg; do
+      if [[ -n "$error_msg" && "$error_msg" != "null" ]]; then
+        gum_log error "${repo_url}: ${error_msg}"
+        all_results+=("error:${repo_url}")
+      else
+        gum_log info "Added: ${repo_url}"
+        all_results+=("success:${repo_url}")
+      fi
+    done < <(echo "$body" | jq -r '.value[]? | [.gitHubRepositoryUrl, .errorMessage] | @tsv')
+  done
+
+  # Print summary counts
+  local success_count=0 error_count=0
+  for r in "${all_results[@]}"; do
+    [[ "$r" == success:* ]] && ((success_count++)) || ((error_count++))
+  done
+
+  echo
+  local batch_error_count=${#batch_errors[@]}
+  if (( batch_error_count > 0 )); then
+    for be in "${batch_errors[@]}"; do gum_log warn "$be"; done
+    gum_style "Done! Added ${success_count} repo(s), ${error_count} repo error(s), ${batch_error_count} batch error(s)" "220" "true" "rounded"
+  else
+    gum_style "Done! Added ${success_count} repo(s), ${error_count} error(s)" "86" "true" "rounded"
+  fi
+}
+
+# ─── Main ──────────────────────────────────────────────────────────────────────
+
+main() {
+  gum_style "Azure Boards GitHub Connection Sync" "212" "true" "rounded"
+  echo
+
+  local pat
+  pat=$(get_ado_pat)
+  gum_log info "ADO PAT found"
+
+  gum_log info "Fetching ADO projects..."
+  local projects
+  projects=$(get_projects "$pat")
+
+  local project_count
+  project_count=$(echo "$projects" | jq 'length')
+
+  if (( project_count == 0 )); then
+    gum_log error "No projects found"
+    exit 1
+  fi
+
+  # List projects and exit
+  if [[ "$LIST_PROJECTS" == true ]]; then
+    gum_log info "Found ${project_count} projects:"
+    echo
+    echo "$projects" | jq -r 'sort_by(.name | ascii_downcase)[] | if .description then "  \(.name) - \(.description)" else "  \(.name)" end'
+    exit 0
+  fi
+
+  # Filter to single project if specified
+  if [[ -n "$PROJECT" ]]; then
+    projects=$(echo "$projects" | jq --arg name "$PROJECT" '[.[] | select(.name | ascii_downcase == ($name | ascii_downcase))]')
+    project_count=$(echo "$projects" | jq 'length')
+    if (( project_count == 0 )); then
+      gum_log error "Project '${PROJECT}' not found"
+      exit 1
+    fi
+    gum_log info "Processing single project: ${PROJECT}"
+  else
+    gum_log info "Found ${project_count} projects"
+  fi
+  echo
+
+  # Process each project
+  local project_name connection_id connection_name
+  while IFS= read -r project_name; do
+    gum_log info "Checking GitHub connections for project '${project_name}'..."
+    local connections
+    connections=$(get_github_connections "$pat" "$project_name")
+
+    local selected_conn_id="" selected_conn_name=""
+
+    # Look for existing connection
+    local conn_count
+    conn_count=$(echo "$connections" | jq 'length')
+    if (( conn_count > 0 )); then
+      selected_conn_id=$(echo "$connections" | jq -r '.[0].id')
+      selected_conn_name=$(echo "$connections" | jq -r '.[0].name')
+      local auth_type is_valid
+      auth_type=$(echo "$connections" | jq -r '.[0].authorizationType')
+      is_valid=$(echo "$connections" | jq -r '.[0].isConnectionValid')
+      gum_log info "Found existing connection: ${selected_conn_name} (type: ${auth_type}, valid: ${is_valid})"
+    fi
+
+    # Create connection if none exists
+    if [[ -z "$selected_conn_id" ]]; then
+      gum_log info "No GitHub connection found for '${project_name}', creating one..."
+      local github_pat
+      github_pat=$(get_github_pat)
+      gum_log info "Got GitHub token from gh CLI"
+
+      local new_conn
+      new_conn=$(create_github_connection "$pat" "$project_name" "$github_pat")
+
+      if echo "$new_conn" | jq -e '.error' >/dev/null 2>&1; then
+        local error_msg
+        error_msg=$(echo "$new_conn" | jq -r '.error')
+        gum_log error "Failed to create connection for '${project_name}': ${error_msg}"
+        [[ -n "$PROJECT" ]] && exit 1
+        continue
+      fi
+
+      selected_conn_id=$(echo "$new_conn" | jq -r '.id')
+      selected_conn_name=$(echo "$new_conn" | jq -r '.name')
+      gum_log info "Created new GitHub connection: ${selected_conn_name}"
+    fi
+
+    echo
+    gum_log info "Using connection: ${project_name} -> ${selected_conn_name}"
+
+    # Get repos already in the connection
+    gum_log info "Fetching repos already in the connection..."
+    local -a existing_repos=()
+    mapfile -t existing_repos < <(get_connection_repos "$pat" "$project_name" "$selected_conn_id")
+    gum_log info "Found ${#existing_repos[@]} repos already connected"
+
+    debug_log "Sample existing repos: ${existing_repos[*]:0:3}"
+
+    # Get GitHub repos
+    gum_log info "Fetching repos from GitHub org '${GITHUB_ORG}'..."
+    local -a github_repos=()
+    mapfile -t github_repos < <(get_github_repos)
+    gum_log info "Found ${#github_repos[@]} repos in GitHub org"
+
+    # Get ADO repos
+    gum_log info "Fetching repos from ADO project '${project_name}'..."
+    local -a ado_repos=()
+    mapfile -t ado_repos < <(get_ado_repos "$pat" "$project_name")
+    gum_log info "Found ${#ado_repos[@]} repos in ADO project"
+
+    # Build lookup maps: github repo name (lowercase) -> url
+    local -A github_map=()
+    for url in "${github_repos[@]}"; do
+      [[ -z "$url" ]] && continue
+      local name="${url##*/}"
+      github_map["${name,,}"]="$url"
+    done
+
+    # Build set of existing repo URLs (lowercase)
+    local -A existing_set=()
+    for url in "${existing_repos[@]}"; do
+      [[ -z "$url" ]] && continue
+      existing_set["${url,,}"]=1
+    done
+
+    # Find matching repos to add
+    local -a matching_repos=()
+    for ado_name in "${ado_repos[@]}"; do
+      [[ -z "$ado_name" ]] && continue
+      local lower_name="${ado_name,,}"
+      if [[ -n "${github_map[$lower_name]:-}" ]]; then
+        local gh_url="${github_map[$lower_name]}"
+        if [[ -z "${existing_set[${gh_url,,}]:-}" ]]; then
+          matching_repos+=("$gh_url")
+        fi
+      fi
+    done
+
+    debug_log "Existing repos count: ${#existing_repos[@]}"
+    debug_log "Repos to add: ${#matching_repos[@]}"
+
+    echo
+    gum_log info "Found ${#matching_repos[@]} matching repos to add"
+
+    if (( ${#matching_repos[@]} == 0 )); then
+      gum_style "No new repos to add!" "220" "true"
+      echo
+      if (( ${#existing_repos[@]} > 0 )); then
+        echo "Already connected repos:"
+        local show_count=$(( ${#existing_repos[@]} < 10 ? ${#existing_repos[@]} : 10 ))
+        for (( j=0; j<show_count; j++ )); do
+          echo "  - ${existing_repos[$j]}"
+        done
+        (( ${#existing_repos[@]} > 10 )) && echo "  ... and $(( ${#existing_repos[@]} - 10 )) more"
+      fi
+      [[ -n "$PROJECT" ]] && exit 0
+      continue
+    fi
+
+    # Show repos to be added
+    echo
+    gum_style "Repos to be added:" "86" "true"
+    local show_count=$(( ${#matching_repos[@]} < 20 ? ${#matching_repos[@]} : 20 ))
+    for (( j=0; j<show_count; j++ )); do
+      echo "  + ${matching_repos[$j]}"
+    done
+    (( ${#matching_repos[@]} > 20 )) && echo "  ... and $(( ${#matching_repos[@]} - 20 )) more"
+    echo
+
+    # Confirm
+    if ! gum confirm "Add ${#matching_repos[@]} repo(s) to the connection?"; then
+      gum_log info "Cancelled"
+      [[ -n "$PROJECT" ]] && exit 0
+      continue
+    fi
+
+    # Add repos
+    echo
+    gum_log info "Adding repos to connection..."
+
+    if [[ "$NO_BATCH" == true ]]; then
+      # One at a time
+      gum_log info "Adding ${#matching_repos[@]} repos one at a time (--no-batch mode)..."
+      local success_count=0 error_count=0 ignored_count=0
+      local total=${#matching_repos[@]}
+
+      for (( j=0; j<total; j++ )); do
+        local repo_url="${matching_repos[$j]}"
+        local repo_name="${repo_url##*/}"
+        local idx=$((j + 1))
+
+        local result
+        result=$(add_single_repo "$pat" "$project_name" "$selected_conn_id" "$repo_url")
+
+        case "$result" in
+          success)
+            gum_log info "[${idx}/${total}] done ${repo_name}"
+            ((success_count++))
+            ;;
+          ignored)
+            gum_log warn "[${idx}/${total}] skipped ${repo_name} (no access)"
+            ((ignored_count++))
+            ;;
+          error:*)
+            gum_log error "[${idx}/${total}] failed ${repo_name}: ${result#error:}"
+            ((error_count++))
+            ;;
+        esac
+      done
+
+      echo
+      if (( ignored_count > 0 )); then
+        gum_style "Done! Added ${success_count}, ignored ${ignored_count} (no access), ${error_count} error(s)" "220" "true" "rounded"
+      else
+        gum_style "Done! Added ${success_count} repo(s), ${error_count} error(s)" "86" "true" "rounded"
+      fi
+    else
+      add_repos_batch "$pat" "$project_name" "$selected_conn_id" "${matching_repos[@]}"
+    fi
+
+    # Single project mode: stop after first
+    [[ -n "$PROJECT" ]] && break
+  done < <(echo "$projects" | jq -r '.[].name')
+}
+
+main

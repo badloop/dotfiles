@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# --- Configuration ---
+WLED_IP="${WLED_IP:?WLED_IP environment variable must be set}"
+API_URL="http://${WLED_IP}/json/state"
+
+usage() {
+  echo "Usage: $(basename "$0") <power|brightness> <on|off|0-100>"
+  exit 1
+}
+
+[[ $# -ne 2 ]] && usage
+
+mod_type="${1,,}" # lowercase
+value="$2"
+
+case "$mod_type" in
+  power)
+    case "${value,,}" in
+      on)  payload='{"on":true}' ;;
+      off) payload='{"on":false}' ;;
+      *)   echo "Error: for 'power', value must be 'on' or 'off'."; exit 1 ;;
+    esac
+    ;;
+  brightness)
+    if ! [[ "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 100 )); then
+      echo "Error: for 'brightness', value must be an integer 0-100."
+      exit 1
+    fi
+    # WLED brightness is 0-255 internally, so scale it
+    bri=$(( value * 255 / 100 ))
+    payload="{\"bri\":${bri}}"
+    ;;
+  *)
+    echo "Error: modification type must be 'power' or 'brightness'."
+    exit 1
+    ;;
+esac
+
+if curl -sf -X POST -H "Content-Type: application/json" -d "$payload" "$API_URL" -o /dev/null --connect-timeout 3; then
+  echo "WLED ${mod_type} set to ${value}"
+else
+  echo "Error communicating with WLED"
+  exit 1
+fi

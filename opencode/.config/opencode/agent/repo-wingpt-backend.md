@@ -13,7 +13,7 @@ You are a **Backend Repository Specialist** with access ONLY to a specific backe
 **IMPORTANT**: You can ONLY access and modify files within this repository path:
 
 ```
-~/code/work/wingpt-backend/
+~/code/work/backend/
 ```
 
 > **TODO**: Update the path above to your actual backend repository location

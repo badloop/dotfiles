@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Show usage information
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+    echo "Usage: gh-repo-assign [org] [repos] [group]"
+    echo ""
+    echo "Assign GitHub teams to repositories in an organization."
+    echo ""
+    echo "Arguments:"
+    echo "  org       GitHub organization name (prompts if not provided)"
+    echo "  repos     Comma-separated list of repository names (interactive if not provided)"
+    echo "  group     Group name for teams (interactive if not provided)"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h    Show this help message"
+    echo ""
+    echo "Requirements:"
+    echo "  - gh CLI authenticated"
+    echo "  - Dependencies: gh, jq, gum, fzf"
+    echo ""
+    echo "Examples:"
+    echo "  gh-repo-assign myorg repo1,repo2 mygroup"
+    echo "  gh-repo-assign  # Interactive mode"
+    exit 0
+fi
+
+# Ensure required tools exist
+for cmd in gh jq gum fzf; do
+  command -v "$cmd" >/dev/null 2>&1 || { echo "❌ Missing dependency: $cmd"; exit 1; }
+done
+
+# Ensure gh is authenticated
+if ! gh auth status >/dev/null 2>&1; then
+  echo "❌ gh CLI is not authenticated. Run 'gh auth login' first."
+  exit 1
+fi
+
+# Org name: first arg or interactive gum
+if [ $# -ge 1 ]; then
+  ORG="$1"
+else
+  ORG=$(gum input --placeholder "Enter GitHub org name")
+fi
+[ -z "$ORG" ] && { echo "❌ No org provided."; exit 1; }
+
+# If args provided for repos and group, use them non-interactively
+if [ $# -ge 3 ]; then
+  IFS=',' read -r -a SELECTED_REPOS <<< "$2"
+  GROUP="$3"
+  # Fetch teams for slugs
+  echo "📡 Fetching team list for '$ORG'..."
+  TEAMS_JSON=$(gh api --paginate "orgs/$ORG/teams" --jq '.')
+
+  if [ -z "$TEAMS_JSON" ]; then
+    echo "❌ No teams returned for org $ORG (or access issue)."
+    exit 1
+  fi
+
+  TEAMS=$(echo "$TEAMS_JSON" | jq -r '.[].name')
+
+  if [ -z "$TEAMS" ]; then
+    echo "❌ No teams returned for org $ORG (or access issue)."
+    exit 1
+  fi
+else
+  # Interactive mode: fetch repos and select
+  echo "📡 Fetching repositories for org '$ORG'..."
+  REPOS_JSON=$(gh api --paginate "orgs/$ORG/repos" --jq '.')
+
+  if [ -z "$REPOS_JSON" ]; then
+    echo "❌ No repos returned for org $ORG (or access issue)."
+    exit 1
+  fi
+
+  REPOS=$(echo "$REPOS_JSON" | jq -r '.[].name')
+
+  if [ -z "$REPOS" ]; then
+    echo "❌ No repos returned for org $ORG (or access issue)."
+    exit 1
+  fi
+
+  # Allow user to pick multiple repos via fzf and store into an array safely
+  mapfile -t SELECTED_REPOS < <(echo "$REPOS" | fzf --multi --prompt "Select repositories (TAB to multi-select) > " --height 40% --border)
+
+  if [ "${#SELECTED_REPOS[@]}" -eq 0 ]; then
+    echo "❌ No repos selected."
+    exit 1
+  fi
+
+  # Fetch teams and select group
+  echo "📡 Fetching team list for '$ORG'..."
+  TEAMS_JSON=$(gh api --paginate "orgs/$ORG/teams" --jq '.')
+
+  if [ -z "$TEAMS_JSON" ]; then
+    echo "❌ No teams returned for org $ORG (or access issue)."
+    exit 1
+  fi
+
+  TEAMS=$(echo "$TEAMS_JSON" | jq -r '.[].name')
+
+  if [ -z "$TEAMS" ]; then
+    echo "❌ No teams returned for org $ORG (or access issue)."
+    exit 1
+  fi
+
+  # Extract unique group prefixes (strip the " - Developer" / " - Read Only" suffix)
+  mapfile -t GROUPS < <(echo "$TEAMS" | sed -E 's/ - (Developer|Read Only)$//' | sort -u)
+
+  # Let user pick one group (single-select)
+  GROUP=$(printf '%s\n' "${GROUPS[@]}" | fzf --prompt "Select group name > " --height 40% --border)
+
+  [ -z "$GROUP" ] && { echo "❌ No group selected."; exit 1; }
+fi
+
+
+
+echo "⚙️ Applying team permissions for group: '$GROUP' ..."
+
+# Precompute team slugs to avoid repeated jq queries
+TEAM_DEVELOPER="${GROUP} - Developer"
+TEAM_READONLY="${GROUP} - Read Only"
+SLUG_DEVELOPER=$(echo "$TEAMS_JSON" | jq -r --arg NAME "$TEAM_DEVELOPER" '.[] | select(.name == $NAME) | .slug')
+SLUG_READONLY=$(echo "$TEAMS_JSON" | jq -r --arg NAME "$TEAM_READONLY" '.[] | select(.name == $NAME) | .slug')
+
+for REPO in "${SELECTED_REPOS[@]}"; do
+  echo "🌀 Processing repo: $REPO"
+  for TEAM_DEF in "Developer:maintain" "Read Only:pull"; do
+    TEAM_TYPE="${TEAM_DEF%%:*}"
+    PERM="${TEAM_DEF##*:}"
+    TEAM_NAME="${GROUP} - ${TEAM_TYPE}"
+    echo "  🔍 Finding team: $TEAM_NAME"
+    if [ "$TEAM_TYPE" = "Developer" ]; then
+      SLUG="$SLUG_DEVELOPER"
+    else
+      SLUG="$SLUG_READONLY"
+    fi
+    if [ -z "$SLUG" ]; then
+      echo "  ❌ Team not found: $TEAM_NAME"
+      continue
+    fi
+    echo "  🚀 Assigning $TEAM_NAME ($PERM) to $ORG/$REPO"
+    RESULT=$(gh api -X PUT "orgs/$ORG/teams/$SLUG/repos/$ORG/$REPO" \
+      -f permission="$PERM" 2>&1) && echo "  ✅ OK" || echo "  ❌ ${RESULT}"
+  done
+done
+
+echo "🎉 Done!"
+

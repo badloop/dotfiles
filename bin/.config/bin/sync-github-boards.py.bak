@@ -1,0 +1,707 @@
+#!/usr/bin/env python3
+"""
+Sync GitHub repositories to Azure Boards GitHub Connections.
+
+This script:
+1. Lists ADO projects you have access to
+2. Finds projects with Azure Boards GitHub connections
+3. Lets you choose a connection to sync
+4. Gets repos from GitHub org and ADO project
+5. Adds matching repos to the Azure Boards connection
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from typing import Optional
+
+# Configuration (override via environment variables)
+ADO_ORG = os.environ.get("ADO_ORG")
+GITHUB_ORG = os.environ.get("GITHUB_ORG")
+API_VERSION = "7.2-preview.1"
+
+if not ADO_ORG or not GITHUB_ORG:
+    print("Error: ADO_ORG and GITHUB_ORG environment variables must be set.", file=sys.stderr)
+    sys.exit(1)
+
+
+def run_cmd(cmd: list[str], capture: bool = True) -> subprocess.CompletedProcess:
+    """Run a command and return the result."""
+    return subprocess.run(cmd, capture_output=capture, text=True)
+
+
+def gum_style(text: str, foreground: str = "", bold: bool = False, border: str = "") -> None:
+    """Print styled text using gum."""
+    cmd = ["gum", "style"]
+    if foreground:
+        cmd.extend(["--foreground", foreground])
+    if bold:
+        cmd.append("--bold")
+    if border:
+        cmd.extend(["--border", border, "--padding", "0 1"])
+    cmd.append(text)
+    subprocess.run(cmd)
+
+
+def gum_spin(title: str, cmd: list[str]) -> subprocess.CompletedProcess:
+    """Run a command with a spinner."""
+    full_cmd = ["gum", "spin", "--spinner", "dot", "--title", title, "--show-output", "--"] + cmd
+    return subprocess.run(full_cmd, capture_output=True, text=True)
+
+
+def gum_choose(items: list[str], header: str = "") -> Optional[str]:
+    """Let user choose from a list."""
+    import tempfile
+    
+    cmd = ["gum", "choose"]
+    if header:
+        cmd.extend(["--header", header])
+    cmd.extend(items)
+    
+    # Write output to temp file, let gum have the terminal
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt') as f:
+        temp_path = f.name
+    
+    try:
+        # Run gum with terminal access, redirect stdout to file
+        full_cmd = " ".join(f'"{c}"' if " " in c else c for c in cmd) + f" > {temp_path}"
+        exit_code = os.system(full_cmd)
+        
+        if exit_code != 0:
+            return None
+        
+        with open(temp_path, 'r') as f:
+            return f.read().strip()
+    finally:
+        if os.path.exists(temp_path):
+            os.unlink(temp_path)
+
+
+def gum_confirm(prompt: str) -> bool:
+    """Ask for confirmation."""
+    # Use os.system to let gum have full terminal access
+    exit_code = os.system(f'gum confirm "{prompt}"')
+    return exit_code == 0
+
+
+def gum_log(level: str, message: str) -> None:
+    """Log a message with gum."""
+    subprocess.run(["gum", "log", "--level", level, message])
+
+
+def get_ado_pat() -> str:
+    """Get ADO PAT from environment."""
+    pat = os.environ.get("ADO_PAT")
+    if not pat:
+        gum_log("error", "ADO_PAT environment variable not set")
+        sys.exit(1)
+    return pat
+
+
+def ado_request(endpoint: str, pat: str, method: str = "GET", data: Optional[dict] = None) -> dict:
+    """Make a request to ADO REST API."""
+    url = f"https://dev.azure.com/{ADO_ORG}/{endpoint}"
+    cmd = ["curl", "-s", "-u", f":{pat}", url]
+    
+    if method == "POST":
+        cmd.extend(["-X", "POST", "-H", "Content-Type: application/json"])
+        if data:
+            cmd.extend(["-d", json.dumps(data)])
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {"error": result.stdout}
+
+
+def get_projects(pat: str) -> list[dict]:
+    """Get list of ADO projects with pagination support."""
+    all_projects = []
+    continuation_token = None
+    
+    while True:
+        url = "_apis/projects?api-version=7.1&$top=100"
+        if continuation_token:
+            url += f"&continuationToken={continuation_token}"
+        
+        # Make request and capture headers for continuation token
+        full_url = f"https://dev.azure.com/{ADO_ORG}/{url}"
+        cmd = ["curl", "-s", "-i", "-u", f":{pat}", full_url]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        # Split headers and body
+        parts = result.stdout.split("\r\n\r\n", 1)
+        if len(parts) < 2:
+            parts = result.stdout.split("\n\n", 1)
+        
+        headers = parts[0] if parts else ""
+        body = parts[1] if len(parts) > 1 else ""
+        
+        try:
+            data = json.loads(body)
+            projects = data.get("value", [])
+            all_projects.extend(projects)
+        except json.JSONDecodeError:
+            break
+        
+        # Check for continuation token in headers
+        continuation_token = None
+        for line in headers.split("\n"):
+            if line.lower().startswith("x-ms-continuationtoken:"):
+                continuation_token = line.split(":", 1)[1].strip()
+                break
+        
+        if not continuation_token:
+            break
+    
+    return all_projects
+
+
+def get_github_connections(pat: str, project: str) -> list[dict]:
+    """Get GitHub connections for a project."""
+    result = ado_request(f"{project}/_apis/githubconnections?api-version={API_VERSION}", pat)
+    return result.get("value", [])
+
+
+def get_connection_repos(pat: str, project: str, connection_id: str) -> list[str]:
+    """Get repos already in a GitHub connection."""
+    # Try to get all repos in one request with a large top value
+    result = ado_request(
+        f"{project}/_apis/githubconnections/{connection_id}/repos?api-version={API_VERSION}&$top=1000", 
+        pat
+    )
+    repos = result.get("value", [])
+    return [r.get("gitHubRepositoryUrl", "") for r in repos]
+
+
+def get_github_pat() -> str:
+    """Get GitHub PAT from gh CLI."""
+    result = run_cmd(["gh", "auth", "token"])
+    if result.returncode != 0:
+        gum_log("error", "Failed to get GitHub token from gh CLI. Run 'gh auth login' first.")
+        sys.exit(1)
+    return result.stdout.strip()
+
+
+def create_github_connection(ado_pat: str, project: str, github_pat: str, debug: bool = False) -> Optional[dict]:
+    """Create a new GitHub connection using a GitHub PAT."""
+    url = f"https://dev.azure.com/{ADO_ORG}/{project}/_apis/githubconnections?api-version={API_VERSION}"
+    
+    data = {
+        "name": f"GitHub-{GITHUB_ORG}",
+        "authorizationType": "PersonalAccessToken",
+        "credentials": {
+            "accessToken": github_pat
+        }
+    }
+    
+    cmd = [
+        "curl", "-s", "-w", "\n%{http_code}", "-u", f":{ado_pat}",
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", json.dumps(data),
+        url
+    ]
+    
+    if debug:
+        safe_data = data.copy()
+        safe_data["credentials"] = {"accessToken": "***"}
+        gum_log("debug", f"URL: {url}")
+        gum_log("debug", f"Request body: {json.dumps(safe_data, indent=2)}")
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    
+    output_lines = result.stdout.rsplit("\n", 1)
+    body = output_lines[0] if len(output_lines) > 1 else ""
+    status_code = output_lines[-1] if output_lines else "unknown"
+    
+    if debug:
+        gum_log("debug", f"HTTP status code: {status_code}")
+        gum_log("debug", f"Response body: {body if body else '(empty)'}")
+        if result.stderr:
+            gum_log("debug", f"Response stderr: {result.stderr}")
+    
+    if status_code and status_code.isdigit():
+        code = int(status_code)
+        if code == 401:
+            return {"error": f"HTTP {code}: Unauthorized - check your ADO PAT has correct permissions"}
+        elif code == 403:
+            return {"error": f"HTTP {code}: Forbidden - you may not have permission to create connections in this project"}
+        elif code == 404:
+            return {"error": f"HTTP {code}: Not Found - project may not exist or GitHub Boards not enabled"}
+        elif code >= 400:
+            return {"error": f"HTTP {code}: {body if body else 'No response body'}"}
+    
+    if not body:
+        return {"error": f"Empty response from API (HTTP {status_code})"}
+    
+    try:
+        response = json.loads(body)
+        if debug:
+            gum_log("debug", f"Parsed response: {json.dumps(response, indent=2)}")
+        if "id" in response:
+            return response
+        return {"error": response}
+    except json.JSONDecodeError as e:
+        if debug:
+            gum_log("debug", f"JSON decode error: {e}")
+        return {"error": f"Invalid JSON response: {body}"}
+
+
+def get_github_repos() -> list[str]:
+    """Get list of repos from GitHub org using gh CLI."""
+    result = run_cmd([
+        "gh", "repo", "list", GITHUB_ORG, 
+        "--limit", "500", 
+        "--json", "url",
+        "--jq", ".[].url"
+    ])
+    if result.returncode != 0:
+        gum_log("error", f"Failed to get GitHub repos: {result.stderr}")
+        return []
+    return [url.strip() for url in result.stdout.strip().split("\n") if url.strip()]
+
+
+def get_ado_repos(pat: str, project: str) -> list[str]:
+    """Get list of repos from ADO project."""
+    result = ado_request(f"{project}/_apis/git/repositories?api-version=7.1", pat)
+    repos = result.get("value", [])
+    # Extract repo names and construct GitHub URLs
+    return [r.get("name", "") for r in repos]
+
+
+def add_single_repo_to_connection(pat: str, project: str, connection_id: str, repo_url: str, debug: bool = False) -> dict:
+    """Add a single repo to a GitHub connection. Returns result with success/error info."""
+    url = f"https://dev.azure.com/{ADO_ORG}/{project}/_apis/githubconnections/{connection_id}/reposBatch?api-version={API_VERSION}"
+    
+    data = {
+        "gitHubRepositoryUrls": [{"gitHubRepositoryUrl": repo_url}],
+        "operationType": "add"
+    }
+    
+    cmd = [
+        "curl", "-s", "-w", "\n%{http_code}", "-u", f":{pat}",
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", json.dumps(data),
+        url
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    
+    output_lines = result.stdout.rsplit("\n", 1)
+    body = output_lines[0] if len(output_lines) > 1 else ""
+    status_code = output_lines[-1] if output_lines else "unknown"
+    
+    if debug:
+        gum_log("debug", f"HTTP {status_code}: {body[:200] if body else '(empty)'}")
+    
+    # Check for HTTP error status
+    if status_code and status_code.isdigit() and int(status_code) >= 400:
+        return {"error": f"HTTP {status_code}", "repo_url": repo_url}
+    
+    try:
+        if not body:
+            return {"error": "Empty response", "repo_url": repo_url}
+        
+        response = json.loads(body)
+        
+        # Check for ADO error response format
+        if "message" in response and "$id" in response:
+            return {"error": response.get("message", "Unknown error"), "repo_url": repo_url}
+        
+        # Check if repo was actually added (count > 0)
+        count = response.get("count", 0)
+        values = response.get("value", [])
+        
+        if count == 0 or len(values) == 0:
+            return {"error": "Repo not added (no access or already exists)", "repo_url": repo_url, "ignored": True}
+        
+        # Check if the returned value has an error
+        if values and values[0].get("errorMessage"):
+            return {"error": values[0]["errorMessage"], "repo_url": repo_url}
+        
+        return {"success": True, "repo_url": repo_url}
+        
+    except json.JSONDecodeError as e:
+        return {"error": f"JSON decode error: {e}", "repo_url": repo_url}
+
+
+def add_repos_to_connection(pat: str, project: str, connection_id: str, repo_urls: list[str], debug: bool = False) -> dict:
+    """Add repos to a GitHub connection, batching if necessary (max 200 per request)."""
+    BATCH_SIZE = 200
+    all_results = []
+    errors = []
+    
+    # Split into batches
+    batches = [repo_urls[i:i + BATCH_SIZE] for i in range(0, len(repo_urls), BATCH_SIZE)]
+    
+    if debug:
+        gum_log("debug", f"Splitting {len(repo_urls)} repos into {len(batches)} batch(es)")
+    
+    for batch_num, batch in enumerate(batches, 1):
+        if len(batches) > 1:
+            gum_log("info", f"Processing batch {batch_num}/{len(batches)} ({len(batch)} repos)...")
+        
+        url = f"https://dev.azure.com/{ADO_ORG}/{project}/_apis/githubconnections/{connection_id}/reposBatch?api-version={API_VERSION}"
+        
+        data = {
+            "gitHubRepositoryUrls": [{"gitHubRepositoryUrl": repo_url} for repo_url in batch],
+            "operationType": "add"
+        }
+        
+        if debug:
+            gum_log("debug", f"URL: {url}")
+            gum_log("debug", f"Batch {batch_num}: Adding {len(batch)} repos")
+            gum_log("debug", f"First 3 repo URLs: {batch[:3]}")
+            # Dump actual JSON to file for inspection
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                json.dump(data, f, indent=2)
+                gum_log("debug", f"Full request JSON written to: {f.name}")
+        
+        cmd = [
+            "curl", "-s", "-w", "\n%{http_code}", "-u", f":{pat}",
+            "-X", "POST",
+            "-H", "Content-Type: application/json",
+            "-d", json.dumps(data),
+            url
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        output_lines = result.stdout.rsplit("\n", 1)
+        body = output_lines[0] if len(output_lines) > 1 else ""
+        status_code = output_lines[-1] if output_lines else "unknown"
+        
+        if debug:
+            gum_log("debug", f"HTTP status code: {status_code}")
+            gum_log("debug", f"Response body: {body if body else '(empty)'}")
+            if result.stderr:
+                gum_log("debug", f"Response stderr: {result.stderr}")
+        
+        # Check for HTTP error status
+        if status_code and status_code.isdigit() and int(status_code) >= 400:
+            error_msg = f"Batch {batch_num} failed with HTTP {status_code}: {body}"
+            gum_log("error", error_msg)
+            errors.append(error_msg)
+            continue  # Try next batch instead of failing completely
+        
+        try:
+            if not body:
+                errors.append(f"Batch {batch_num}: Empty response (HTTP {status_code})")
+                continue
+            
+            batch_result = json.loads(body)
+            
+            # Check for ADO error response format
+            if "message" in batch_result and "$id" in batch_result:
+                error_msg = f"Batch {batch_num}: {batch_result.get('message', 'Unknown error')}"
+                gum_log("error", error_msg)
+                errors.append(error_msg)
+                continue
+            
+            # Collect results from this batch
+            batch_values = batch_result.get("value", [])
+            all_results.extend(batch_values)
+            
+        except json.JSONDecodeError as e:
+            error_msg = f"Batch {batch_num}: JSON decode error - {e}"
+            gum_log("error", error_msg)
+            errors.append(error_msg)
+            continue
+    
+    result_dict = {"value": all_results}
+    if errors:
+        result_dict["batch_errors"] = errors
+    return result_dict
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Sync GitHub repositories to Azure Boards GitHub Connections.")
+    parser.add_argument(
+        "-p", "--project",
+        help="Process only a single ADO project by name (skips interactive selection)"
+    )
+    parser.add_argument(
+        "-l", "--list-projects",
+        action="store_true",
+        help="List all ADO projects accessible with your token and exit"
+    )
+    parser.add_argument(
+        "-d", "--debug",
+        action="store_true",
+        help="Enable debug output for troubleshooting"
+    )
+    parser.add_argument(
+        "--no-batch",
+        action="store_true",
+        help="Add repos one at a time instead of batching (slower but shows which repos fail)"
+    )
+    args = parser.parse_args()
+
+    # Header
+    gum_style("Azure Boards GitHub Connection Sync", foreground="212", bold=True, border="rounded")
+    print()
+    
+    # Get PAT
+    pat = get_ado_pat()
+    gum_log("info", "ADO PAT found")
+    
+    # Get projects
+    gum_log("info", "Fetching ADO projects...")
+    projects = get_projects(pat)
+    
+    if not projects:
+        gum_log("error", "No projects found")
+        sys.exit(1)
+    
+    # List projects and exit if requested
+    if args.list_projects:
+        gum_log("info", f"Found {len(projects)} projects:")
+        print()
+        for p in sorted(projects, key=lambda x: x.get("name", "").lower()):
+            name = p.get("name", "")
+            desc = p.get("description", "")
+            if desc:
+                print(f"  {name} - {desc}")
+            else:
+                print(f"  {name}")
+        sys.exit(0)
+    
+    # Filter to single project if specified
+    if args.project:
+        projects = [p for p in projects if p.get("name", "").lower() == args.project.lower()]
+        if not projects:
+            gum_log("error", f"Project '{args.project}' not found")
+            sys.exit(1)
+        gum_log("info", f"Processing single project: {args.project}")
+    else:
+        gum_log("info", f"Found {len(projects)} projects")
+    print()
+    
+    # Process each project
+    for project in projects:
+        project_name = project.get("name", "")
+        
+        gum_log("info", f"Checking GitHub connections for project '{project_name}'...")
+        connections = get_github_connections(pat, project_name)
+        
+        selected_conn = None
+        
+        # Look for an existing GitHub connection (any type)
+        if connections:
+            for conn in connections:
+                conn_name = conn.get("name", "")
+                conn_id = conn.get("id", "")
+                auth_type = conn.get("authorizationType", "")
+                is_valid = conn.get("isConnectionValid", False)
+                
+                gum_log("info", f"Found existing connection: {conn_name} (type: {auth_type}, valid: {is_valid})")
+                
+                selected_conn = {
+                    "project": project_name,
+                    "connection_name": conn_name,
+                    "connection_id": conn_id,
+                    "is_valid": is_valid,
+                    "github_org": GITHUB_ORG,
+                    "display": f"{project_name} -> {GITHUB_ORG}"
+                }
+                break  # Use the first connection found
+        
+        # If no connection exists, create one using GitHub PAT
+        if not selected_conn:
+            gum_log("info", f"No GitHub connection found for '{project_name}', creating one...")
+            
+            github_pat = get_github_pat()
+            gum_log("info", "Got GitHub token from gh CLI")
+            
+            new_conn = create_github_connection(pat, project_name, github_pat, debug=args.debug)
+            
+            if not new_conn or "error" in new_conn:
+                error_msg = new_conn.get("error", "Unknown error") if new_conn else "No response"
+                gum_log("error", f"Failed to create GitHub connection for '{project_name}': {error_msg}")
+                if not args.project:
+                    continue  # Try next project if processing all
+                sys.exit(1)
+            
+            gum_log("info", f"Created new GitHub connection: {new_conn.get('name', 'unknown')}")
+            
+            selected_conn = {
+                "project": project_name,
+                "connection_name": new_conn.get("name", ""),
+                "connection_id": new_conn.get("id", ""),
+                "is_valid": True,
+                "github_org": GITHUB_ORG,
+                "display": f"{project_name} -> {GITHUB_ORG}"
+            }
+        
+        print()
+        gum_log("info", f"Using connection: {selected_conn['project']} -> {selected_conn['connection_name']}")
+        
+        # Get repos already in the connection
+        gum_log("info", "Fetching repos already in the connection...")
+        existing_repos = get_connection_repos(pat, selected_conn["project"], selected_conn["connection_id"])
+        gum_log("info", f"Found {len(existing_repos)} repos already connected")
+        
+        if args.debug:
+            if existing_repos:
+                gum_log("debug", f"Sample existing repo URLs: {existing_repos[:3]}")
+            else:
+                gum_log("debug", "No existing repos found in connection")
+        
+        # Get GitHub repos
+        gum_log("info", f"Fetching repos from GitHub org '{GITHUB_ORG}'...")
+        github_repos = get_github_repos()
+        gum_log("info", f"Found {len(github_repos)} repos in GitHub org")
+        
+        # Get ADO repos
+        gum_log("info", f"Fetching repos from ADO project '{selected_conn['project']}'...")
+        ado_repo_names = get_ado_repos(pat, selected_conn["project"])
+        gum_log("info", f"Found {len(ado_repo_names)} repos in ADO project")
+        
+        # Find matching repos (repos that exist in both GitHub org and ADO project)
+        # GitHub URLs are like https://github.com/<org>/repo-name
+        github_repo_map = {}
+        for url in github_repos:
+            # Extract repo name from URL
+            repo_name = url.split("/")[-1]
+            github_repo_map[repo_name.lower()] = url
+        
+        # Create case-insensitive set of existing repos for comparison
+        existing_repos_lower = set(r.lower() for r in existing_repos)
+        
+        matching_repos = []
+        for ado_name in ado_repo_names:
+            if ado_name.lower() in github_repo_map:
+                github_url = github_repo_map[ado_name.lower()]
+                # Case-insensitive check against existing repos
+                if github_url.lower() not in existing_repos_lower:
+                    matching_repos.append(github_url)
+        
+        if args.debug:
+            gum_log("debug", f"Existing repos count: {len(existing_repos)}")
+            if existing_repos:
+                gum_log("debug", f"Sample existing repos: {existing_repos[:3]}")
+            if matching_repos:
+                gum_log("debug", f"Sample repos to add: {matching_repos[:3]}")
+        
+        print()
+        gum_log("info", f"Found {len(matching_repos)} matching repos to add")
+        
+        if not matching_repos:
+            gum_style("No new repos to add!", foreground="220", bold=True)
+            print()
+            
+            if existing_repos:
+                print("Already connected repos:")
+                for repo in existing_repos[:10]:
+                    print(f"  - {repo}")
+                if len(existing_repos) > 10:
+                    print(f"  ... and {len(existing_repos) - 10} more")
+            
+            if args.project:
+                sys.exit(0)
+            continue  # Try next project
+        
+        # Show repos to be added
+        print()
+        gum_style("Repos to be added:", foreground="86", bold=True)
+        for repo in matching_repos[:20]:
+            print(f"  + {repo}")
+        if len(matching_repos) > 20:
+            print(f"  ... and {len(matching_repos) - 20} more")
+        
+        print()
+        
+        # Confirm
+        if not gum_confirm(f"Add {len(matching_repos)} repo(s) to the connection?"):
+            gum_log("info", "Cancelled")
+            if args.project:
+                sys.exit(0)
+            continue  # Try next project
+        
+        # Add repos
+        print()
+        gum_log("info", "Adding repos to connection...")
+        
+        if args.no_batch:
+            # Add repos one at a time for detailed success/failure tracking
+            gum_log("info", f"Adding {len(matching_repos)} repos one at a time (--no-batch mode)...")
+            success_count = 0
+            error_count = 0
+            ignored_count = 0
+            
+            for i, repo_url in enumerate(matching_repos, 1):
+                repo_name = repo_url.split("/")[-1]
+                result = add_single_repo_to_connection(
+                    pat,
+                    selected_conn["project"],
+                    selected_conn["connection_id"],
+                    repo_url,
+                    debug=args.debug
+                )
+                
+                if result.get("success"):
+                    gum_log("info", f"[{i}/{len(matching_repos)}] ✓ {repo_name}")
+                    success_count += 1
+                elif result.get("ignored"):
+                    gum_log("warn", f"[{i}/{len(matching_repos)}] ⊘ {repo_name} (no access)")
+                    ignored_count += 1
+                else:
+                    gum_log("error", f"[{i}/{len(matching_repos)}] ✗ {repo_name}: {result.get('error', 'unknown')}")
+                    error_count += 1
+            
+            print()
+            if ignored_count > 0:
+                gum_style(f"Done! Added {success_count}, ignored {ignored_count} (no access), {error_count} error(s)", foreground="220", bold=True, border="rounded")
+            else:
+                gum_style(f"Done! Added {success_count} repo(s), {error_count} error(s)", foreground="86", bold=True, border="rounded")
+        else:
+            # Use batching (original behavior)
+            result = add_repos_to_connection(
+                pat, 
+                selected_conn["project"], 
+                selected_conn["connection_id"], 
+                matching_repos,
+                debug=args.debug
+            )
+            
+            # Show batch errors if any
+            if "batch_errors" in result:
+                for batch_error in result["batch_errors"]:
+                    gum_log("warn", batch_error)
+            
+            # Show results
+            print()
+            added = result.get("value", [])
+            success_count = 0
+            error_count = 0
+            
+            for repo in added:
+                url = repo.get("gitHubRepositoryUrl", "")
+                error = repo.get("errorMessage", "")
+                if error:
+                    gum_log("error", f"{url}: {error}")
+                    error_count += 1
+                else:
+                    gum_log("info", f"Added: {url}")
+                    success_count += 1
+            
+            print()
+            batch_error_count = len(result.get("batch_errors", []))
+            if batch_error_count > 0:
+                gum_style(f"Done! Added {success_count} repo(s), {error_count} repo error(s), {batch_error_count} batch error(s)", foreground="220", bold=True, border="rounded")
+            else:
+                gum_style(f"Done! Added {success_count} repo(s), {error_count} error(s)", foreground="86", bold=True, border="rounded")
+        
+        # If processing a single project, exit after completion
+        if args.project:
+            break
+
+
+if __name__ == "__main__":
+    main()
