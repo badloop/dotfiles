@@ -195,6 +195,27 @@ window#waybar {
     color: @rp_text;
 }
 
+/* ===== System Metrics ===== */
+#cpu,
+#memory,
+#custom-gpu {
+    font-size: 14px;
+    padding: 0 4px;
+    min-width: 60px;
+}
+
+#cpu {
+    color: @rp_foam;
+}
+
+#memory {
+    color: @rp_iris;
+}
+
+#custom-gpu {
+    color: @rp_gold;
+}
+
 /* ===== System Tray ===== */
 #tray {
     padding: 0 4px;

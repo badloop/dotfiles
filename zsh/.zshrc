@@ -88,6 +88,7 @@ jsonfzf() {
 # Wallpaper picker
 function wallpaper() {
     local walldir="$HOME/.local/share/wallpapers"
+    local conffile="$HOME/.config/hypr/hyprpaper.conf"
 
     if [[ ! -d "$walldir" ]]; then
         echo "Wallpaper directory not found: $walldir"
@@ -104,9 +105,18 @@ function wallpaper() {
 
     [[ -z "$selection" ]] && return 0
 
-    hyprctl hyprpaper preload "$selection"
+    # Apply wallpaper at runtime
     hyprctl hyprpaper wallpaper ",$selection"
-    hyprctl hyprpaper unload unused
+
+    # Persist to config file
+    cat > "$conffile" <<EOF
+splash = false
+
+wallpaper {
+    monitor =
+    path = $selection
+}
+EOF
 }
 
 # zsh syntax highlighting configuration

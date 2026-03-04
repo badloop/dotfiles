@@ -10,6 +10,9 @@
         "custom/cider"
     ],
     "modules-right": [
+        "cpu",
+        "memory",
+        "custom/gpu",
         "custom/mic-toggle",
         "custom/dunst-toggle",
         "custom/weather-fetch",
@@ -105,6 +108,19 @@
         "return-type": "json",
         "interval": 60,
         "on-click": "~/.config/waybar/scripts/popup-toggle.sh weather-popup"
+    },
+    "cpu": {
+        "interval": 5,
+        "format": "<span font_family='JetBrainsMono Nerd Font Mono' font_size='14pt'>\uf4bc</span> <span rise='2pt'>{usage:>2}%</span>"
+    },
+    "memory": {
+        "interval": 5,
+        "format": "<span font_family='JetBrainsMono Nerd Font Mono' font_size='14pt'>\udb80\udf5b</span> <span rise='2pt'>{percentage:>2}%</span>"
+    },
+    "custom/gpu": {
+        "interval": 5,
+        "exec": "printf '%2s' $(cat /sys/class/drm/card*/device/gpu_busy_percent)",
+        "format": "<span font_family='JetBrainsMono Nerd Font Mono' font_size='14pt'>󰢮</span> <span rise='2pt'>{}%</span>"
     },
     "custom/mic-toggle": {
         "exec": "~/.config/waybar/scripts/mic-toggle.sh",
