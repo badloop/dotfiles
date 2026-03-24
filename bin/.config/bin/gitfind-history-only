@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# gitfind-history-only — Show the top N largest blobs in git history
+# that are NOT in the current HEAD.
+#
+# Usage: gitfind-history-only [options] [count]
+# Output: Interactive gum table (default) or plain text for piping.
+#
+# Options:
+#   -p, --plain    Output raw data: <size_bytes> <object_hash> <path>
+#   -n, --count N  Number of results (default: 50)
+#   -h, --help     Show this help
+#
+# Examples:
+#   gitfind-history-only                    # interactive table, top 50
+#   gitfind-history-only -n 20             # interactive table, top 20
+#   gitfind-history-only -p | gitpurge     # pipe to purge
+
+set -euo pipefail
+
+plain=false
+count=50
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -p|--plain) plain=true; shift ;;
+    -n|--count) count="$2"; shift 2 ;;
+    -h|--help) sed -n '2,/^$/s/^# //p' "$0"; exit 0 ;;
+    [0-9]*) count="$1"; shift ;;
+    *) echo "Unknown option: $1" >&2; exit 1 ;;
+  esac
+done
+
+# Auto-detect: fall back to plain if stdout is not a terminal
+if [[ "$plain" == false ]] && ! [[ -t 1 ]]; then
+  plain=true
+fi
+
+human_size() {
+  local bytes=$1
+  if (( bytes >= 1073741824 )); then
+    printf "%.1f GB" "$(echo "scale=1; $bytes/1073741824" | bc)"
+  elif (( bytes >= 1048576 )); then
+    printf "%.1f MB" "$(echo "scale=1; $bytes/1048576" | bc)"
+  elif (( bytes >= 1024 )); then
+    printf "%.1f KB" "$(echo "scale=1; $bytes/1024" | bc)"
+  else
+    printf "%d B" "$bytes"
+  fi
+}
+
+extension() {
+  local path="$1"
+  local base="${path##*/}"
+  if [[ "$base" == *.* ]]; then
+    echo ".${base##*.}"
+  else
+    echo "(none)"
+  fi
+}
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+# Step 1: get hashes NOT in HEAD
+comm -23 \
+  <(git rev-list --objects --all \
+    | grep -v package-lock.json \
+    | grep -v CHANGELOG.md \
+    | awk '{print $1}' \
+    | sort -u) \
+  <(git ls-tree -r HEAD \
+    | grep -v package-lock.json \
+    | awk '{print $3}' \
+    | sort -u) \
+  > "$tmpdir/not-in-head.txt"
+
+if [[ ! -s "$tmpdir/not-in-head.txt" ]]; then
+  echo "No history-only blobs found."
+  exit 0
+fi
+
+# Step 2: rejoin with rev-list to get paths, then get sizes
+# NOTE: head -N causes SIGPIPE (exit 141) upstream when it closes early.
+# With pipefail + set -e, that would kill the script. We capture the result
+# and allow exit codes 0 and 141 (SIGPIPE).
+raw=$(git rev-list --objects --all \
+  | grep -v package-lock.json \
+  | grep -v CHANGELOG.md \
+  | grep -Ff "$tmpdir/not-in-head.txt" \
+  | git cat-file --batch-check='%(objectname) %(objecttype) %(objectsize) %(rest)' \
+  | awk '$2=="blob" {print $3, $1, substr($0, index($0,$4))}' \
+  | sort -nr \
+  | head -"$count") || {
+  rc=$?
+  # 141 = SIGPIPE from head closing early — expected and harmless
+  if (( rc != 141 )); then
+    exit "$rc"
+  fi
+}
+
+if [[ -z "$raw" ]]; then
+  echo "No history-only blobs found."
+  exit 0
+fi
+
+if [[ "$plain" == true ]]; then
+  echo "$raw"
+  exit 0
+fi
+
+# Build CSV for gum table
+table="Size,Ext,Name,Path"
+while IFS= read -r line; do
+  bytes=$(echo "$line" | awk '{print $1}')
+  path=$(echo "$line" | awk '{for(i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}')
+  ext=$(extension "$path")
+  name="${path##*/}"
+  size=$(human_size "$bytes")
+  table+=$'\n'"${size},${ext},${name},${path}"
+done <<< "$raw"
+
+echo "$table" | gum table \
+  --separator "," \
+  --columns "Size,Ext,Name,Path" \
+  --widths 10,8,30,0 \
+  --height 40 \
+  --border rounded \
+  --header.foreground "212" \
+  --selected.foreground "10"

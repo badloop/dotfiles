@@ -233,37 +233,6 @@
         (label :class "weather-desc" :text weather-desc :halign "start")
         (label :class "weather-feels" :text "Feels like ${weather-feels}" :halign "start")))
 
-    ;; === SPC OUTLOOK (conditional) ===
-    (box :visible {spc-active == "true"} :class "spc-card" :orientation "v" :space-evenly false :spacing 4
-         :style "background-color: alpha(${spc-color}, 0.25); border-color: ${spc-color};"
-      (box :orientation "h" :space-evenly false :spacing 8
-        (label :class "spc-header-icon" :text "⛈")
-        (label :class "spc-title" :text "SPC Day 1 Outlook")
-        (box :hexpand true)
-        (box :class "spc-risk-badge" :style "background-color: ${spc-color};"
-          (label :text spc-label
-                 :style {spc-label == "SLGT" || spc-label == "MRGL" ? "color: #000;" : "color: #FFF;"})))
-      (label :class "spc-full-name" :text spc-full :halign "start")
-      (button :class "spc-link" :onclick "xdg-open https://www.spc.noaa.gov/products/outlook/day1otlk.html &"
-        (box :orientation "h" :space-evenly false :spacing 6
-          (label :text "View full SPC outlook") (box :hexpand true) (label :class "link-arrow" :text "󰁔"))))
-
-    ;; === MESOSCALE DISCUSSIONS (conditional) ===
-    (box :visible {md-count > 0} :class "md-card" :orientation "v" :space-evenly false :spacing 6
-      (box :orientation "h" :space-evenly false :spacing 8
-        (label :class "md-icon" :text "󰙅")
-        (label :class "md-title" :text {md-count > 1 ? "Mesoscale Discussions" : "Mesoscale Discussion"})
-        (box :hexpand true)
-        (box :class "md-count-badge"
-          (label :text "MD ${md-count}")))
-      (for md in {md-items-json}
-        (button :class "md-item" :onclick "xdg-open '${md.url}' &"
-          (box :orientation "v" :space-evenly false :spacing 2
-            (box :orientation "h" :space-evenly false
-              (label :class "md-number" :text "MD ${md.number}" :halign "start")
-              (box :hexpand true))
-            (label :class "md-summary" :text {md.summary} :halign "start" :wrap true :limit-width 60)))))
-
     ;; Separator
     (box :class "separator")
 
@@ -291,6 +260,41 @@
           (label :class "forecast-icon" :text {day.icon} :halign "center")
           (label :class "forecast-high" :text "${day.high}°" :halign "center")
           (label :class "forecast-low" :text "${day.low}°" :halign "center"))))
+
+    ;; === SPC OUTLOOK (conditional) ===
+    (box :visible {spc-active == "true"} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "spc-card" :orientation "v" :space-evenly false :spacing 4
+           :style "background-color: alpha(${spc-color}, 0.25); border-color: ${spc-color};"
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "spc-header-icon" :text "⛈")
+          (label :class "spc-title" :text "SPC Day 1 Outlook")
+          (box :hexpand true)
+          (box :class "spc-risk-badge" :style "background-color: ${spc-color};"
+            (label :text spc-label
+                   :style {spc-label == "SLGT" || spc-label == "MRGL" ? "color: #000;" : "color: #FFF;"})))
+        (label :class "spc-full-name" :text spc-full :halign "start")
+        (button :class "spc-link" :onclick "xdg-open https://www.spc.noaa.gov/products/outlook/day1otlk.html &"
+          (box :orientation "h" :space-evenly false :spacing 6
+            (label :text "View full SPC outlook") (box :hexpand true) (label :class "link-arrow" :text "󰁔")))))
+
+    ;; === MESOSCALE DISCUSSIONS (conditional) ===
+    (box :visible {md-count > 0} :orientation "v" :space-evenly false :spacing 0
+      (box :class "separator")
+      (box :class "md-card" :orientation "v" :space-evenly false :spacing 6
+        (box :orientation "h" :space-evenly false :spacing 8
+          (label :class "md-icon" :text "󰙅")
+          (label :class "md-title" :text {md-count > 1 ? "Mesoscale Discussions" : "Mesoscale Discussion"})
+          (box :hexpand true)
+          (box :class "md-count-badge"
+            (label :text "MD ${md-count}")))
+        (for md in {md-items-json}
+          (button :class "md-item" :onclick "xdg-open '${md.url}' &"
+            (box :orientation "v" :space-evenly false :spacing 2
+              (box :orientation "h" :space-evenly false
+                (label :class "md-number" :text "MD ${md.number}" :halign "start")
+                (box :hexpand true))
+              (label :class "md-summary" :text {md.summary} :halign "start" :wrap true :limit-width 60))))))
 
     ;; === WATCHES (conditional) ===
     (box :visible {watches-count > 0} :orientation "v" :space-evenly false :spacing 0
@@ -382,7 +386,7 @@
   :namespace "eww-popup"
   :geometry (geometry
     :x "0px"
-    :y "4px"
+    :y "40px"
     :width "0px"
     :height "0px"
     :anchor "top left")
@@ -396,7 +400,7 @@
   :namespace "eww-popup"
   :geometry (geometry
     :x "0px"
-    :y "4px"
+    :y "40px"
     :width "0px"
     :height "0px"
     :anchor "top left")
@@ -410,7 +414,7 @@
   :namespace "eww-popup"
   :geometry (geometry
     :x "0px"
-    :y "4px"
+    :y "40px"
     :width "0px"
     :height "0px"
     :anchor "top right")

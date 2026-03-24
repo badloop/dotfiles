@@ -100,6 +100,13 @@ window#waybar {
 
 /* ===== Weather Modules ===== */
 
+/* Weather group container border */
+#group-weather {
+    border: 1px solid @rp_muted;
+    border-radius: 3px;
+    margin: 2px 2px;
+}
+
 /* Hidden fetch module + hidden state for inactive badges */
 #custom-weather-fetch,
 #custom-weather-spc.hidden,
@@ -200,8 +207,11 @@ window#waybar {
 #memory,
 #custom-gpu {
     font-size: 14px;
-    padding: 0 4px;
+    padding: 0;
     min-width: 60px;
+    border: 1px solid @rp_muted;
+    border-radius: 3px;
+    margin: 2px 2px;
 }
 
 #cpu {
@@ -230,6 +240,9 @@ window#waybar {
     font-family: "JetBrainsMono Nerd Font Mono";
     font-size: 16px;
     padding: 0 6px;
+    border: 1px solid @rp_muted;
+    border-radius: 3px;
+    margin: 2px 2px;
 }
 
 #custom-mic-toggle.unmuted {

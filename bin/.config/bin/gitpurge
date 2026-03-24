@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# gitpurge — Remove files from git history using git-filter-repo.
+#
+# Reads output from gitfind-history-only or gitfind-current on stdin.
+# Expected format: <size_bytes> <object_hash> <path>
+#
+# Usage:
+#   gitfind-history-only -p | gitpurge              # confirm each file
+#   gitfind-history-only -p | gitpurge -y            # purge all, no prompts
+#   gitfind-history-only -p | gitpurge --force       # non-fresh-clone repo
+#   gitfind-history-only -p | gitpurge -y --force    # all at once, force
+#
+# Options:
+#   -y, --yes      Skip confirmation prompts, purge all files
+#   --force        Pass --force to git-filter-repo
+#   -h, --help     Show this help
+
+set -euo pipefail
+
+auto_yes=false
+force=false
+
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes) auto_yes=true ;;
+    --force) force=true ;;
+    -h|--help) sed -n '2,/^$/s/^# //p' "$0"; exit 0 ;;
+    *) echo "Unknown option: $arg" >&2; exit 1 ;;
+  esac
+done
+
+human_size() {
+  local bytes=$1
+  if (( bytes >= 1073741824 )); then
+    printf "%.1f GB" "$(echo "scale=1; $bytes/1073741824" | bc)"
+  elif (( bytes >= 1048576 )); then
+    printf "%.1f MB" "$(echo "scale=1; $bytes/1048576" | bc)"
+  elif (( bytes >= 1024 )); then
+    printf "%.1f KB" "$(echo "scale=1; $bytes/1024" | bc)"
+  else
+    printf "%d B" "$bytes"
+  fi
+}
+
+# Read all paths from stdin
+paths=()
+sizes=()
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  bytes=$(echo "$line" | awk '{print $1}')
+  path=$(echo "$line" | awk '{for(i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}')
+  [[ -z "$path" ]] && continue
+  paths+=("$path")
+  sizes+=("$bytes")
+done
+
+if [[ ${#paths[@]} -eq 0 ]]; then
+  echo "No paths found in input." >&2
+  echo "Pipe output from: gitfind-history-only -p  or  gitfind-current -p" >&2
+  exit 1
+fi
+
+# Collect which paths to purge
+to_purge=()
+
+if [[ "$auto_yes" == true ]]; then
+  to_purge=("${paths[@]}")
+  gum style --foreground 212 --bold "Purging all ${#paths[@]} files from history"
+  echo ""
+  for i in "${!paths[@]}"; do
+    size=$(human_size "${sizes[$i]}")
+    printf "  %-10s %s\n" "$size" "${paths[$i]}"
+  done
+  echo ""
+  # Final safety prompt
+  if ! gum confirm "This will rewrite git history for ${#to_purge[@]} files. Continue?" --affirmative "Rewrite history" --negative "Abort"; then
+    echo "Aborted."
+    exit 0
+  fi
+else
+  gum style --foreground 212 --bold "Review ${#paths[@]} files for purging"
+  echo ""
+  for i in "${!paths[@]}"; do
+    size=$(human_size "${sizes[$i]}")
+    echo ""
+    gum style --foreground 11 "$(printf '[%d/%d]  %s  (%s)' $((i+1)) ${#paths[@]} "${paths[$i]}" "$size")"
+    if gum confirm "Remove this file from history?" --affirmative "Remove" --negative "Skip"; then
+      to_purge+=("${paths[$i]}")
+      gum style --foreground 10 "  -> marked for removal"
+    else
+      gum style --foreground 8 "  -> skipped"
+    fi
+  done
+fi
+
+if [[ ${#to_purge[@]} -eq 0 ]]; then
+  echo ""
+  gum style --foreground 11 "No files selected. Nothing to do."
+  exit 0
+fi
+
+echo ""
+gum style --foreground 212 --bold "Summary: ${#to_purge[@]} file(s) to remove from history"
+echo ""
+for p in "${to_purge[@]}"; do
+  printf "  %s\n" "$p"
+done
+echo ""
+
+# Build filter-repo args
+args=(git filter-repo --invert-paths)
+for p in "${to_purge[@]}"; do
+  args+=(--path "$p")
+done
+if [[ "$force" == true ]]; then
+  args+=(--force)
+fi
+
+gum spin --spinner dot --title "Rewriting history..." --show-output -- "${args[@]}"
+
+echo ""
+gum style --foreground 10 --bold "Done. ${#to_purge[@]} path(s) removed from history."
+echo ""
+echo "Next steps:"
+echo "  1. Verify:  git log --oneline --all | wc -l"
+echo "  2. Check:   git rev-list --objects --all --disk-usage | numfmt --to=iec"
+echo "  3. Push:    git push origin --all --force"
+echo "  4. Tags:    git push origin --tags --force"

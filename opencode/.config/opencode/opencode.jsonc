@@ -1,13 +1,36 @@
 {
     "$schema": "https://opencode.ai/config.json",
     "autoupdate": true,
+    "share": "disabled",
+    "plugin": [
+        "@tarquinen/opencode-dcp@latest"
+    ],
     "instructions": [
         "~/.config/opencode/tools.md"
     ],
     "permission": {
         "external_directory": {
             "~/code/work/**": "allow",
-            "~/.local/share/today/**": "allow"
+            "~/.local/share/today/**": "allow",
+            "/tmp": "allow"
+        }
+    },
+    "provider": {
+        "lmstudio": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "LM Studio (local)",
+            "options": {
+                "baseURL": "http://127.0.0.1:1234/v1"
+            },
+            "models": {
+                "qwen/qwen3.5-9b": {
+                    "name": "Qwen 3.5 9B (local)",
+                    "limit": {
+                        "context": 262144,
+                        "output": 32768
+                    }
+                }
+            }
         }
     },
 }
