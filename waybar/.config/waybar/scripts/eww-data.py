@@ -87,6 +87,73 @@ def cmd_github_incidents_count():
     print(len(d))
 
 
+def cmd_github_incidents_json():
+    """Produce a flattened incident structure for EWW consumption.
+
+    Each incident gets: name, impact, status, affected components list,
+    and a pre-formatted updates array with human-readable CT timestamps.
+    """
+    raw = load_json(os.path.join(GITHUB_CACHE, "incidents.json"), [])
+    from zoneinfo import ZoneInfo
+
+    ct = ZoneInfo("America/Chicago")
+    result = []
+    for inc in raw:
+        # Affected component names
+        components = [c.get("name", "") for c in inc.get("components", [])]
+        comp_str = ", ".join(components) if components else "Unknown"
+
+        # Format started_at
+        started = ""
+        started_raw = inc.get("started_at") or inc.get("created_at", "")
+        if started_raw:
+            try:
+                dt = datetime.fromisoformat(started_raw.replace("Z", "+00:00"))
+                started = dt.astimezone(ct).strftime("%I:%M %p CT").lstrip("0")
+            except Exception:
+                started = started_raw[:16]
+
+        # Build update entries (most recent first, limit to 4)
+        updates = []
+        for upd in (inc.get("incident_updates") or [])[:4]:
+            ts = ""
+            raw_ts = upd.get("created_at", "")
+            if raw_ts:
+                try:
+                    dt = datetime.fromisoformat(raw_ts.replace("Z", "+00:00"))
+                    ts = dt.astimezone(ct).strftime("%I:%M %p CT").lstrip("0")
+                except Exception:
+                    ts = raw_ts[:16]
+            body = upd.get("body", "")
+            if len(body) > 200:
+                body = body[:197] + "..."
+            # Sanitize quotes for EWW string safety
+            body = body.replace('"', "'")
+            updates.append(
+                {
+                    "status": upd.get("status", "unknown"),
+                    "statusLabel": upd.get("status", "unknown").capitalize(),
+                    "time": ts,
+                    "body": body,
+                }
+            )
+
+        result.append(
+            {
+                "name": inc.get("name", "Unknown Incident"),
+                "impact": inc.get("impact", "minor"),
+                "status": inc.get("status", "investigating"),
+                "statusLabel": inc.get("status", "investigating").capitalize(),
+                "components": comp_str,
+                "started": started,
+                "shortlink": inc.get("shortlink", ""),
+                "updates": updates,
+                "update_count": len(inc.get("incident_updates") or []),
+            }
+        )
+    print(json.dumps(result))
+
+
 def cmd_github_unread_count():
     d = load_json(UNREAD_FILE, [])
     print(len(d))
@@ -299,6 +366,7 @@ COMMANDS = {
     "github-status-indicator": cmd_github_status_indicator,
     "github-status-description": cmd_github_status_description,
     "github-incidents-count": cmd_github_incidents_count,
+    "github-incidents-json": cmd_github_incidents_json,
     "github-unread-count": cmd_github_unread_count,
     "github-unread-json": cmd_github_unread_json,
     "weather-temp": cmd_weather_temp,

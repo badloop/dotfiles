@@ -27,6 +27,9 @@ function v() {
     if [ -f ./venv/bin/activate ]; then
         # shellcheck disable=1091
         source venv/bin/activate
+    elif [ -f ./.venv/bin/activate ]; then
+        # shellcheck disable=1091
+        source .venv/bin/activate
     fi
 }
 

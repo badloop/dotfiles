@@ -6,13 +6,15 @@
         "@tarquinen/opencode-dcp@latest"
     ],
     "instructions": [
-        "~/.config/opencode/tools.md"
+        "~/.config/opencode/tools.md",
+        "~/.config/opencode/critical-rules.md"
     ],
     "permission": {
         "external_directory": {
             "~/code/work/**": "allow",
             "~/.local/share/today/**": "allow",
-            "/tmp": "allow"
+            "/tmp/**": "allow",
+            "~/.config/opencode/**": "allow"
         }
     },
     "provider": {

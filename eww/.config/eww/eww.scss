@@ -131,6 +131,29 @@ window {
   padding: 8px;
 }
 
+.no-incidents-card {
+  padding: 20px 16px;
+
+  .no-incidents-icon {
+    color: $rp_foam;
+    font-size: 32px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+  }
+
+  .no-incidents-title {
+    color: $rp_foam;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "TX-02";
+  }
+
+  .no-incidents-subtitle {
+    color: $rp_muted;
+    font-size: 11px;
+    font-family: "TX-02";
+  }
+}
+
 .incident-card {
   background-color: $card_bg;
   border-radius: 8px;
@@ -144,18 +167,90 @@ window {
     border: 1px solid $rp_love;
   }
 
+  .incident-impact-icon {
+    font-size: 20px;
+    font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    margin-right: 4px;
+  }
+  .impact-minor .incident-impact-icon { color: $rp_gold; }
+  .impact-major .incident-impact-icon,
+  .impact-critical .incident-impact-icon { color: $rp_love; }
+
   .incident-title {
     color: $rp_text;
     font-size: 13px;
     font-weight: bold;
     font-family: "TX-02";
-    margin-bottom: 6px;
+  }
+
+  .incident-meta {
+    color: $rp_muted;
+    font-size: 10px;
+    font-family: "TX-02";
+  }
+
+  .incident-status-badge {
+    border-radius: 4px;
+    padding: 2px 8px;
+
+    label {
+      font-size: 10px;
+      font-weight: bold;
+      font-family: "TX-02";
+    }
+
+    &.status-investigating {
+      background-color: rgba($rp_gold, 0.25);
+      label { color: $rp_gold; }
+    }
+    &.status-identified {
+      background-color: rgba($rp_iris, 0.25);
+      label { color: $rp_iris; }
+    }
+    &.status-monitoring {
+      background-color: rgba($rp_foam, 0.25);
+      label { color: $rp_foam; }
+    }
+    &.status-resolved {
+      background-color: rgba($rp_pine, 0.25);
+      label { color: $rp_pine; }
+    }
+  }
+
+  .incident-update-hint {
+    color: $rp_muted;
+    font-size: 9px;
+    font-style: italic;
+    font-family: "TX-02";
   }
 
   .incident-divider {
     background-color: $highlight;
     min-height: 1px;
-    margin: 6px 0;
+    margin: 4px 0;
+  }
+
+  .incident-link-btn {
+    border-radius: 6px;
+    padding: 6px 8px;
+    background-color: transparent;
+    margin-top: 4px;
+
+    &:hover {
+      background-color: $highlight;
+    }
+
+    label {
+      color: $rp_iris;
+      font-size: 10px;
+      font-family: "TX-02";
+    }
+
+    .footer-icon {
+      color: $rp_iris;
+      font-size: 12px;
+      font-family: "JetBrainsMono Nerd Font Mono", "TX-02";
+    }
   }
 }
 

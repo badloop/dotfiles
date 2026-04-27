@@ -95,6 +95,9 @@ def fetch_rss_and_update_unread():
         last_data = load_json(LASTCHECK_FILE, {})
         last_check_str = last_data.get("lastCheck", "1970-01-01T00:00:00+00:00")
         last_check = datetime.fromisoformat(last_check_str.replace("Z", "+00:00"))
+        # Ensure timezone-aware (fix for previously saved naive timestamps)
+        if last_check.tzinfo is None:
+            last_check = last_check.replace(tzinfo=timezone.utc)
     except Exception:
         last_check = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
@@ -143,7 +146,7 @@ def fetch_rss_and_update_unread():
                 "url": url,
                 "pubDate": pub_date,
                 "description": desc,
-                "addedAt": datetime.now().isoformat(),
+                "addedAt": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -151,7 +154,7 @@ def fetch_rss_and_update_unread():
         unread = new_stories + unread
 
     save_json(UNREAD_FILE, unread)
-    save_json(LASTCHECK_FILE, {"lastCheck": datetime.now().isoformat()})
+    save_json(LASTCHECK_FILE, {"lastCheck": datetime.now(timezone.utc).isoformat()})
     return unread
 
 

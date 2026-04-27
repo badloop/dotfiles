@@ -9,8 +9,9 @@
 ;; GitHub data — fast jq reads from local cache
 (defpoll github-status-json :interval "30s"
   `cat ~/.cache/waybar/github-news/status.json 2>/dev/null || echo '{}'`)
+;; GitHub incidents — pre-formatted with CT timestamps
 (defpoll github-incidents-json :interval "30s"
-  `cat ~/.cache/waybar/github-news/incidents.json 2>/dev/null || echo '[]'`)
+  `~/.config/waybar/scripts/eww-data.py github-incidents-json`)
 (defpoll github-unread-json :interval "2s"
   `~/.config/waybar/scripts/eww-data.py github-unread-json`)
 
@@ -124,7 +125,7 @@
       (label :class "status-icon ${github-status-indicator == 'critical' || github-status-indicator == 'major' ? 'status-icon-bad' : github-status-indicator == 'minor' ? 'status-icon-minor' : 'status-icon-ok'}"
              :text {github-status-indicator == "critical" || github-status-indicator == "major" ? "󰅙" :
                     github-status-indicator == "minor" ? "󰀨" : "󰗡"})
-      (box :orientation "v" :space-evenly false :spacing 4 :hexpand true
+      (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
         (label :class "status-description"
                :text {github-status-description ?: "All Systems Operational"}
                :halign "start" :wrap true)
@@ -132,14 +133,66 @@
                :text "Updated just now"
                :halign "start")))
 
-    ;; Incidents section
+    ;; No-incidents state
     (box :visible {github-incidents-count == 0}
-      (label :class "no-incidents" :text "No active incidents"))
+         :class "no-incidents-card" :orientation "v" :space-evenly false :spacing 8 :halign "center"
+      (label :class "no-incidents-icon" :text "󰗡")
+      (label :class "no-incidents-title" :text "All Clear")
+      (label :class "no-incidents-subtitle" :text "No active incidents reported"))
 
-    ;; Incident list - rendered by a script that reads the JSON
-    (box :visible {github-incidents-count > 0} :orientation "v" :space-evenly false :spacing 8
-      (label :class "incident-card incident-title" :halign "start" :wrap true
-             :text {github-incidents-count > 0 ? "Active incidents: ${github-incidents-count}" : ""}))
+    ;; Incident cards (scrollable for multiple incidents)
+    (scroll :visible {github-incidents-count > 0}
+            :class "scroll-container"
+            :vscroll true :hscroll false
+            :height 400
+      (box :orientation "v" :space-evenly false :spacing 8
+        (for inc in {github-incidents-json}
+          (box :class "incident-card impact-${inc.impact}" :orientation "v" :space-evenly false :spacing 8
+            ;; Incident header
+            (box :orientation "h" :space-evenly false :spacing 8
+              (label :class "incident-impact-icon"
+                     :text {inc.impact == "critical" ? "󰅙" : inc.impact == "major" ? "󰀨" : "󰋼"})
+              (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
+                (label :class "incident-title" :text {inc.name} :halign "start" :wrap true)
+                (box :orientation "h" :space-evenly false :spacing 8
+                  (label :class "incident-meta" :text {inc.components} :halign "start")
+                  (label :class "incident-meta" :text "Since ${inc.started}" :halign "start"))))
+
+            ;; Status badge row
+            (box :orientation "h" :space-evenly false :spacing 8
+              (box :class "incident-status-badge status-${inc.status}"
+                (label :text {inc.statusLabel}))
+              (box :hexpand true)
+              (label :class "incident-update-hint"
+                     :text {inc.update_count > 4 ? "Showing 4 of ${inc.update_count} updates" : ""}
+                     :visible {inc.update_count > 4}))
+
+            ;; Divider before timeline
+            (box :class "incident-divider")
+
+            ;; Update timeline
+            (box :orientation "v" :space-evenly false :spacing 6
+              (for upd in {inc.updates}
+                (box :class "update-entry" :orientation "h" :space-evenly false :spacing 8
+                  ;; Timeline dot + line
+                  (box :orientation "v" :space-evenly false :halign "center"
+                    (box :class "update-dot dot-${upd.status}"))
+                  ;; Update content
+                  (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
+                    (box :orientation "h" :space-evenly false :spacing 6
+                      (label :class "update-status" :text {upd.statusLabel} :halign "start")
+                      (label :class "update-time" :text {upd.time} :halign "start"))
+                    (label :class "update-body" :text {upd.body} :halign "start" :wrap true)))))
+
+            ;; Link to full incident page
+            (button :class "incident-link-btn"
+                    :onclick "xdg-open '${inc.shortlink}' &"
+                    :visible {inc.shortlink != ""}
+              (box :orientation "h" :space-evenly false :spacing 6
+                (label :class "footer-icon" :text "󰖟")
+                (label :text "View full incident")
+                (box :hexpand true)
+                (label :class "link-arrow" :text "󰁔")))))))
 
     ;; Footer link
     (button :class "status-footer-btn"
