@@ -17,6 +17,12 @@
             "~/.config/opencode/**": "allow"
         }
     },
+    "skills": {
+        "paths": ["~/code/home/scratches/.opencode/skills"]
+    },
+    "server": {
+        "mdns": true
+    },
     "provider": {
         "lmstudio": {
             "npm": "@ai-sdk/openai-compatible",

@@ -250,6 +250,7 @@ alias vim='v;nvim'
 alias ls="eza --git --icons --header --group"
 alias hist="history 1"
 alias cat="bat"
+alias opencode="opencode --mdns"
 
 # Completions
 autoload -U compinit
